@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import button from '@assets/buttons/02-Home.png'
 
-export default function ButtonSidebar({ onClick }) {
+export default function ButtonHome({ onClick }) {
     const [pressed, setPressed] = useState(false)
 
     return (

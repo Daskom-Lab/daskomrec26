@@ -24,13 +24,11 @@ export default function Home() {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [isExiting, setIsExiting] = useState(false);
 
-    // Sidebar toggle
     const toggleSidebar = () => {
         if (inputLocked || isLoggingOut) return;
         setIsSidebarOpen(prev => !prev);
     };
 
-    // Home navigation with exit animation
     const goHome = () => {
         if (inputLocked || isLoggingOut) return;
         setIsExiting(true);
@@ -39,7 +37,6 @@ export default function Home() {
         setTimeout(() => router.visit('/user/home'), 1000);
     };
 
-    // Logout handler
     const handleLogout = () => {
         setInputLocked(true);
         setIsSidebarOpen(false);
@@ -50,14 +47,11 @@ export default function Home() {
         }, 350);
     };
 
-    // Intro animation
     useEffect(() => {
         const showTimer = setTimeout(() => setShowImage(true), 300);
-
-        // Start card placing animation shortly after image shows
         const placeCardTimer = setTimeout(() => {
-            setIsCardPlacing(false); // animation complete
-            setInputLocked(false);   // unlock input after animation
+            setIsCardPlacing(false);
+            setInputLocked(false);
         }, 100);
 
         const skipIntro = () => {
@@ -88,11 +82,11 @@ export default function Home() {
 
         .cold-blue-filter {
             filter:
-                brightness(1)
-                contrast(.95)
-                saturate(2.5)
-                hue-rotate(25deg)
-                sepia(.08);
+                brightness(1.1)
+                contrast(1.2)
+                saturate(1)
+                hue-rotate(15deg)
+                sepia(0);
         }
 
         .pulse-effect {
@@ -101,12 +95,12 @@ export default function Home() {
     `;
 
     const getBackgroundStyle = () => {
-        let scale = 1.2;
+        let scale = 1.1;
         let blur = showImage && imageLoaded ? 0 : 10;
 
         if (isExiting) {
-            scale = 1;        // zoom out
-            blur = 15;          // blur more
+            scale = 1;
+            blur = 15;
         }
 
         return {
@@ -119,13 +113,13 @@ export default function Home() {
     };
 
     const getCardStyle = () => {
-        let scale = isCardPlacing ? 1.5 : 1.0;
-        let rotate = isCardPlacing ? -25 : -21;
+        let scale = isCardPlacing ? 1.8 : 1.0;
+        let rotate = isCardPlacing ? -25 : -20;
         let opacity = isCardPlacing ? 0 : 1;
 
         if (isExiting) {
-            opacity = 0;   // fade out
-            scale = 0.8;
+            opacity = 0;
+            scale = 0.9;
         }
 
         return {
@@ -143,35 +137,46 @@ export default function Home() {
 
             <div className="relative w-full min-h-screen overflow-hidden">
 
-                {/* INITIAL GRADIENT BACKGROUND */}
+                {/* Gradient base */}
                 <div
-                    className="absolute inset-0 transition-opacity duration-700"
+                    className="absolute inset-0"
                     style={{ background: 'linear-gradient(to bottom, #0a2a4a, #0c365b)' }}
                 />
 
-                {/* BACKGROUND IMAGE */}
-                <img
-                    ref={backgroundRef}
-                    src={background}
-                    alt="background"
-                    onLoad={() => setImageLoaded(true)}
-                    className="absolute inset-0 w-full h-full object-cover pointer-events-none cold-blue-filter"
-                    style={getBackgroundStyle()}
+                {/* The filter  */}
+                <div className="absolute inset-0 cold-blue-filter">
+                    <img
+                        ref={backgroundRef}
+                        src={background}
+                        alt="background"
+                        onLoad={() => setImageLoaded(true)}
+                        className="w-full h-full object-cover pointer-events-none"
+                        style={getBackgroundStyle()}
+                    />
+                </div>
+        
+        
+                {/* Blue opacity overlay */}
+                <div
+                    className="absolute inset-0 pointer-events-none transition-opacity duration-1000"
+                    style={{
+                        background: 'rgba(2, 99, 196, 0.2)', // deep blue
+                    }}
                 />
 
-                {/* UNDERWATER EFFECT */}
+                {/* Underwater distortion */}
                 <UnderwaterEffect
                     isLoaded={showImage && imageLoaded}
-                    isZooming={false} // removed zoom
+                    isZooming={false}
                 />
 
-                {/* DARK VIGNETTE */}
+                {/* Vignette */}
                 <div
                     className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/30 pointer-events-none transition-opacity duration-1000"
                     style={{ opacity: showImage && imageLoaded ? 1 : 0 }}
                 />
 
-                {/* SIDEBAR BUTTON */}
+                {/* Sidebar Button */}
                 <div
                     className={`absolute top-6 left-6 z-60 transition-all duration-700 ease-out
                         ${!inputLocked && !isLoggingOut ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6 pointer-events-none'}`}
@@ -179,7 +184,7 @@ export default function Home() {
                     <ButtonSidebar onClick={toggleSidebar} />
                 </div>
 
-                {/* HOME BUTTON */}
+                {/* Home Button */}
                 <div
                     className={`absolute top-6 right-6 z-60 transition-all duration-700 ease-out
                         ${!inputLocked && !isLoggingOut ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-6 pointer-events-none'}`}
@@ -187,14 +192,14 @@ export default function Home() {
                     <ButtonHome onClick={goHome} />
                 </div>
 
-                {/* USER SIDEBAR */}
+                {/* Sidebar */}
                 <UserSidebar
                     isOpen={isSidebarOpen}
                     onClose={() => setIsSidebarOpen(false)}
                     onLogout={handleLogout}
                 />
 
-                {/* CENTER CARD */}
+                {/* Card */}
                 <div
                     className="absolute inset-0 flex items-center justify-center"
                     style={getCardStyle()}
@@ -208,16 +213,16 @@ export default function Home() {
                     />
                 </div>
 
-                {/* LOGOUT / EXIT FADE */}
+                {/* Exit Fade */}
                 <div
-                    className="fixed inset-0 z-70 pointer-events-none transition-opacity duration-1000 ease-in-out"
+                    className="fixed inset-0 z-70 pointer-events-none transition-opacity duration-1000"
                     style={{
                         background: 'linear-gradient(to bottom, #0a2a4a, #0c365b)',
                         opacity: isLoggingOut ? 1 : 0,
                     }}
                 />
 
-                {/* INPUT LOCK OVERLAY */}
+                {/* Input lock */}
                 {inputLocked && (
                     <div className="fixed inset-0 z-80 pointer-events-auto" />
                 )}

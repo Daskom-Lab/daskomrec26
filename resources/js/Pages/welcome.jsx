@@ -1,386 +1,351 @@
-import React, { useRef, useState} from 'react';
-import { Head } from '@inertiajs/react';
-import { Link } from '@inertiajs/react';
+import React, { useRef, useState, useEffect } from 'react';
+import { Head, Link, router } from '@inertiajs/react';
 import { Parallax, ParallaxLayer } from '@react-spring/parallax';
+
+import oceanBg from '@assets/backgrounds/ocean.png';
+import cave01 from '@assets/backgrounds/cave_01.png';
+import cave02 from '@assets/backgrounds/cave_02.png';
+import cave03 from '@assets/backgrounds/cave_03.png';
+import cave04 from '@assets/backgrounds/cave_04.png';
+import daskomLogo from '@assets/logo/01-DaskomBnW.png';
+import dlorLogo from '@assets/logo/02-DLOR_Plain.png';
+import scrollButton from '@assets/buttons/09-Button.png';
+import utamaBg from '@assets/backgrounds/utama.png';
+import fish01 from '@assets/others/01-Fish.png';
+import fish02 from '@assets/others/02-Fish.png';
+import trialImg from '@assets/backgrounds/trial.png';
+import doorImg from '@assets/backgrounds/door2.png';
+import startSign from '@assets/buttons/04-Sign.png';
+import roadImg from '@assets/backgrounds/road.png';
+
+import UnderwaterEffect from '@components/UnderwaterEffect';
 
 export default function Welcome() {
     const parallax = useRef(null);
-    const [isShaking, setIsShaking] = useState(false); 
+    const [isShaking, setIsShaking] = useState(false);
+
+    const [showIntro, setShowIntro] = useState(true);
+    const [isLockedIn, setLockedIn] = useState(false);
+    const [isZooming, setIsZooming] = useState(true);
+    const [inputLocked, setInputLocked] = useState(true);
+
+    useEffect(() => {
+        const zoomTimer = setTimeout(() => {
+            setIsZooming(false);
+        }, 100); 
+
+        const fadeTimer = setTimeout(() => {
+            setShowIntro(false);
+        }, 2500);
+
+        const unlockTimer = setTimeout(() => {
+            setInputLocked(false);
+        }, 3500); 
+
+        const skipIntro = () => {
+            clearTimeout(zoomTimer);
+            clearTimeout(fadeTimer);
+            clearTimeout(unlockTimer);
+            setIsZooming(false);
+            setShowIntro(false);
+            setInputLocked(false);
+        };
+
+        // Listeners for skip
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') skipIntro();
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('click', skipIntro);
+
+        return () => {
+            clearTimeout(zoomTimer);
+            clearTimeout(fadeTimer);
+            clearTimeout(unlockTimer);
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('click', skipIntro);
+        };
+    }, []);
 
     const handleScrollDown = () => {
-        setIsShaking(true);           
-       setTimeout(() => {
-           if (parallax.current) {
-                parallax.current.scrollTo(2); 
+        setIsShaking(true);
+        setTimeout(() => {
+            if (parallax.current) {
+                parallax.current.scrollTo(2);
             }
             setIsShaking(false);
         }, 1200);
     };
 
+    const handleLockedIn = () => {
+        setLockedIn(true);
+        setTimeout(() => {
+            router.visit('login');
+        }, 500); 
+    };
 
     const styles = `
-   @keyframes rumble {
-      0% { transform: translate(0, 0) scale(1.02); }
-      10% { transform: translate(-1px, -1px) scale(1.02); }
-      20% { transform: translate(1px, 1px) scale(1.02); }
-      30% { transform: translate(-2px, 1px) scale(1.02); }
-      40% { transform: translate(2px, -1px) scale(1.02); }
-      50% { transform: translate(-1px, 2px) scale(1.02); }
-      60% { transform: translate(1px, -2px) scale(1.02); }
-      70% { transform: translate(-2px, -1px) scale(1.02); }
-      80% { transform: translate(2px, 1px) scale(1.02); }
-      90% { transform: translate(-1px, 0) scale(1.02); }
-      100% { transform: translate(0, 0) scale(1.02); }
-    }
-      .rumble-effect {
-        animation: rumble 0.3s infinite linear;
-        transform-origin: center center;
-    }
- @keyframes swimLeftTop {
-    /* Ikan bawah kiri */
-      0% { left: -15%; top: 180%; opacity: 0; }
-      100% { left: 22%; top: 160%; opacity: 1; }
-    }
-    /* Ikan atas kiri */
-    @keyframes swimLeftBottom {
-      0% { left: -15%; top: 160%; opacity: 0; }
-      100% { left: 15%; top: 135%; opacity: 1; }
-    }
-    /* Ikan bawah kanan*/
-    @keyframes swimRightTop {
-      0% { right: -15%; top: 180%; opacity: 0; }
-      100% { right: 22%; top: 160%; opacity: 1; }
-    }
-    /* Ikan atas kanan */
-    @keyframes swimRightBottom {
-      0% { right: -15%; top: 160%; opacity: 0; }
-      100% { right: 15%; top: 135%; opacity: 1; }
-    }
+        /* --- RUMBLE EFFECT --- */
+        @keyframes rumble {
+            0% { transform: translate(0, 0) rotate(0deg); filter: blur(0px); }
+            10% { transform: translate(-4px, -4px) rotate(-1deg); }
+            20% { transform: translate(4px, 4px) rotate(1deg); filter: blur(1px); }
+            30% { transform: translate(-6px, 2px) rotate(0deg); }
+            40% { transform: translate(6px, -2px) rotate(1deg); }
+            50% { transform: translate(-4px, 4px) rotate(-1deg); filter: blur(1px); }
+            60% { transform: translate(4px, -4px) rotate(0deg); }
+            70% { transform: translate(-2px, -6px) rotate(1deg); }
+            80% { transform: translate(2px, 6px) rotate(-1deg); }
+            90% { transform: translate(-1px, 0) rotate(0deg); }
+            100% { transform: translate(0, 0) rotate(0deg); filter: blur(0px); }
+        }
+        .rumble-effect {
+            animation: rumble 0.4s infinite linear;
+            transform-origin: center center;
+            will-change: transform, filter;
+        }
 
-    /* Class untuk menerapkan animasi ikan */
-    .fish-lt {
-        position: absolute;
-        animation: swimLeftTop 8s ease-out forwards;
-        animation-delay: 0.5s;
-        transform: rotate(0deg);
-    }
-    .fish-lb { 
-        position: absolute;
-        animation: swimLeftBottom 9s ease-out forwards;
-        animation-delay: 1s;
-        transform: rotate(-15deg);
-    }
-    .fish-rt {
-        position: absolute;
-        animation: swimRightTop 8s ease-out forwards;
-        animation-delay: 0.2s;
-        transform: scaleX(-1) rotate(0deg);
-    }
-    .fish-rb { 
-        position: absolute;
-        animation: swimRightBottom 9s ease-out forwards;
-        animation-delay: 1.2s;
-        transform: scaleX(-1) rotate(-15deg);
-    }
-    .fish-filter {
-     filter: brightness(0.9) sepia(1) hue-rotate(190deg) saturate(2) contrast(1.5)}
-    }
+        /* --- FISH ANIMATION: Swim In -> Hover/Bob -> Fade Out -> Reset --- */
+        /* Note: Changed to 'infinite' so they reset automatically if you scroll away and back */
+        
+        @keyframes swimLeftTop {
+            0% { left: -15%; top: 180%; opacity: 0; transform: rotate(0deg); } /* Start Offscreen */
+            15% { left: 22%; top: 160%; opacity: 1; transform: rotate(0deg); } /* Arrive */
+            /* Bobbing Phase */
+            30% { top: 155%; transform: rotate(-5deg); }
+            50% { top: 165%; transform: rotate(5deg); }
+            70% { top: 155%; transform: rotate(-5deg); }
+            /* Fade Out & Reset */
+            90% { left: 22%; top: 160%; opacity: 0; transform: scale(0.9); } 
+            100% { left: -15%; opacity: 0; } 
+        }
 
-    @keyframes fadeInSlow {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .fade-in-start {
-        opacity: 0;
-        animation: fadeInSlow 2s ease-out forwards;
-        animation-delay: 1.8s; 
-  `;
+        @keyframes swimLeftBottom {
+            0% { left: -15%; top: 160%; opacity: 0; transform: rotate(-15deg); }
+            15% { left: 18%; top: 135%; opacity: 1; transform: rotate(-15deg); }
+            /* Bobbing Phase */
+            35% { top: 140%; transform: rotate(-10deg); }
+            55% { top: 130%; transform: rotate(-20deg); }
+            75% { top: 140%; transform: rotate(-10deg); }
+            /* Fade Out & Reset */
+            90% { left: 18%; opacity: 0; transform: scale(0.9) rotate(-15deg); }
+            100% { left: -15%; opacity: 0; }
+        }
+
+        @keyframes swimRightTop {
+            0% { right: -15%; top: 180%; opacity: 0; transform: scaleX(-1) rotate(0deg); }
+            15% { right: 25%; top: 160%; opacity: 1; transform: scaleX(-1) rotate(0deg); }
+            /* Bobbing Phase */
+            30% { top: 165%; transform: scaleX(-1) rotate(5deg); }
+            50% { top: 155%; transform: scaleX(-1) rotate(-5deg); }
+            70% { top: 165%; transform: scaleX(-1) rotate(5deg); }
+            /* Fade Out & Reset */
+            90% { right: 25%; opacity: 0; transform: scaleX(-1) scale(0.9); }
+            100% { right: -15%; opacity: 0; }
+        }
+
+        @keyframes swimRightBottom {
+            0% { right: -15%; top: 160%; opacity: 0; transform: scaleX(-1) rotate(-15deg); }
+            15% { right: 18%; top: 135%; opacity: 1; transform: scaleX(-1) rotate(-15deg); }
+            /* Bobbing Phase */
+            35% { top: 130%; transform: scaleX(-1) rotate(-5deg); }
+            55% { top: 140%; transform: scaleX(-1) rotate(-20deg); }
+            75% { top: 130%; transform: scaleX(-1) rotate(-5deg); }
+            /* Fade Out & Reset */
+            90% { right: 18%; opacity: 0; transform: scaleX(-1) scale(0.9) rotate(-15deg); }
+            100% { right: -15%; opacity: 0; }
+        }
+        
+        /* Using 'infinite' loop with a longer duration (12s-14s) ensures 
+           they are always doing something (swimming in or bobbing) 
+           when the user scrolls to them.
+        */
+        .fish-lt { animation: swimLeftTop 12s ease-in-out infinite; animation-delay: 0s; position: absolute; }
+        .fish-lb { animation: swimLeftBottom 14s ease-in-out infinite; animation-delay: 1s; position: absolute; }
+        .fish-rt { animation: swimRightTop 12s ease-in-out infinite; animation-delay: 0.5s; position: absolute; }
+        .fish-rb { animation: swimRightBottom 14s ease-in-out infinite; animation-delay: 1.5s; position: absolute; }
+        
+        .cold-blue-filter {
+            filter: brightness(1) contrast(.95) saturate(1.2) hue-rotate(5deg);
+        }
+    `;
+
     return (
         <>
             <Head title="Atlantis" />
             <style>{styles}</style>
 
-            <div style={{ width: '100%', height: 'auto', margin: 0, padding: 0 }}>
+            {/* --- INTRO OVERLAY SECTION --- */}
+            <div 
+                className={`fixed inset-0 z-[9999] pointer-events-none transition-opacity duration-[1000ms] ease-in-out bg-[#0C365B] ${showIntro ? 'opacity-100' : 'opacity-0'}`}
+            >
+                <UnderwaterEffect />
+                <div className="relative w-full h-full overflow-hidden">
+                    <img 
+                        src={utamaBg} 
+                        className={`
+                            absolute inset-0 w-full h-full object-cover 
+                            transition-transform duration-[2500ms] ease-out
+                            cold-blue-filter
+                            ${isZooming ? 'scale-[1.3]' : 'scale-100'} 
+                        `}
+                        alt="Intro Background"
+                    />
+                    
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-[#0C365B]/80" />
+                    <div className={`absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-1000 ${isZooming ? 'opacity-0' : 'opacity-100'}`}>
+                         <img 
+                            src={dlorLogo}
+                            alt="Intro Logo"
+                            className="w-200 h-auto drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]"
+                         />
+                    </div>
+                </div>
+            </div>
+
+            {/* --- MAIN PARALLAX CONTENT --- */}
+            <div className={`w-full h-auto m-0 p-0 ${inputLocked ? 'pointer-events-none' : ''}`}>
+                <UnderwaterEffect />
 
                 <Parallax ref={parallax} pages={3} style={{ top: '0', left: '0', backgroundColor: '#0C365B' }}>
-                    {/* SECTION 1 */}
+                      
+                    {/* Background Layer */}
                     <ParallaxLayer
                         offset={0}
                         speed={0}
                         factor={1.5}
                         style={{
-                            backgroundImage: "url('/assets/backgrounds/ocean.png')",
+                            backgroundImage: `url(${oceanBg})`,
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
-                            backgroundWidth: '100%',
                             zIndex: 0,
-                            transform: 'scale(1.2)'
                         }}
+                        className="scale-125 cold-blue-filter"
                     />
 
-                    <ParallaxLayer
-                        offset={0}
-                        speed={0}
-                        factor={2.1}
-                        style={{
-                            pointerEvents: 'none',
-                            zIndex: 50,
-                        }}
-                    >
-                        <div 
-                            className={isShaking ? "rumble-effect" : ""}
-                            style={{ 
-                                position: 'relative', 
-                                width: '100%', 
-                                height: '100%',
-                            }}
-                        >
-                            <img src="/assets/backgrounds/cave_01.png" style={{ position: 'absolute', top: 0 , left: 0 ,width: '50.1%', height: '50.1%' ,objectFit: 'fill'}}/>
-                            <img src="/assets/backgrounds/cave_02.png" style={{ position: 'absolute',top: 0,right: 0,width: '50.1%', height: '50.1%',objectFit: 'fill'}}/>
-                            <img src="/assets/backgrounds/cave_03.png" style={{ position: 'absolute',bottom: 0, left: 0,width: '50.1%',height: '50.1%',objectFit: 'fill'}}/>
-                            <img src="/assets/backgrounds/cave_04.png" style={{position: 'absolute',bottom: 0,right: 0,width: '50.1%',height: '50.1%',objectFit: 'fill'}}/>
-                            </div>
-                    </ParallaxLayer>
-
-                    <ParallaxLayer
-                        offset={0}
-                        speed={0}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            zIndex: 100,
-                        }}
-                    >
-                        <div style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            textAlign: 'center',
-                            color: 'white',
-                            maxWidth: '650px',
-                            padding: '0 20px',
-                            fontFamily: 'Caudex',
-                            marginTop: '320px',
-                        }}
-                        >
-                            <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0px' }}>
-                                <img src="/assets/logo/01-DaskomBnW.png" alt="Logo Daskom" style={{ width: '20%', height: 'auto' }} />
-                                <img src="/assets/logo/02-DLOR_Plain.png" alt="Logo DLOR" style={{ width: '20%', height: 'auto' }} />
-                            </div>
-
-                            <div style={{ fontSize: '30px', lineHeight: '1.6', textShadow: '0 2px 10px rgba(0,0,0,0.5)', textAlign: 'left', }}>
-                                <p style={{ marginBottom: '15px' }}>True knowledge, like the lost kingdom,<br />awaits only in the crushing deep.</p>
-                                <p style={{ marginBottom: '15px' }}>The gates of this Atlantis have opened for<br />those brave enough to endure the pressure.</p>
-                                <p style={{ marginBottom: '15px' }}>We seek resilient guardians to uphold a<br />legacy time could not erode.</p>
-                                <p style={{ marginBottom: '15px' }}>Descend into the unknown and forge the<br />future.</p>
-                                <p style={{ fontSize: '30px' }}>Are you ready for the adventure?</p>
-                            </div>
-
-                            <div
-                              onClick={handleScrollDown}
-                                style={{
-                                    marginTop: '40px',
-                                    animation: 'bounce 2s infinite',
-                                    display: 'flex',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                <img
-                                    src="/assets/buttons/09-Button.png"
-                                    alt="Scroll Down Button"
-                                    style={{ width: '50px', height: 'auto' }}
-                                />
-                            </div>
-
+                    {/* Cave Layer (Foreground) */}
+                    <ParallaxLayer offset={0} speed={0} factor={2.1} className="pointer-events-none z-50">
+                        <div className={`relative w-full h-full ${isShaking ? "rumble-effect" : ""}`}>
+                            <img src={cave01} className="absolute top-0 left-0 w-[50.1%] h-[50.1%] object-fill" />
+                            <img src={cave02} className="absolute top-0 right-0 w-[50.1%] h-[50.1%] object-fill" />
+                            <img src={cave03} className="absolute bottom-0 left-0 w-[50.1%] h-[50.1%] object-fill" />
+                            <img src={cave04} className="absolute bottom-0 right-0 w-[50.1%] h-[50.1%] object-fill" />
                         </div>
                     </ParallaxLayer>
 
-                    {/* SECTION 2 */}
+                    {/* Content Layer (Text & Logos) */}
+                    <ParallaxLayer offset={0} speed={0} className="flex items-center justify-center z-[100]">
+                        <div className={`flex flex-col items-center text-center text-white max-w-2xl px-5 mt-32 md:mt-80 font-['Caudex'] transition-all duration-1000 delay-500 ${showIntro ? 'opacity-0 translate-y-10' : 'opacity-100 translate-y-0'}`}>
+                                
+                            <div className="mb-8 flex justify-center items-center gap-2">
+                                <img src={daskomLogo} alt="Logo Daskom" className="w-24 md:w-32 h-auto" />
+                                <img src={dlorLogo} alt="Logo DLOR" className="w-32 md:w-48 h-auto" />
+                            </div>
+
+                            {/* Holy yap */}
+                            <div className="text-xl md:text-2xl lg:text-3xl leading-relaxed text-left drop-shadow-lg">
+                                <p className="mb-4">
+                                    True knowledge, like the lost kingdom, awaits only in the crushing deep.
+                                </p>
+                                <p className="mb-4">
+                                    The gates of this Atlantis have opened for those brave enough to endure the pressure.
+                                </p>
+                                <p className="mb-4">
+                                    We seek resilient guardians to uphold a legacy time could not erode.
+                                </p>
+                                <p className="mb-4">
+                                    Descend into the unknown and forge the future.
+                                </p>
+                                {/* Specific size for the final punchline */}
+                                <p className="text-xl md:text-4xl font-bold mt-6">
+                                    Are you ready for the adventure?
+                                </p>
+                            </div>
+
+                            {/* Scroll Button */}
+                            <div 
+                                onClick={handleScrollDown} 
+                                className="mt-10 animate-bounce cursor-pointer flex"
+                            >
+                                <img src={scrollButton} alt="Scroll Down" className="w-[40px] md:w-[50px] h-auto" />
+                            </div>
+                        </div>
+                    </ParallaxLayer>
+
+                    {/* Deep Ocean Background */}
+                    <ParallaxLayer offset={1.5} speed={0} factor={3} className="z-10">
+                        <div className="relative w-full h-full">
+                            <img src={utamaBg} className="w-full h-full object-cover brightness-[0.8] saturate-[1.2]" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0C365B] pointer-events-none" />
+                        </div>
+                    </ParallaxLayer>
+
+                    {/* Le fishe au Chocolat */}
+                    <ParallaxLayer offset={1.15} speed={0.1} className="pointer-events-none z-20">
+                        <img src={fish01} className="fish-lt w-[12%] brightness-90 sepia hue-rotate-[190deg] saturate-200 contrast-150" />
+                        <img src={fish02} className="fish-lb w-[20%] brightness-90 sepia hue-rotate-[190deg] saturate-200 contrast-150" />
+                        <img src={fish01} className="fish-rt w-[12%] brightness-90 sepia hue-rotate-[190deg] saturate-200 contrast-150" />
+                        <img src={fish02} className="fish-rb w-[20%] brightness-90 sepia hue-rotate-[190deg] saturate-200 contrast-150" />
+                    </ParallaxLayer>
+
+                    {/* Bottom Rocks, Door, and START Button */}
                     <ParallaxLayer 
-                      offset={1.5} 
-                      speed={0} 
-                      factor={2} 
-                      style={{ 
-                        zIndex: 1 
-                    }}>
-                    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                        offset={1.15} 
+                        speed={0.1} 
+                        factor={2} 
+                        className="z-10 flex flex-col items-center justify-end pb-10"
+                    >
                         <img 
-                            src="/assets/backgrounds/utama.png" 
-                            style={{ 
-                                width: '100%', 
-                                height: '100%', 
-                                objectFit: 'cover', 
-                                filter: 'brightness(0.8) saturate(1.2)'
-                            }} 
+                            src={trialImg} 
+                            alt="rocks" 
+                            className="w-auto h-auto min-w-[1200px] max-w-[2000px] absolute bottom-1 left-1/2 -translate-x-1/2"
+                            style={{ filter: 'sepia(1) hue-rotate(150deg) saturate(2) contrast(1.5) brightness(0.9)' }}
                         />
-                        <div style={{
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                background: 'linear-gradient(to bottom, transparent 30%, #0C365B 100%)',
-                                pointerEvents: 'none' 
-                            }} />
-                        </div>
-                    </ParallaxLayer>
-                    
-                    {/* LAYER IKAN */}
-                   <ParallaxLayer 
-                      offset={1.15} 
-                      speed={0.1} 
-                      style={{ 
-                        pointerEvents: 'none', 
-                        zIndex:10
-                        }}>
-                      <img src="/assets/others/01-Fish.png" className="fish-lt fish-filter" style={{ width: '12%' }}/>
-                      <img src="/assets/others/02-Fish.png" className="fish-lb fish-filter" style={{ width: '20%' }} />  
-                      <img src="/assets/others/01-Fish.png" className="fish-rt fish-filter" style={{ width: '12%' }} />
-                      <img src="/assets/others/02-Fish.png" className="fish-rb fish-filter" style={{ width: '20%' }} />
-
-                    </ParallaxLayer>
-
-                    <ParallaxLayer
-                        offset={1.15}
-                        speed={0.1}
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'flex-start',
-                            paddingTop: '25%',
-                            zIndex: 3
-                        }}
-                    >
-                        <img
-                            src="/assets/backgrounds/trial.png"
-                            alt="trial"
-                            style={{
-                                width: '100%',
-                                height: 'auto',
-                            }}
+                        <img 
+                            src={doorImg} 
+                            alt="door" 
+                            className="w-auto h-auto min-w-[1200px] max-w-[2000px] absolute bottom-1 left-1/2 -translate-x-1/2"
+                            style={{ filter: 'sepia(1) hue-rotate(150deg) saturate(2) contrast(1.5) brightness(0.9)' }}
                         />
-                    </ParallaxLayer>
-
-                    <ParallaxLayer
-                        offset={1.15}
-                        speed={0.1}
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'flex-start',
-                            paddingTop: '20%',
-                            zIndex: 3
-                        }}
-                    >
-                        <img
-                            src="/assets/backgrounds/door2.png"
-                            alt="door"
-                            style={{
-                                width: '100%',
-                                height: 'auto',
-                                marginTop: '10%',
-                                filter: 'sepia(1) hue-rotate(150deg) saturate(2) contrast(1.5) brightness(0.9)'
-                            }}
+                        <img 
+                            src={roadImg} 
+                            alt="road" 
+                            className="w-auto h-auto min-w-[1200px] max-w-[2000px] absolute bottom-1 left-1/2 -translate-x-1/2"
+                            style={{ filter: 'sepia(1) hue-rotate(150deg) saturate(2) contrast(1.5) brightness(0.9)' }}
                         />
-                    </ParallaxLayer>
 
-                    <ParallaxLayer
-                        offset={1.15}
-                        speed={0.1}
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'flex-end',
-                            paddingBottom: '5vh',
-                            zIndex: 50,
-                            pointerEvents: 'none'
-                        }}
-                    >
-                        <Link href="/login">
-                            <div
-                                style={{
-                                    marginBottom: '5vh',
-                                    cursor: 'pointer',
-                                    transition: 'transform 0.3s ease',
-                                    position: 'relative',
-                                    pointerEvents: 'auto',
-                                    width: 'clamp(200px, 30vw, 400px)'
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                            >
-                                <img
-                                    src="/assets/buttons/04-Sign.png"
-                                    alt="Start"
-                                    style={{
-                                        width: '100%',
-                                        height: 'auto',
-                                        filter: 'drop-shadow(0 0 20px rgba(255, 255, 255, 0.6))',
-                                        display: 'block',
-                                    }}
-                                />
-                                <span style={{
-                                    position: 'absolute',
-                                    top: '50%',
-                                    left: '50%',
-                                    transform: 'translate(-50%, -60%)',
-                                    fontFamily: 'Caudex',
-                                    fontSize: 'clamp(24px. 4vw, 45px)',
-                                    fontWeight: 'semibold',
-                                    color: '#ffffff',
-                                    letterSpacing: '2px',
-                                    pointerEvents: 'none',
-                                    textShadow: '0 0 10px rgba(0,255,255,0.8)'
+                        {/* Dive in! */}
+                        <button 
+                            onClick={handleLockedIn}
+                            disabled={isLockedIn}
+                            className={`
+                                relative mb-75
+                                transition-all duration-1000 ease-in-out
+                                ${isLockedIn ? 'opacity-0 scale-100 blur-sm' : 'opacity-100 hover:scale-110'}
+                            `}
+                        >
+                            <img 
+                                src={startSign} 
+                                alt="Start" 
+                                className="w-100 h-auto drop-shadow-[0_0_20px_rgba(96,165,250,0.8)] cold-blue-filter-light" 
+                            />
+                            <span 
+                                className="absolute inset-0 flex items-center justify-center text-4xl font-extrabold tracking-[2px]" 
+                                style={{ 
+                                    color: '#e0f2fe', 
+                                    textShadow: '0 0 10px rgba(56, 189, 248, 0.7), 0 0 20px rgba(96, 165, 250, 0.5)' 
                                 }}>
-                                    START
-                                </span>
-                            </div>
-                        </Link>
+                                START
+                            </span>
+                        </button>
 
-                        <div style={{
-                            textAlign: 'center',
-                            fontFamily: 'Caudex',
-                            color: 'white',
-                            fontSize: 'clamp(12px, 2vw, 20px)',
-                            letterSpacing: '1px',
-                            pointerEvents: 'none',
-                        }}>
+                        <div className="absolute top-[85%] text-center font-['Caudex'] text-white text-xl tracking-wider">
                             @Atlantis.DLOR2026. All Right Served
                         </div>
 
                     </ParallaxLayer>
-
-                    <ParallaxLayer
-                        offset={1.15}
-                        speed={0.1}
-                        factor={2}
-                        style={{
-                            zIndex: 3,
-                            display: 'flex',
-                            alignItems: 'flex-end',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <img
-                            src="/assets/backgrounds/road.png"
-                            alt="rocks"
-                            style={{
-                                width: '100%',
-                                minWidth: '800px',
-                                height: 'auto',
-                                position: 'absolute',
-                                bottom: '5vh',
-                                filter: 'sepia(1) hue-rotate(150deg) saturate(2) contrast(1.5) brightness(0.9)'
-                            }}
-
-                        />
-                    </ParallaxLayer>
-
                 </Parallax>
             </div>
         </>
-    )
+    );
 }

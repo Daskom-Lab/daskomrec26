@@ -133,10 +133,7 @@ export default function Home() {
                 />
 
                 {/* UNDERWATER EFFECT */}
-                <UnderwaterEffect
-                    isLoaded={showImage && imageLoaded}
-                    isZooming={isZooming}
-                />
+                <UnderwaterEffect />
 
                 {/* DARK VIGNETTE */}
                 <div
