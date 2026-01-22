@@ -1,202 +1,205 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 
-import card_fem from '@assets/cards/Female_CAAS.png';
-import card_boy from '@assets/cards/Male_CAAS.png';
+import cardFemale from '@assets/cards/Female_CAAS.png';
+import cardMale from '@assets/cards/Male_CAAS.png';
+
+const MAX_ROTATION = 8;
+const BUBBLE_COUNT = 15;
 
 export default function CardCaas({ sex, name, nim, cls, major }) {
-  const [rotate, setRotate] = useState({ x: 0, y: 0 });
-  const [clicked, setClicked] = useState(false);
-  const [shinePos, setShinePos] = useState({ x: 50, y: 50 });
-  const [bubbles, setBubbles] = useState([]);
-  const [hovered, setHovered] = useState(false);
   const cardRef = useRef(null);
+  const containerRef = useRef(null);
 
-  const handleMouseMove = (e) => {
-    const card = cardRef.current;
-    const rect = card.getBoundingClientRect();
+  const [bubbles, setBubbles] = useState([]);
+  const [clicked, setClicked] = useState(false);
+
+  const cardImage = useMemo(() => (sex === 'female' ? cardFemale : cardMale), [sex]);
+
+  const handlePointerMove = (e) => {
+    if (!containerRef.current) return;
+
+    const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
 
-    const rotateY = ((x - centerX) / centerX) * 5;
-    const rotateX = ((centerY - y) / centerY) * 5;
+    const xPct = x / rect.width;
+    const yPct = y / rect.height;
 
-    setRotate({ x: rotateX, y: rotateY });
-    setShinePos({ x: (x / rect.width) * 100, y: (y / rect.height) * 100 });
-    setHovered(true); // show underwater light when cursor is detected
+    const xRot = (yPct - 0.5) * 2;
+    const yRot = (xPct - 0.5) * 2;
+
+    containerRef.current.style.setProperty('--rx', `${-xRot * MAX_ROTATION}deg`);
+    containerRef.current.style.setProperty('--ry', `${yRot * MAX_ROTATION}deg`);
+    containerRef.current.style.setProperty('--mx', `${xPct * 100}%`);
+    containerRef.current.style.setProperty('--my', `${yPct * 100}%`);
+    containerRef.current.style.setProperty('--opacity', '1');
   };
 
-  const handleMouseLeave = () => {
-    setRotate({ x: 0, y: 0 });
-    setShinePos({ x: 50, y: 50 });
-    setHovered(false); // hide light when cursor leaves
+  const handlePointerLeave = () => {
+    if (!containerRef.current) return;
+    containerRef.current.style.setProperty('--rx', '0deg');
+    containerRef.current.style.setProperty('--ry', '0deg');
+    containerRef.current.style.setProperty('--opacity', '0');
   };
 
   const handleClick = () => {
+    if (clicked) return;
     setClicked(true);
-
-    const newBubbles = Array.from({ length: 20 }, () => {
-      const edge = Math.floor(Math.random() * 4);
-      let left = 0;
-      let bottom = 0;
-      switch (edge) {
-        case 0:
-          left = Math.random() * 100;
-          bottom = 100;
-          break;
-        case 1:
-          left = 100;
-          bottom = Math.random() * 100;
-          break;
-        case 2:
-          left = Math.random() * 100;
-          bottom = 0;
-          break;
-        case 3:
-          left = 0;
-          bottom = Math.random() * 100;
-          break;
-      }
-      return {
-        id: Math.random(),
-        left,
-        bottom,
-        size: 5 + Math.random() * 12,
-        duration: 2 + Math.random() * 2,
-        driftX: (Math.random() - 0.5) * 50,
-      };
-    });
-
-    setBubbles(prev => [...prev, ...newBubbles]);
+    spawnBubbles();
     setTimeout(() => setClicked(false), 200);
   };
 
-  const shadowX = rotate.y * 2;
-  const shadowY = -rotate.x * 2 + 15;
+  const spawnBubbles = useCallback(() => {
+    const newBubbles = Array.from({ length: BUBBLE_COUNT }, (_, i) => {
+      const edge = Math.floor(Math.random() * 4);
+      let left, top;
+      
+      switch (edge) {
+        case 0: left = Math.random() * 100; top = -5; break; // Top
+        case 1: left = 105; top = Math.random() * 100; break; // Right
+        case 2: left = Math.random() * 100; top = 105; break; // Bottom
+        case 3: left = -5; top = Math.random() * 100; break; // Left
+        default: left = 0; top = 0;
+      }
+      return {
+        id: Date.now() + i,
+        left, top,
+        size: 6 + Math.random() * 10,
+        duration: 1 + Math.random() * 1.5,
+        driftX: (Math.random() - 0.5) * 100,
+        driftY: -50 - Math.random() * 100,
+      };
+    });
+    setBubbles((prev) => [...prev, ...newBubbles]);
+  }, []);
 
   return (
-    <div
-      ref={cardRef}
-      role="button"
-      tabIndex={0}
-      className="relative w-full max-w-[250px] md:max-w-[380px] cursor-pointer rounded-xl"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      onClick={handleClick}
-      style={{
-        boxShadow: `${shadowX}px ${shadowY}px 30px rgba(0,0,0,0.6)`,
-        transition: 'box-shadow 0.3s ease',
-      }}
-    >
+    <>
+      <svg style={{ display: 'none' }}>
+        <defs>
+          <filter id="pearl-noise">
+            <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="2" result="noise" />
+            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.5 0" />
+            <feBlend in="SourceGraphic" in2="noise" mode="multiply" />
+          </filter>
+        </defs>
+      </svg>
+
+      <style>{`
+        .card-container {
+          --rx: 0deg;
+          --ry: 0deg;
+          --mx: 50%;
+          --my: 50%;
+          --opacity: 0;
+          --scale: 1;
+          perspective: 1000px;
+        }
+
+        .card-inner {
+          transform: rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--scale));
+          transition: transform 0.2s cubic-bezier(0.1, 0.4, 0.3, 1);
+          will-change: transform;
+        }
+
+        .card-foil {
+          opacity: var(--opacity);
+          transition: opacity 0.4s ease;
+          mix-blend-mode: overlay;
+          background-image: repeating-linear-gradient(
+            115deg,
+            transparent 0%,
+            rgba(0, 255, 255, 0.15) 15%,
+            rgba(160, 100, 255, 0.15) 25%,
+            rgba(255, 255, 255, 0.3) 35%,
+            rgba(160, 100, 255, 0.15) 45%,
+            rgba(0, 255, 255, 0.15) 55%,
+            transparent 70%
+          );
+          background-size: 250% 250%;
+          background-position: calc(var(--mx) * 1.2) calc(var(--my) * 1.2);
+          filter: url(#pearl-noise) brightness(1.1);
+        }
+
+        .bubble {
+          position: absolute;
+          border-radius: 50%;
+          /* More transparent/glassy bubble style */
+          background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.1) 60%, rgba(255,255,255,0.4) 100%);
+          box-shadow: inset 0 0 4px rgba(255,255,255,0.6), 0 2px 5px rgba(0,0,0,0.1);
+          animation: floatBubble var(--dur) ease-out forwards;
+          pointer-events: none;
+          z-index: 50; /* Ensure it sits on top */
+        }
+
+        @keyframes floatBubble {
+          0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+          20% { opacity: 1; transform: translate(0, 0) scale(1.1); }
+          100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+        }
+      `}</style>
+
       <div
-        className="w-full h-full rounded-xl relative overflow-hidden"
-        style={{
-          transform: `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) scale(${clicked ? 0.98 : 1})`,
-          transformStyle: 'preserve-3d',
-          transition: 'transform 0.3s ease',
-        }}
+        ref={containerRef}
+        onPointerMove={handlePointerMove}
+        onPointerLeave={handlePointerLeave}
+        onClick={handleClick}
+        className="card-container relative w-full max-w-[320px] sm:max-w-[400px] cursor-pointer group select-none"
       >
-        {/* Card Image */}
-        <img
-          src={sex === 'female' ? card_fem : card_boy}
-          alt={`${sex} CAAS card`}
-          className="w-full h-full object-cover object-top rounded-xl"
-        />
-
-        {/* Underwater Lighting */}
-        {hovered && (
-          <div className="absolute inset-0 pointer-events-none rounded-xl overflow-hidden">
-            {/* Moving light rays */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.01), transparent 60%),
-                             radial-gradient(circle at 70% 70%, rgba(255,255,255,0.03), transparent 60%)`,
-                animation: 'light-move 20s linear infinite',
-                backgroundSize: '300% 300%',
-                mixBlendMode: 'screen',
-              }}
-            />
-
-            {/* Shine that follows mouse */}
-            <div
-              className="absolute inset-0 pointer-events-none rounded-xl"
-              style={{
-                background: `radial-gradient(circle 150px at ${shinePos.x}% ${shinePos.y}%, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%)`,
-                transition: 'background 0.1s ease',
-                mixBlendMode: 'screen',
-              }}
-            />
-          </div>
-        )}
-
-        {/* Overlay Text */}
         <div
-          className="absolute inset-0 flex flex-col justify-end items-start text-left text-[#7C5D12] font-bold z-10 ml-25 mb-19 sm:ml-38 sm:mb-30"
-          style={{ fontFamily: 'Cormorant Infant, serif' }}
+          ref={cardRef}
+          className="card-inner relative w-full h-full rounded-xl overflow-hidden shadow-2xl"
+          style={{
+             '--scale': clicked ? 0.96 : 1,
+             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+          }}
         >
-          <p className="text-lg leading-[0.9] sm:text-xl sm:leading-[1.15]">{name}</p>
-          <p className="text-lg leading-[0.9] sm:text-xl sm:leading-[1.15]">{nim}</p>
-          <p className="text-lg leading-[0.9] sm:text-xl sm:leading-[1.15]">{cls}</p>
-          <p className="text-lg leading-[0.9] sm:text-xl sm:leading-[1.15]">{major}</p>
+          <img
+            src={cardImage}
+            alt={name}
+            className="w-full h-full object-cover pointer-events-none"
+          />
+
+          <div className="card-foil absolute inset-0 pointer-events-none z-10" />
+
+          <div
+            className="absolute inset-0 flex flex-col justify-end text-[#7C5D12] font-bold z-30 ml-32 mb-24 sm:ml-40 sm:mb-32 pointer-events-none"
+            style={{ fontFamily: 'Cormorant Infant, serif' }}
+          >
+            {[name, nim, cls, major].map((text, idx) => (
+              <p 
+                key={`${text}-${idx}`} 
+                className="text-lg leading-6 sm:text-xl sm:leading-6 drop-shadow-sm" 
+                style={{textShadow: '0 1px 4px rgba(255,255,255,0.7)'}}
+              >
+                {text}
+              </p>
+            ))}
+          </div>
         </div>
 
-        {/* Bubble Effect */}
-        <div className="absolute inset-0 pointer-events-none">
-          {bubbles.map((bubble) => (
+        {/* Bubble bubble */}
+        <div className="absolute inset-0 pointer-events-none z-50">
+          {bubbles.map((b) => (
             <div
-              key={bubble.id}
+              key={b.id}
               className="bubble"
               style={{
-                left: `${bubble.left}%`,
-                bottom: `${bubble.bottom}%`,
-                width: `${bubble.size}px`,
-                height: `${bubble.size}px`,
-                animationDuration: `${bubble.duration}s`,
-                transform: `translateX(0px)`,
-                '--driftX': `${bubble.driftX}px`,
+                left: `${b.left}%`,
+                top: `${b.top}%`,
+                width: `${b.size}px`,
+                height: `${b.size}px`,
+                '--dur': `${b.duration}s`,
+                '--dx': `${b.driftX}px`,
+                '--dy': `${b.driftY}px`,
               }}
               onAnimationEnd={() =>
-                setBubbles(prev => prev.filter(b => b.id !== bubble.id))
+                setBubbles((prev) => prev.filter((item) => item.id !== b.id))
               }
             />
           ))}
         </div>
       </div>
-
-      {/* CSS Animations */}
-      <style jsx>{`
-        .bubble {
-          position: absolute;
-          background-color: rgba(255,255,255,0.6);
-          border-radius: 50%;
-          animation-name: bubble-rise;
-          animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-          animation-fill-mode: forwards;
-        }
-
-        @keyframes bubble-rise {
-          0% {
-            transform: translateX(0px) translateY(0px) scale(0.8);
-            opacity: 0.6;
-          }
-          50% {
-            transform: translateX(calc(var(--driftX)/2)) translateY(-60px) scale(1);
-            opacity: 0.8;
-          }
-          100% {
-            transform: translateX(var(--driftX)) translateY(-150px) scale(0.6);
-            opacity: 0;
-          }
-        }
-
-        @keyframes light-move {
-            0% { background-position: 0% 0%, 100% 100%; }
-            50% { background-position: 10% 10%, 90% 90%; }
-            100% { background-position: 0% 0%, 100% 100%; }
-        }
-      `}</style>
-    </div>
+    </>
   );
 }

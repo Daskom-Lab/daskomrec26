@@ -1,139 +1,138 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 
 export default function UnderwaterEffect({ isLoaded, isZooming }) {
-    const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
+    const containerRef = useRef(null);
 
     useEffect(() => {
+        let rafId;
         const onMove = (e) => {
-            setMouse({
-                x: e.clientX / window.innerWidth,
-                y: e.clientY / window.innerHeight,
+            if (!containerRef.current) return;
+            
+            cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => {
+                const x = e.clientX / window.innerWidth;
+                const angle = (0.5 - x) * 30; 
+                
+                containerRef.current.style.setProperty('--light-angle', `${angle}deg`);
             });
         };
+
         window.addEventListener('mousemove', onMove);
-        return () => window.removeEventListener('mousemove', onMove);
+        return () => {
+            window.removeEventListener('mousemove', onMove);
+            cancelAnimationFrame(rafId);
+        };
     }, []);
 
-    // Disable everything until start animation finishes
+    const particles = useMemo(() => {
+        return [...Array(25)].map((_, i) => ({
+            left: `${Math.random() * 100}%`,
+            width: `${1 + Math.random() * 3}px`,
+            duration: `${8 + Math.random() * 15}s`,
+            delay: `-${Math.random() * 15}s`,
+            opacity: 0.2 + Math.random() * 0.4
+        }));
+    }, []);
+
     if (isZooming) return null;
 
     const styles = `
+        @keyframes floatUp {
+            0% { transform: translateY(110vh); opacity: 0; }
+            20% { opacity: var(--p-opacity); }
+            80% { opacity: var(--p-opacity); }
+            100% { transform: translateY(-10vh); opacity: 0; }
+        }
         @keyframes godrayPulse {
-        0%, 100% { opacity: 0.45; }
-        50% { opacity: 0.6; }
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 0.9; }
         }
     `;
 
     return (
         <>
-            <style>{styles}</style>
+            <div 
+                ref={containerRef}
+                className="fixed inset-0 pointer-events-none z-50 overflow-hidden"
+                style={{
+                    '--light-angle': '0deg',
+                }}
+            >
+                <style>{styles}</style>
 
-            {/* SVG distortion filter */}
-            <svg className="absolute inset-0 pointer-events-none">
-                <filter id="waterDistortion">
-                    <feTurbulence
-                        type="fractalNoise"
-                        baseFrequency="0.01 0.03"
-                        numOctaves="2"
-                        seed="2"
-                    >
-                        <animate
-                            attributeName="baseFrequency"
-                            dur="12s"
-                            values="
-                                0.01 0.03;
-                                0.015 0.05;
-                                0.01 0.03"
-                            repeatCount="indefinite"
+                <svg style={{ display: 'none' }}>
+                    <defs>
+                        <filter id="waterDistortion" x="-20%" y="-20%" width="140%" height="140%">
+                            <feTurbulence type="fractalNoise" baseFrequency="0.005 0.02" numOctaves="3" seed="2">
+                                <animate attributeName="baseFrequency" dur="20s" values="0.005 0.02;0.008 0.015;0.005 0.02" repeatCount="indefinite" />
+                            </feTurbulence>
+                            <feDisplacementMap in="SourceGraphic" scale="30" xChannelSelector="R" yChannelSelector="G" />
+                        </filter>
+                    </defs>
+                </svg>
+
+                {/* Darker Vignette */}
+                <div 
+                    className="absolute inset-0"
+                    style={{
+                        background: 'radial-gradient(circle at 50% 50%, transparent 0%, rgba(0, 5, 20, 0.3) 100%)',
+                        zIndex: 1
+                    }}
+                />
+
+                {/* The godray */}
+                <div
+                    className="absolute inset-0"
+                    style={{
+                        zIndex: 2,
+                        mixBlendMode: 'screen',
+                        filter: 'blur(80px)',
+                        
+                        background: `
+                            conic-gradient(
+                                from var(--light-angle) at 50% -20%,
+                                transparent 0deg,
+                                rgba(100, 220, 255, 0.1) 170deg,
+                                rgba(180, 230, 255, 0.1) 180deg,
+                                rgba(100, 220, 255, 0.1) 190deg,
+                                transparent 255deg
+                            )
+                        `,
+                        animation: 'godrayPulse 12s ease-in-out infinite'
+                    }}
+                />
+
+                {/* Distorted Overlay */}
+                <div 
+                    className="absolute inset-0"
+                    style={{
+                        zIndex: 3,
+                        backdropFilter: 'url(#waterDistortion) blur(1px)',
+                        WebkitBackdropFilter: 'url(#waterDistortion) blur(1px)',
+                        background: 'rgba(0, 100, 200, 0.08)',
+                        pointerEvents: 'none'
+                    }}
+                />
+
+                {/* Particles */}
+                <div className="absolute inset-0" style={{ zIndex: 4 }}>
+                    {particles.map((p, i) => (
+                        <div
+                            key={i}
+                            className="absolute bg-white rounded-full"
+                            style={{
+                                left: p.left,
+                                width: p.width,
+                                height: p.width,
+                                '--p-opacity': p.opacity,
+                                opacity: 0,
+                                boxShadow: '0 0 8px rgba(255,255,255,0.4)',
+                                animation: `floatUp ${p.duration} linear infinite`,
+                                animationDelay: p.delay,
+                            }}
                         />
-                    </feTurbulence>
-                    <feDisplacementMap
-                        in="SourceGraphic"
-                        scale="20"
-                        xChannelSelector="R"
-                        yChannelSelector="G"
-                    />
-                </filter>
-            </svg>
-
-            {/* Distortion overlay */}
-            <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                    filter: 'url(#waterDistortion)',
-                    opacity: 0.35,
-                    transition: 'opacity 2s ease',
-                }}
-            />
-
-            {/* Godray (mouse-following cone light) */}
-            <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                    background: `
-                        conic-gradient(
-                            from ${-30 + mouse.x * 60}deg at ${mouse.x * 100}% 0%,
-                            rgba(200,230,255,0.45),
-                            rgba(200,230,255,0.15) 20%,
-                            rgba(200,230,255,0.05) 40%,
-                            transparent 60%
-                        )
-                    `,
-                    maskImage: `
-                        radial-gradient(
-                            ellipse at ${mouse.x * 100}% 0%,
-                            rgba(255,255,255,1),
-                            rgba(255,255,255,0.4) 40%,
-                            transparent 70%
-                        )
-                    `,
-                    WebkitMaskImage: `
-                        radial-gradient(
-                            ellipse at ${mouse.x * 100}% 0%,
-                            rgba(255,255,255,1),
-                            rgba(255,255,255,0.4) 40%,
-                            transparent 70%
-                        )
-                    `,
-                    filter: 'blur(30px)',
-                    opacity: 0.3 + mouse.y * 0.05,
-                    mixBlendMode: 'screen',
-                    transition: 'opacity 0.2s ease',
-                    animation: 'godrayPulse 6s ease-in-out infinite',
-                }}
-            />
-
-            {/* Haze layer */}
-            <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                    background: `
-                        radial-gradient(
-                            ellipse at top,
-                            rgba(180,220,255,0.15),
-                            transparent 70%
-                        )
-                    `,
-                    filter: 'blur(80px)',
-                    opacity: 0.4,
-                }}
-            />
-
-            {/* Floating particles */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                {[...Array(25)].map((_, i) => (
-                    <div
-                        key={i}
-                        className="absolute top-0 rounded-full bg-cyan-200/40"
-                        style={{
-                            left: `${mouse.x * 100 + Math.sin(i) * 10}%`,
-                            width: `${1 + Math.random() * 2}px`,
-                            height: `${1 + Math.random() * 2}px`,
-                            animation: `particlesFloat ${5 + i % 4}s linear infinite`,
-                            boxShadow: '0 0 8px rgba(173,216,230,0.6)',
-                        }}
-                    />
-                ))}
+                    ))}
+                </div>
             </div>
         </>
     );

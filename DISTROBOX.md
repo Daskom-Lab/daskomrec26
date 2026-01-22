@@ -76,3 +76,24 @@ composer run dev
 ```
 
 Now, you can access the website on `localhost:8000`
+
+# Additional Fix
+
+Sometimes, if you want to rerun it again, you will found an error on mysql that some directory aren't found or something (idk why though)
+Just follow this step to fix it:
+
+```sh
+distrobox enter webdev-daskomrec26
+```
+
+```sh
+sudo mkdir -p /run/mariadb
+sudo chown -R mysql:mysql /run/mariadb
+sudo chmod 755 /run/mariadb
+
+sudo mkdir -p /run/mysqld
+sudo chown mysql:mysql /run/mysqld
+sudo chmod 755 /run/mysqld
+
+sudo systemctl restart mariadb
+```

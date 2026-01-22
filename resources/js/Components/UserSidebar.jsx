@@ -12,7 +12,7 @@ import ButtonCoreLocked from '@assets/buttons/06-Cores.png';
 import ButtonLogout from '@assets/buttons/13-LogOut.png';
 
 export default function UserSidebar({ isOpen, onClose, onLogout }) {
-    const [coreUnlocked, setCoreUnlocked] = useState(false);
+    const [coreUnlocked, setCoreUnlocked] = useState(true);
     const [wiggle, setWiggle] = useState(false);
     const [coreClickCount, setCoreClickCount] = useState(0);
     const clickTimer = useRef(null);
@@ -38,7 +38,7 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
                 return newCount;
             });
         } else {
-            console.log("Core is unlocked!");
+            router.visit('/user/cores')
         }
     };
 
@@ -92,7 +92,7 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
 
                         {/* Assistants / Line */}
                         <div className="flex flex-col gap-2">
-                            <button type="button" className={buttonWrapper}>
+                            <button type="button" className={buttonWrapper} onClick={() => {router.visit('/user/assistants')}}>
                                 <img src={ButtonAssistants} className={imageStyle} alt="Assistants" />
                             </button>
                             <button type="button" className={buttonWrapper}>
@@ -102,10 +102,10 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
 
                         {/* Announcement / Shift / Core */}
                         <div className="flex flex-col gap-2">
-                            <button type="button" className={buttonWrapper}>
+                            <button type="button" className={buttonWrapper} onClick={() => {router.visit('/user/announcement')}}>
                                 <img src={ButtonAnnouncement} className={imageStyle} alt="Announcement" />
                             </button>
-                            <button type="button" className={buttonWrapper}>
+                            <button type="button" className={buttonWrapper} onClick={() => {router.visit('/user/shift')}}>
                                 <img src={ButtonShift} className={imageStyle} alt="Shift" />
                             </button>
                             <button
