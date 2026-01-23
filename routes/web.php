@@ -30,6 +30,10 @@ Route::get('/user/assistants', function () {
     return inertia('User/assistants');
 });
 
+Route::get('/user/oaline', function () {
+    return inertia('User/oaline');
+});
+
 Route::get('/user/shift', function () {
     return inertia('User/shift');
 });

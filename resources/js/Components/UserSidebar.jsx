@@ -124,7 +124,7 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
                                     ASSISTANTS
                                 </span>
                             </button>
-                            <button type="button" className={buttonWrapper}>
+                            <button type="button" className={buttonWrapper} onClick={() => {router.visit('/user/oaline')}}>
                                 <img src={ButtonAnchor} className={imageStyle} alt="OA LINE"/>
                                 <span 
                                     className="absolute inset-0 flex items-center justify-center text-2xl font-extrabold mb-2" 
