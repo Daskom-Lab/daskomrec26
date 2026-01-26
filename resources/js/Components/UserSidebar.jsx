@@ -71,14 +71,14 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
             <div
                 className={`fixed inset-0 bg-black/10 backdrop-blur-xs transition-opacity duration-300 ${
                     isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-                } z-40`}
+                } z-50`}
                 onClick={onClose}
             />
 
             {/* Sidebar */}
             <aside
                 onClick={(e) => e.stopPropagation()}
-                className={`fixed top-0 left-0 h-screen w-full md:w-90 bg-black/30 backdrop-blur-xs text-white shadow-xl transform transition-transform duration-300 z-50
+                className={`fixed top-0 left-0 h-screen w-full md:w-90 bg-black/30 backdrop-blur-xs text-white shadow-xl transform transition-transform duration-300 z-60
                     ${isOpen ? 'translate-x-0' : '-translate-x-full'}
                 `}
             >
