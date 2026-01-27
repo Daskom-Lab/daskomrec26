@@ -19,23 +19,23 @@ const ControlButton = ({ onClick, disabled, src, alt }) => {
             onClick={onClick}
             disabled={disabled}
             className={`
-                relative focus:outline-none 
+                relative focus:outline-none
                 flex items-center justify-center
                 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
             `}
         >
-            <img 
-                src={src} 
+            <img
+                src={src}
                 alt={alt}
                 className={`
-                    h-60 md:h-22 w-auto 
+                    h-60 md:h-22 w-auto
                     object-contain transition-all duration-100 ease-out
                     ${pressed ? 'scale-90 brightness-110' : 'scale-100 hover:brightness-105'}
                 `}
                 style={{
                     filter: pressed && !disabled
                         ? 'drop-shadow(0 0 14px rgba(0,180,255,.9))'
-                        : 'drop-shadow(0 0 5px rgba(0,120,200,0))', 
+                        : 'drop-shadow(0 0 5px rgba(0,120,200,0))',
                 }}
             />
         </button>
@@ -43,11 +43,11 @@ const ControlButton = ({ onClick, disabled, src, alt }) => {
 };
 
 // === MAIN CONTROLS COMPONENT ===
-export default function BookControls({ 
-    onPrev, 
-    onNext, 
-    onGoToPage, 
-    currentPage, 
+export default function BookControls({
+    onPrev,
+    onNext,
+    onGoToPage,
+    currentPage,
     totalPages,
     className = ''
 }) {
@@ -65,47 +65,47 @@ export default function BookControls({
     };
 
     return (
-        <div 
+        <div
             className={`flex items-center gap-2 md:gap-6 p-2 md:p-3 px-4 md:px-6 rounded-full ${className}`}
             style={{ fontFamily: 'Cormorant Infant, serif' }}
-            onPointerDown={(e) => e.stopPropagation()} 
+            onPointerDown={(e) => e.stopPropagation()}
         >
             <style>{`
-                input[type=number]::-webkit-inner-spin-button, 
-                input[type=number]::-webkit-outer-spin-button { 
-                    -webkit-appearance: none; 
-                    margin: 0; 
+                input[type=number]::-webkit-inner-spin-button,
+                input[type=number]::-webkit-outer-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
                 }
             `}</style>
 
             {/* PREV BUTTON */}
-            <ControlButton 
-                onClick={onPrev} 
+            <ControlButton
+                onClick={onPrev}
                 disabled={currentPage === 0}
                 src={ButtonLeft}
                 alt="Previous"
             />
 
             {/* PAGE INPUT */}
-            <div 
+            <div
                 className="flex items-center gap-1 md:gap-2 text-white/90 font-bold tracking-wide text-lg md:text-xl drop-shadow-md"
             >
-                <input 
-                    type="number" 
+                <input
+                    type="number"
                     value={inputVal}
                     onChange={(e) => setInputVal(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    className="w-4 bg-transparent text-center text-white focus:outline-none focus:border-white transition-colors"
+                    className="w-10 bg-transparent text-center text-white focus:outline-none focus:border-white transition-colors"
                 />
-                <span 
+                <span
                     className="opacity-50 whitespace-nowrap"
                 >/ {totalPages}
                 </span>
             </div>
 
             {/* NEXT BUTTON */}
-            <ControlButton 
-                onClick={onNext} 
+            <ControlButton
+                onClick={onNext}
                 disabled={currentPage === totalPages}
                 src={ButtonRight}
                 alt="Next"

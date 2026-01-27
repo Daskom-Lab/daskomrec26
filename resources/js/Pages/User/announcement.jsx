@@ -32,16 +32,16 @@ export default function AnnouncementPage({ userStatus = 'passed' }) {
         setIsSidebarOpen(false);
         setTimeout(() => {
             setIsLoggingOut(true);
-            setTimeout(() => router.visit('/'), 1000); 
+            setTimeout(() => router.visit('/'), 1000);
         }, 350);
     };
 
         useEffect(() => {
             const zoomTimer = setTimeout(() => {
-                setInputLocked(false); 
+                setInputLocked(false);
             }, 500);
         }, []);
-    
+
 
     return (
         <>
@@ -65,7 +65,7 @@ export default function AnnouncementPage({ userStatus = 'passed' }) {
 
                 {/* --- MAIN CONTENT CENTER --- */}
                 <div className="relative z-30 w-full min-h-screen flex justify-center items-center py-10 md:py-20">
-                    
+
                     {/* Container Board Utama */}
                     <div className="relative w-[85%] max-w-[360px] md:max-w-[600px] lg:max-w-[650px] h-[480px] sm:h-[550px] md:h-[700px] mt-4 md:mt-10">
 
@@ -94,7 +94,7 @@ export default function AnnouncementPage({ userStatus = 'passed' }) {
 
                                 {/* --- BAGIAN ATAS: KONTEN TEKS --- */}
                                 <div className="flex flex-col justify-center items-center flex-1 space-y-2 text-white drop-shadow-[0_0_6px_rgba(0,255,255,0.35)] max-w-full">
-                                    <h2 
+                                    <h2
                                         className="text-xs sm:text-sm md:text-3xl leading-tight font-bold uppercase tracking-[0.2em] sm-tracking-widest border-b border-blue-400/30 pb-0.5 md:pb-2 max-w-full break-words px-2"
                                     >
                                         {userStatus === 'passed' ? 'CONGRATULATIONS' : 'ANNOUNCEMENT'}
