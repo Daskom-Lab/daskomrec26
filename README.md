@@ -28,4 +28,4 @@ DLOR 2026 is a recruitment platform designed to streamline the application proce
 ## Development using Distrobox
 Distrobox is basically a nice wrapper for docker and podman to containerize your workspaces 
 (Linux only, you can use docker directly if you use Windows or MacOS).
-For further instruction, you may see this file [docs/DISTROBOX.md](.docs/DISTROBOX.md)
+For further instruction, you may see this file [docs/DISTROBOX.md](./docs/DISTROBOX.md)
