@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 
 import background from '@assets/backgrounds/utama.png';
 import road from '@assets/backgrounds/road.png';
@@ -35,8 +35,8 @@ export default function Login() {
     const [fadeScroll, setFadeScroll] = useState(false);
 
     // Added errors and setError for indicator logic
-    const { data, setData, processing, errors, setError, clearErrors } = useForm({ 
-        username: '', 
+    const { data, setData, post, processing, errors, setError, clearErrors } = useForm({ 
+        nim: '', 
         password: '' 
     });
 
@@ -84,17 +84,16 @@ export default function Login() {
 
         clearErrors();
 
-        // --- DUMMY TEST LOGIC ---
-        // Change "atlantis" to your preferred test password
-        if (data.password !== 'atlantis') {
-            setError('password', 'Incorrect key provided.');
-            return;
-        }
+        post('/login', {
+            onSuccess : () =>{
+                setFadeScroll(true);
+                setTimeout(() => setCameraState('in'), 500);
+                setTimeout(() => setShowColorFade(true), 800);
+            },
+            onError: () => {
 
-        setFadeScroll(true);
-        setTimeout(() => setCameraState('in'), 500);
-        setTimeout(() => setShowColorFade(true), 800);
-        setTimeout(() => router.visit('/user/home'), 2000);
+            }
+        });
     };
 
     useEffect(() => {
@@ -229,11 +228,11 @@ export default function Login() {
                                             textShadow: '0 2px 10px rgba(12, 54, 91, 0.3), 0 0 20px rgba(96, 165, 250, 0.2)' 
                                         }}
                                     >
-                                        Username
+                                        NIM
                                     </label>
                                     <BlueInputBox 
-                                        value={data.username} 
-                                        onChange={(e) => setData('username', e.target.value)} 
+                                        value={data.nim} 
+                                        onChange={(e) => setData('nim', e.target.value)} 
                                     />
                                 </div>
                                 <div className="flex flex-col gap-1">
