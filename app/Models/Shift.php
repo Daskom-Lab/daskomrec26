@@ -18,7 +18,9 @@ class Shift extends Model
     ];
 
     protected $casts = [
-        'date' => 'date',
+        'date' => 'date:Y-m-d',
+        'time_start' => 'datetime:H:i',
+        'time_end' => 'datetime:H:i',
     ];
 
     /**
