@@ -2,9 +2,17 @@
 
 use App\Http\Controllers\StageController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ShiftController;
+use App\Http\Controllers\PlottinganController;
+use App\Http\Controllers\CaasstageController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\PasswordController;
 use Illuminate\Support\Facades\Route;
+
+Route::resource('shifts', ShiftController::class)->except(['index']);
+
+Route::resource('users', UserController::class)->except(['index']);
 
 Route::get('/', function () {
     return inertia('welcome');
@@ -49,33 +57,22 @@ Route::middleware('auth')->group(function (){
         return inertia('User/announcement');
     });
 
-    Route::get('/user/cores', function () {
-        return inertia('User/cores');
-    });
-});
+Route::get('/admin/home', [HomeController::class, 'index']);
+Route::put('/admin/home/current-stage', [HomeController::class, 'setCurrentStage']);
+Route::put('/admin/home/configuration/{stage}', [HomeController::class, 'updateConfiguration']);
+Route::put('/admin/home/messages/{stage}', [HomeController::class, 'updateStageMessages']);
 
-Route::prefix('admin')->group(function (){
-    Route::get('login', function () {
-        return inertia('Admin/login');
-    });
-    
-    Route::get('home', function () {
-        return inertia('Admin/home');
-    });
-    
-    Route::get('shift', function () {
-        return inertia('Admin/shift');
-    });
-    
-    Route::get('password', function () {
-        return inertia('Admin/password');
-    });
-    
-    Route::get('caas', function () {
-        return inertia('Admin/caas');
-    });
-});
+Route::get('/admin/shift', [ShiftController::class, 'index']);
+
+Route::get('/admin/plottingan', [PlottinganController::class, 'index']);
+Route::get('/admin/plottingan/shift/{shiftId}', [PlottinganController::class, 'shiftUsers']);
+
+Route::get('/admin/configuration', [StageController::class, 'index']);
+Route::put('/admin/configuration/{stage}', [StageController::class, 'update']);
 
 
+Route::get('/admin/caas', [UserController::class, 'index']);
+Route::post('/admin/caas', [UserController::class, 'store']);
 
-
+Route::put('/admin/caas/{caasstage}/stage', [CaasstageController::class, 'updateStage']);
+Route::put('/admin/caas/{caasstage}/status', [CaasstageController::class, 'updateStatus']);

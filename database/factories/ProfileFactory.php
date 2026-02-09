@@ -19,10 +19,9 @@ class ProfileFactory extends Factory
     {
         return [
             //
-            'user_id' => fake()->numberBetween(1, 10), // Associate profile with a user
+            'user_id' => User::pluck('id')->shuffle()->pop(), // Associate profile with a user
             'name' => fake()->name(),
             'major' => fake()->word(),
-            'email' => fake()->unique()->safeEmail(),
             'class' => fake()->word(),
             'gender' => fake()->randomElement(['Male', 'Female']),
         ];

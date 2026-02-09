@@ -13,7 +13,6 @@ class Profile extends Model
         'user_id',
         'name',
         'major',
-        'email',
         'class',
         'gender',
     ];
