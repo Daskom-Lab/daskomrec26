@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('caas_stages', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
-            $table->string('status', 10)->default('GAGAL');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->enum('status', ['PROSES', 'LOLOS', 'GAGAL'])->default('GAGAL');
+            $table->foreignId('user_id')->unique()->constrained()->onDelete('cascade');
             $table->foreignId('stage_id')->constrained()->onDelete('cascade');
+            $table->timestamps();
         });
     }
 

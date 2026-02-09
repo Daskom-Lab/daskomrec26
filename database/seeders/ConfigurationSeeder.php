@@ -14,6 +14,8 @@ class ConfigurationSeeder extends Seeder
     public function run(): void
     {
         //
-        Configuration::factory()->create();
+        foreach (range(1, 6) as $stageId) {
+            Configuration::factory()->state(['stage_id' => $stageId])->create();
+        }   
     }
 }

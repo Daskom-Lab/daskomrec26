@@ -11,7 +11,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +21,16 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules(): array
     {
+        $userId = $this->route('user')->id;
+        
         return [
-            //
+            'nim' => 'required|string|unique:users,nim,' . $userId . '|max:255',
+            'password' => 'nullable|string|min:6',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'major' => 'required|string|max:255',
+            'class' => 'required|string|max:255',
+            'gender' => 'required|in:Male,Female',
         ];
     }
 }
