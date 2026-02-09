@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 
 import ButtonSidebar from '@components/ButtonSidebar';
 import ButtonHome from '@components/ButtonHome';
@@ -16,6 +16,13 @@ import buttonImg from '@assets/buttons/ButtonRegular.png';
 import logoImg from '@assets/logo/ORB_DLOR 1.png'; 
 
 export default function ChangePassword() {
+    const {data, setData, put, errors, processing, reset}= useForm({
+        current_password: '',
+        password: '',
+        password_confirmation: '',
+    })
+
+
     const backgroundRef = useRef(null);
     const [showImage, setShowImage] = useState(false);
     
@@ -25,9 +32,6 @@ export default function ChangePassword() {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
-
-    const [oldPassword, setOldPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
 
     const toggleSidebar = () => {
         if (inputLocked || isLoggingOut) return;
@@ -48,13 +52,19 @@ export default function ChangePassword() {
     };
 
     const handleConfirmChange = () => {
-        setShowModal(false); 
-        setTimeout(() => {
-            setShowSuccess(true); 
-        }, 300);
-        
-        setOldPassword('');
-        setNewPassword('');
+        put('/user/password', {
+            preserveScroll: true,
+            onSuccess: () => {
+                setShowModal(false); 
+                reset(); 
+                setTimeout(() => {
+                    setShowSuccess(true); 
+                }, 300);
+            },
+            onError: () => {
+                setShowModal(false); 
+            }
+        });
     };
 
     useEffect(() => {
@@ -183,20 +193,33 @@ export default function ChangePassword() {
                             <label className="block text-lg mb-1 ml-1 drop-shadow-md text-gray-100">Old Password</label>
                             <input 
                                 type="password"
-                                value={oldPassword}
-                                onChange={(e) => setOldPassword(e.target.value)}
+                                value={data.current_password}
+                                onChange={(e) => setData('current_password', e.target.value)}
                                 className="w-full h-12 bg-gray-300 text-gray-800 rounded-md px-4 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all placeholder-gray-500"
                             />
+                            {errors.current_password && <div className="text-red-400 text-sm mt-1">{errors.current_password}</div>}
                         </div>
 
                         <div className="group">
                             <label className="block text-lg mb-1 ml-1 drop-shadow-md text-gray-100">New Password</label>
                             <input 
                                 type="password"
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
+                                value={data.password}
+                                onChange={(e) => setData('password', e.target.value)}
                                 className="w-full h-12 bg-gray-300 text-gray-800 rounded-md px-4 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all placeholder-gray-500"
                             />
+                            {errors.password && <div className="text-red-400 text-sm mt-1">{errors.password}</div>}
+                        </div>
+                        
+                        <div className="group">
+                            <label className="block text-lg mb-1 ml-1 drop-shadow-md text-gray-100">Confirm Password</label>
+                            <input 
+                                type="password"
+                                value={data.password_confirmation}
+                                onChange={(e) => setData('password_confirmation', e.target.value)}
+                                className="w-full h-12 bg-gray-300 text-gray-800 rounded-md px-4 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all placeholder-gray-500"
+                            />
+                            {errors.password_confirmation && <div className="text-red-400 text-sm mt-1">{errors.password_confirmation}</div>}
                         </div>
 
                         <div className="flex justify-center mt-8">
