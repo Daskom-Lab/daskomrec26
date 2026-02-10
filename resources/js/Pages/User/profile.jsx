@@ -48,7 +48,7 @@ export default function Profile() {
 
         setTimeout(() => {
             setIsLoggingOut(true);
-            setTimeout(() => router.visit('/'), 1000);
+            setTimeout(() => router.post('/logout'), 1000);
         }, 350);
     };
 

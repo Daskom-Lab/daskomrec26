@@ -36,7 +36,7 @@ export default function Home() {
         // Wait for sidebar to slide out (300ms) then start fade
         setTimeout(() => {
             setIsLoggingOut(true);
-            setTimeout(() => router.visit('/'), 1000); // fade duration
+            setTimeout(() => router.post('/logout'), 1000); // fade duration
         }, 350);
     };
 

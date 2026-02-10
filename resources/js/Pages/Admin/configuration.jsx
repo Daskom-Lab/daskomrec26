@@ -192,7 +192,7 @@ export default function Configuration({ stages }) {
         setIsSidebarOpen(false);
         setTimeout(() => {
             setIsLoggingOut(true);
-            setTimeout(() => (window.location.href = "/"), 1000);
+            setTimeout(() => router.post("/logout"), 1000);
         }, 350);
     };
 

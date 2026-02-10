@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 
 import ButtonSidebar from '@components/ButtonSidebar';
 import ButtonHome from '@components/ButtonHome';
@@ -26,8 +26,11 @@ export default function ChangePassword() {
     const [showModal, setShowModal] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
 
-    const [oldPassword, setOldPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
+    const { data, setData, put, reset, errors, processing } = useForm({
+        current_password: '',
+        password: '',
+        password_confirmation: '',
+    });
 
     const toggleSidebar = () => {
         if (inputLocked || isLoggingOut) return;
@@ -39,7 +42,7 @@ export default function ChangePassword() {
         setIsSidebarOpen(false);
         setTimeout(() => {
             setIsLoggingOut(true);
-            setTimeout(() => router.visit('/'), 300); 
+            setTimeout(() => router.post('/logout'), 300); 
         }, 350);
     };
 
@@ -48,13 +51,19 @@ export default function ChangePassword() {
     };
 
     const handleConfirmChange = () => {
-        setShowModal(false); 
-        setTimeout(() => {
-            setShowSuccess(true); 
-        }, 300);
-        
-        setOldPassword('');
-        setNewPassword('');
+        put('/admin/password', {
+            preserveScroll: true,
+            onSuccess: () => {
+                setShowModal(false);
+                reset();
+                setTimeout(() => {
+                    setShowSuccess(true);
+                }, 300);
+            },
+            onError: () => {
+                setShowModal(false);
+            }
+        });
     };
 
     useEffect(() => {
@@ -183,18 +192,30 @@ export default function ChangePassword() {
                             <label className="block text-lg mb-1 ml-1 drop-shadow-md text-gray-100">Old Password</label>
                             <input 
                                 type="password"
-                                value={oldPassword}
-                                onChange={(e) => setOldPassword(e.target.value)}
+                                value={data.current_password}
+                                onChange={(e) => setData('current_password', e.target.value)}
                                 className="w-full h-12 bg-gray-300 text-gray-800 rounded-md px-4 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all placeholder-gray-500"
                             />
+                            {errors.current_password && <p className="text-red-400 text-sm mt-1">{errors.current_password}</p>}
                         </div>
 
                         <div className="group">
                             <label className="block text-lg mb-1 ml-1 drop-shadow-md text-gray-100">New Password</label>
                             <input 
                                 type="password"
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
+                                value={data.password}
+                                onChange={(e) => setData('password', e.target.value)}
+                                className="w-full h-12 bg-gray-300 text-gray-800 rounded-md px-4 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all placeholder-gray-500"
+                            />
+                            {errors.password && <p className="text-red-400 text-sm mt-1">{errors.password}</p>}
+                        </div>
+
+                        <div className="group">
+                            <label className="block text-lg mb-1 ml-1 drop-shadow-md text-gray-100">Confirm New Password</label>
+                            <input 
+                                type="password"
+                                value={data.password_confirmation}
+                                onChange={(e) => setData('password_confirmation', e.target.value)}
                                 className="w-full h-12 bg-gray-300 text-gray-800 rounded-md px-4 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all placeholder-gray-500"
                             />
                         </div>
@@ -202,6 +223,7 @@ export default function ChangePassword() {
                         <div className="flex justify-center mt-8">
                             <button 
                                 onClick={handleChangeClick}
+                                disabled={processing}
                                 className="relative w-64 h-16 flex items-center justify-center group active:scale-95 transition-transform">
                                 <img 
                                     src={buttonImg} 

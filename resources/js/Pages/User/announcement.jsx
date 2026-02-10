@@ -32,7 +32,7 @@ export default function AnnouncementPage({ userStatus = 'passed' }) {
         setIsSidebarOpen(false);
         setTimeout(() => {
             setIsLoggingOut(true);
-            setTimeout(() => router.visit('/'), 1000);
+            setTimeout(() => router.post('/logout'), 1000);
         }, 350);
     };
 
