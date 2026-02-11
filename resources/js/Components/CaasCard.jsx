@@ -53,13 +53,27 @@ export default function CardCaas({ sex, name, nim, cls, major }) {
     const newBubbles = Array.from({ length: BUBBLE_COUNT }, (_, i) => {
       const edge = Math.floor(Math.random() * 4);
       let left, top;
-      
+
       switch (edge) {
-        case 0: left = Math.random() * 100; top = -5; break; // Top
-        case 1: left = 105; top = Math.random() * 100; break; // Right
-        case 2: left = Math.random() * 100; top = 105; break; // Bottom
-        case 3: left = -5; top = Math.random() * 100; break; // Left
-        default: left = 0; top = 0;
+        case 0:
+            left = Math.random() * 100;
+            top = 0;
+            break; // Top
+        case 1:
+            left = 100;
+            top = Math.random() * 100;
+            break; // Right
+        case 2:
+            left = Math.random() * 100;
+            top = 100;
+            break; // Bottom
+        case 3:
+            left = -0;
+            top = Math.random() * 100;
+            break; // Left
+        default:
+            left = 0;
+            top = 0;
       }
       return {
         id: Date.now() + i,
@@ -144,7 +158,7 @@ export default function CardCaas({ sex, name, nim, cls, major }) {
         onPointerMove={handlePointerMove}
         onPointerLeave={handlePointerLeave}
         onClick={handleClick}
-        className="card-container relative w-full max-w-[320px] sm:max-w-[400px] cursor-pointer group select-none"
+        className="card-container relative w-full max-w-[320px] sm:max-w-100 cursor-pointer group select-none"
       >
         <div
           ref={cardRef}
@@ -167,9 +181,9 @@ export default function CardCaas({ sex, name, nim, cls, major }) {
             style={{ fontFamily: 'Cormorant Infant, serif' }}
           >
             {[name, nim, cls, major].map((text, idx) => (
-              <p 
-                key={`${text}-${idx}`} 
-                className="text-lg leading-6 sm:text-xl sm:leading-6 drop-shadow-sm" 
+              <p
+                key={`${text}-${idx}`}
+                className="text-lg leading-6 sm:text-xl sm:leading-6 drop-shadow-sm"
                 style={{textShadow: '0 1px 4px rgba(255,255,255,0.7)'}}
               >
                 {text}
