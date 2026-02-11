@@ -3,6 +3,7 @@
 use App\Http\Controllers\StageController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use inertia\inertia;
 
 Route::get('/', function () {
     return inertia('welcome');
@@ -66,4 +67,8 @@ Route::get('/admin/password', function () {
 
 Route::get('/admin/caas', function () {
     return inertia('Admin/caas');
+});
+
+Route::fallback(function () {
+    return inertia::render('404_NotFound'); 
 });
