@@ -14,7 +14,7 @@ import buttonImg from '@assets/buttons/ButtonRegular.png';
 import Mobileboard from '@assets/backgrounds/02-ABoard_Mobile.png';
 import logoImg from '@assets/logo/ORB_DLOR 1.png';
 
-const IS_PASSED = true; 
+const IS_PASSED = true;
 
 export default function ShiftPage() {
     const backgroundRef = useRef(null);
@@ -24,12 +24,12 @@ export default function ShiftPage() {
     const [inputLocked, setInputLocked] = useState(true);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    
+
     const [showModal, setShowModal] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
-    const [selectedShift, setSelectedShift] = useState(null); 
+    const [selectedShift, setSelectedShift] = useState(null);
     const [hasChosen, setHasChosen] = useState(false);
-    
+
     const [showGateModal, setShowGateModal] = useState(false);
 
     const [shifts, setShifts] = useState([
@@ -40,20 +40,20 @@ export default function ShiftPage() {
 
     useEffect(() => {
         const showTimer = setTimeout(() => setShowImage(true), 300);
-        
-        const zoomTimer = setTimeout(() => { 
-            setIsZooming(false); 
-            setInputLocked(false); 
+
+        const zoomTimer = setTimeout(() => {
+            setIsZooming(false);
+            setInputLocked(false);
             if (!IS_PASSED) {
                 setShowGateModal(true);
             }
         }, 100);
 
         const skipIntro = () => {
-            clearTimeout(showTimer); 
+            clearTimeout(showTimer);
             clearTimeout(zoomTimer);
-            setShowImage(true); 
-            setIsZooming(false); 
+            setShowImage(true);
+            setIsZooming(false);
             setInputLocked(false);
             if (!IS_PASSED) {
                 setShowGateModal(true);
@@ -64,7 +64,7 @@ export default function ShiftPage() {
         window.addEventListener('click', skipIntro);
 
         return () => {
-            clearTimeout(showTimer); 
+            clearTimeout(showTimer);
             clearTimeout(zoomTimer);
             window.removeEventListener('keydown', skipIntro);
             window.removeEventListener('click', skipIntro);
@@ -78,8 +78,8 @@ export default function ShiftPage() {
 
     const handleAddClick = (shift) => {
         if (hasChosen) return;
-        setSelectedShift(shift); 
-        setShowModal(true); 
+        setSelectedShift(shift);
+        setShowModal(true);
     };
 
     const handleConfirmAdd = () => {
@@ -89,7 +89,7 @@ export default function ShiftPage() {
     };
 
     const handleHomeClick = () => {
-        setIsLoggingOut(true); 
+        setIsLoggingOut(true);
         setTimeout(() => router.visit('/user/home'), 500);
     };
 
@@ -109,27 +109,27 @@ export default function ShiftPage() {
     `;
 
     const isNavigationVisible = !isZooming && !isLoggingOut;
-    const isContentVisible = !isZooming && IS_PASSED; 
+    const isContentVisible = !isZooming && IS_PASSED;
     const isAnyModalOpen = showModal || showSuccess || showGateModal;
 
     return (
         <>
             <Head title="Choose Shift" />
             <style>{styles}</style>
-            
+
             <div className="fixed inset-0 w-full h-full text-white font-caudex bg-[#0a2a4a] overflow-y-auto md:overflow-hidden">
-                
+
                 {/* 1. Background Layer */}
                 <div className="fixed inset-0 z-0 pointer-events-none">
-                    <img 
+                    <img
                         ref={backgroundRef}
-                        src={utama} 
-                        alt="bg" 
+                        src={utama}
+                        alt="bg"
                         onLoad={() => setImageLoaded(true)}
-                        className={`w-full h-full object-cover transition-all duration-[1500ms] ease-out 
-                            ${showImage && imageLoaded ? 'opacity-100' : 'opacity-0'} 
-                            ${!isZooming ? 'pulse-effect' : ''} cold-blue-filter`} 
-                        style={{ 
+                        className={`w-full h-full object-cover transition-all duration-[1500ms] ease-out
+                            ${showImage && imageLoaded ? 'opacity-100' : 'opacity-0'}
+                            ${!isZooming ? 'pulse-effect' : ''} cold-blue-filter`}
+                        style={{
                             transform: showImage && imageLoaded ? 'scale(1.0)' : 'scale(1.2)',
                             transformOrigin: 'center'
                         }}
@@ -143,9 +143,9 @@ export default function ShiftPage() {
 
                 {/* 3. Content Layer */}
                 <div className={`relative z-40 flex flex-col items-center justify-start md:justify-center min-h-full w-full px-4 pt-24 pb-12 md:py-0 transition-all duration-1000
-                    ${isContentVisible && !isLoggingOut ? 'opacity-100 scale-100' : 'opacity-0 scale-95'} 
+                    ${isContentVisible && !isLoggingOut ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
                     ${isAnyModalOpen ? 'blur-sm brightness-50 pointer-events-none' : ''}`}>
-                    
+
                     <h1 className="text-3xl sm:text-4xl md:text-5xl mb-6 md:mb-10 font-bold drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)] tracking-wide text-center shrink-0">
                         Choose Your Shift
                     </h1>
@@ -177,7 +177,7 @@ export default function ShiftPage() {
                                 <h1 className="text-[10px] sm:text-xs tracking-[0.25em] uppercase font-bold text-red-900/60 mb-1">
                                     Access Restricted
                                 </h1>
-                                
+
                                 <h1 className="text-xl sm:text-2xl md:text-3xl font-black leading-tight drop-shadow-sm mb-3">
                                     Mohon Maaf, <br /> Kamu Belum Lulus.
                                 </h1>
@@ -190,7 +190,7 @@ export default function ShiftPage() {
                                     <button onClick={handleGateBackHome} className="relative w-36 h-10 sm:w-44 sm:h-12 active:scale-95 transition-transform group">
                                         <img src={buttonImg} alt="btn" className="absolute inset-0 w-full h-full object-fill drop-shadow-md" />
                                         <span className="relative z-10 text-white text-sm sm:text-lg font-bold flex items-center justify-center h-full pb-1 tracking-wider group-hover:text-cyan-100 transition-colors">
-                                            BACK HOME
+                                            Home
                                         </span>
                                     </button>
                                 </div>
@@ -204,7 +204,7 @@ export default function ShiftPage() {
                     <div className="flex flex-col justify-center items-center text-center h-full w-full space-y-6 px-4">
                         <h1 className="text-[0px] sm:text-sm text-left sm:text-center -2 sm:pl-0 text-white tracking-[0.2em] uppercase font-bold">Let The Deep Uncover Your Purpose</h1>
                         <h1 className="text-xl sm:text-5xl text-white font-bold leading-tight">Are you sure you want <br /> to add this shift?</h1>
-                        <div className="flex gap-4 flex-col sm:flex-row md:gap-6">                    
+                        <div className="flex gap-4 flex-col sm:flex-row md:gap-6">
                             <button onClick={() => setShowModal(false)} className="relative w-40 h-12 px-6 active:scale-95 transition-transform">
                                 <img src={buttonImg} alt="btn" className="absolute inset-0 w-full h-full object-fill" />
                                 <span className="relative z-10 text-white text-2xl font-bold">No</span>
@@ -224,12 +224,12 @@ export default function ShiftPage() {
                     <UserSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} onLogout={handleLogout} />
                 </div>
 
-                <div className={`fixed top-4 left-4 md:top-6 md:left-6 z-[200] transition-all duration-700 ease-out 
+                <div className={`fixed top-4 left-4 md:top-6 md:left-6 z-[200] transition-all duration-700 ease-out
                     ${isNavigationVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6 pointer-events-none'}`}>
                     <ButtonSidebar onClick={() => setIsSidebarOpen(prev => !prev)} />
                 </div>
 
-                <div className={`fixed top-4 right-4 md:top-6 md:right-6 z-[200] transition-all duration-700 ease-out 
+                <div className={`fixed top-4 right-4 md:top-6 md:right-6 z-[200] transition-all duration-700 ease-out
                     ${isNavigationVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-6 pointer-events-none'}`}>
                     <ButtonHome onClick={handleHomeClick} />
                 </div>

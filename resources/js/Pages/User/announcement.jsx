@@ -4,6 +4,7 @@ import { Head, router } from '@inertiajs/react';
 import ButtonSidebar from '@components/ButtonSidebar';
 import ButtonHome from '@components/ButtonHome';
 import buttonShiftImg from '@assets/buttons/ButtonAnchor.png';
+import ButtonHomeImg from '@assets/buttons/ButtonRegular.png'
 import UserSidebar from '@components/UserSidebar';
 import UnderwaterEffect from '@components/UnderwaterEffect';
 
@@ -13,9 +14,6 @@ import Chains2 from '@assets/others/DECORATIONS/Chains/01-Chain.png';
 import logoImg from '@assets/logo/ORB_DLOR 1.png';
 import Mobileboard from '@assets/backgrounds/02-ABoard_Mobile.png';
 
-// =========================================================================
-// MOCKED BACKEND RESPONSE (Only Quote & URL are dynamic)
-// =========================================================================
 const BACKEND_DATA = {
     passed: {
         quote: "\"Bersiaplah untuk petualangan selanjutnya di kedalaman samudra DLOR.\"",
@@ -38,7 +36,8 @@ export default function AnnouncementPage() {
     const [isUnlocking, setIsUnlocking] = useState(false);
 
     // 1. GET DYNAMIC DATA
-    const userStatus = 'passed';
+    const isLive = true;
+    const userStatus = 'failed';
     const currentData = BACKEND_DATA[userStatus] || BACKEND_DATA.failed;
 
     const toggleSidebar = () => {
@@ -71,7 +70,6 @@ export default function AnnouncementPage() {
     }, []);
 
     const styles = `
-        /* --- PHYSICS --- */
         @keyframes dropIn {
             0% { transform: translateY(-150%); opacity: 0; }
             60% { transform: translateY(5%); opacity: 1; }
@@ -86,7 +84,6 @@ export default function AnnouncementPage() {
         @keyframes chainLeftPhysics { 0%, 100% { transform: scaleY(1); } 33% { transform: scaleY(0.97); } 66% { transform: scaleY(1.03); } }
         @keyframes chainRightPhysics { 0%, 100% { transform: scaleY(1); } 33% { transform: scaleY(1.03); } 66% { transform: scaleY(0.97); } }
 
-        /* --- REVEAL ANIMATIONS --- */
         @keyframes unlockShake {
             0% { transform: translateX(0); }
             25% { transform: translateX(-5px) rotate(-5deg); }
@@ -100,7 +97,6 @@ export default function AnnouncementPage() {
             100% { opacity: 0; filter: blur(10px); transform: scale(1.2); }
         }
 
-        /* --- CRT / TYPEWRITER STYLE ANIMATION --- */
         @keyframes crtTurnOn {
             0% { transform: scale(1, 0.002); opacity: 0; filter: brightness(3); }
             30% { transform: scale(1, 0.002); opacity: 1; filter: brightness(3); }
@@ -133,7 +129,6 @@ export default function AnnouncementPage() {
             z-index: 10;
         }
 
-        /* --- CLASSES --- */
         .animate-drop { animation: dropIn 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
         .animate-sway-container { animation: sway 7s ease-in-out infinite; transform-origin: top center; }
         .animate-chain-left { animation: chainLeftPhysics 7s ease-in-out infinite; transform-origin: top center; }
@@ -163,7 +158,11 @@ export default function AnnouncementPage() {
                 <div className={`absolute top-6 right-6 z-60 transition-all duration-700 ${!inputLocked ? 'opacity-100' : 'opacity-0 translate-x-10'}`}>
                     <ButtonHome onClick={() => router.visit('/user/home')} />
                 </div>
-                <UserSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} onLogout={handleLogout} />
+                <UserSidebar
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)}
+                    onLogout={handleLogout}
+                />
 
                 {/* MAIN CONTENT */}
                 <div className="relative z-30 w-full min-h-screen flex justify-center items-center py-10">
@@ -189,132 +188,162 @@ export default function AnnouncementPage() {
                                     <img src={logoImg} className="w-[80%] max-w-[300px] grayscale" alt="" />
                                 </div>
 
-                                {/* LOCKED STATE */}
-                                {!isRevealed && (
-                                    <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center pt-[5%] px-10 text-[#092338]
-                                                     ${isUnlocking ? 'animate-dissolve' : ''}`}>
-                                        <div className={`mb-6 ${isUnlocking ? 'animate-unlock' : ''}`}>
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" className="w-16 h-16 md:w-24 md:h-24 opacity-80">
-                                                <path d="M12 2C9.243 2 7 4.243 7 7v3H6c-1.103 0-2 .897-2 2v8c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-8c0-1.103-.897-2-2-2h-1V7c0-2.757-2.243-5-5-5zm6 10v8H6v-8h12zm-9-2V7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9z"/>
-                                            </svg>
-                                        </div>
-                                        <h3 className="font-bold text-xl md:text-3xl tracking-[0.2em] mb-2 uppercase opacity-90">Confidential</h3>
-                                        <p className="text-lg font-serif text-center italic opacity-70 mb-8 max-w-[280px] sm:max-w-[320px]">
-                                            The result will seal your fate as an atlantean. Are you sure you want to see it?
-                                        </p>
-                                        <button onClick={handleReveal} disabled={isUnlocking}
-                                            className="group relative px-8 py-3 bg-[#092338] text-white rounded-full overflow-hidden shadow-lg transition-all hover:scale-105 active:scale-95">
-                                            <span className="relative z-10 font-bold tracking-widest text-sm md:text-lg flex items-center gap-2">
-                                                REVEAL RESULT
-                                            </span>
-                                        </button>
-                                    </div>
-                                )}
-
-                                {/* REVEALED STATE */}
-                                {isRevealed && (
-                                    <div className="w-full h-full flex flex-col items-center text-center text-[#092338]
-                                                    px-[10%] pt-[32%] sm:pt-[28%] md:pt-[24%] pb-[12%] animate-crt-reveal ml-1">
-
-                                        {/* 1. Header (Static) */}
-                                        <div className="relative z-10 w-full mb-4">
-                                            <h1 className="text-2xl sm:text-4xl font-bold uppercase tracking-[0.15em] drop-shadow-sm">
-                                                {userStatus === 'passed' ? 'CONGRATULATIONS' : 'ANNOUNCEMENT'}
-                                            </h1>
-                                            <div className="w-24 md:w-48 h-1 bg-[#092338] mx-auto mt-2 rounded-full opacity-80"></div>
-                                        </div>
-
-                                        {/* 2. Content Body (Template Preserved) */}
-                                        <div className="relative z-10 flex-1 flex flex-col justify-center items-center w-full space-y-4">
-                                            <div className="font-serif text-[15px] sm:text-[17px] md:text-xl leading-relaxed md:leading-loose max-w-[90%]">
-
-                                                {/* PASSED TEMPLATE */}
-                                                {userStatus === 'passed' ? (
-                                                    <div className="space-y-2 text-lg">
-                                                        <h1>Selamat! Kamu dinyatakan</h1>
-                                                        <div className="py-2 border-y border-dashed border-[#092338]/40 my-2">
-                                                            <span className="text-[#005f99] font-black text-4xl md:text-5xl tracking-wide block scale-110">
-                                                                LULUS
-                                                            </span>
-                                                        </div>
-                                                        <h1>seleksi tahap ini.</h1>
-
-                                                        {/* --- VARIABLE QUOTE HERE --- */}
-                                                        <h1 className="text-sm sm:text-sm md:text-lg italic opacity-70 mt-4">
-                                                            {currentData.quote}
-                                                        </h1>
-
-                                                        <h1 className="text-sm sm:text-sm md:text-lg italic opacity-70 mt-4">
-                                                            <a href={currentData.url} className="underline cursor-pointer">
-                                                                {currentData.url}
-                                                            </a>
-                                                        </h1>
-                                                    </div>
-
-                                                /* FAILED TEMPLATE */
-                                                ) : (
-                                                    <div className="space-y-2 text-lg">
-                                                        <h1>Mohon maaf, kamu</h1>
-                                                        <div className="py-2 border-y border-dashed border-[#092338]/40 my-2">
-                                                            <span className="text-red-700/80 font-black text-4xl md:text-5xl tracking-wide block">
-                                                                BELUM LULUS
-                                                            </span>
-                                                        </div>
-                                                        <h1>pada tahap ini.</h1>
-
-                                                        {/* --- VARIABLE QUOTE HERE --- */}
-                                                        <h1 className="text-xs sm:text-sm md:text-lg italic opacity-70 mt-4">
-                                                            {currentData.quote}
-                                                        </h1>
-                                                    </div>
-                                                )}
-
+                                {isLive ? (
+                                    <>
+                                        {/* LOCKED STATE */}
+                                        {!isRevealed && (
+                                            <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center pt-[5%] px-10 text-[#092338]
+                                                            ${isUnlocking ? 'animate-dissolve' : ''}`}>
+                                                <div className={`mb-6 ${isUnlocking ? 'animate-unlock' : ''}`}>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" className="w-16 h-16 md:w-24 md:h-24 opacity-80">
+                                                        <path d="M12 2C9.243 2 7 4.243 7 7v3H6c-1.103 0-2 .897-2 2v8c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-8c0-1.103-.897-2-2-2h-1V7c0-2.757-2.243-5-5-5zm6 10v8H6v-8h12zm-9-2V7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9z"/>
+                                                    </svg>
+                                                </div>
+                                                <h3 className="font-bold text-xl md:text-3xl tracking-[0.2em] mb-2 uppercase opacity-90">Confidential</h3>
+                                                <p className="text-lg font-serif text-center italic opacity-70 mb-8 max-w-[280px] sm:max-w-[320px]">
+                                                    The result will seal your fate as an atlantean. Are you sure you want to see it?
+                                                </p>
+                                                <button onClick={handleReveal} disabled={isUnlocking}
+                                                    className="group relative px-8 py-3 bg-[#092338] text-white rounded-full overflow-hidden shadow-lg transition-all hover:scale-105 active:scale-95">
+                                                    <span className="relative z-10 font-bold tracking-widest text-sm md:text-lg flex items-center gap-2">
+                                                        REVEAL RESULT
+                                                    </span>
+                                                </button>
                                             </div>
-                                        </div>
-
-                                        {/* 2. RENDER ACTION BUTTON (LINK) */}
-                                        {userStatus === 'passed' ? (
-                                            <>
-                                                <div className="relative z-20 w-full h-28 md:h-40 flex justify-center items-end pb-2">
-                                                    <button
-                                                        onClick={() => router.visit("/user/shift")}
-                                                        className="group relative w-64 sm:w-80 md:w-96 h-28 md:h-40 transition-all duration-300 hover:scale-105 active:scale-95"
-                                                    >
-                                                        <img
-                                                            src={buttonShiftImg}
-                                                            alt="Large Action Button"
-                                                            className="absolute inset-0 w-full h-full object-contain drop-shadow-[0_6px_8px_rgba(0,0,0,0.3)] scale-110"
-                                                        />
-                                                        <div className="absolute inset-0 flex items-center justify-center gap-2 pt-1">
-                                                            <span className="font-bold text-xl sm:text-2xl md:text-3xl text-white mb-3 drop-shadow-md group-hover:text-cyan-100 transition-colors">
-                                                                SELECT SHIFT
-                                                            </span>
-                                                        </div>
-                                                    </button>
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <div className="relative z-20 w-full h-28 md:h-40 flex justify-center items-end pb-2">
-                                                    <button
-                                                        onClick={() => router.visit("/user/home")}
-                                                        className="group relative w-64 sm:w-80 md:w-96 h-28 md:h-40 transition-all duration-300 hover:scale-105 active:scale-95"
-                                                    >
-                                                        <img
-                                                            src={buttonShiftImg}
-                                                            alt="Large Action Button"
-                                                            className="absolute inset-0 w-full h-full object-contain drop-shadow-[0_6px_8px_rgba(0,0,0,0.3)] scale-110"
-                                                        />
-                                                        <div className="absolute inset-0 flex items-center justify-center gap-2 pt-1">
-                                                            <span className="font-bold text-xl sm:text-2xl md:text-3xl text-white mb-3 drop-shadow-md group-hover:text-cyan-100 transition-colors">
-                                                                HOME
-                                                            </span>
-                                                        </div>
-                                                    </button>
-                                                </div>
-                                            </>
                                         )}
-                                    </div>
+
+                                        {/* REVEALED STATE */}
+                                        {isRevealed && (
+                                            <div className="w-full h-full flex flex-col items-center text-center text-[#092338]
+                                                            px-[10%] pt-[32%] sm:pt-[28%] md:pt-[24%] pb-[12%] animate-crt-reveal ml-1">
+
+                                                {/* 1. Header (Static) */}
+                                                <div className="relative z-10 w-full mb-4">
+                                                    <h1 className="text-2xl sm:text-4xl font-bold uppercase tracking-[0.15em] drop-shadow-sm">
+                                                        {userStatus === 'passed' ? 'CONGRATULATIONS' : 'ANNOUNCEMENT'}
+                                                    </h1>
+                                                    <div className="w-24 md:w-48 h-1 bg-[#092338] mx-auto mt-2 rounded-full opacity-80"></div>
+                                                </div>
+
+                                                {/* 2. Content Body (Template Preserved) */}
+                                                <div className="relative z-10 flex-1 flex flex-col justify-center items-center w-full space-y-4">
+                                                    <div className="font-serif text-[15px] sm:text-[17px] md:text-xl leading-relaxed md:leading-loose max-w-[90%]">
+
+                                                        {/* PASSED TEMPLATE */}
+                                                        {userStatus === 'passed' ? (
+                                                            <div className="space-y-2 text-lg">
+                                                                <h1>Selamat! Kamu dinyatakan</h1>
+                                                                <div className="py-2 border-y border-dashed border-[#092338]/40 my-2">
+                                                                    <span className="text-[#005f99] font-black text-4xl md:text-5xl tracking-wide block scale-110">
+                                                                        LULUS
+                                                                    </span>
+                                                                </div>
+                                                                <h1>seleksi tahap ini.</h1>
+
+                                                                {/* --- VARIABLE QUOTE HERE --- */}
+                                                                <h1 className="text-sm sm:text-sm md:text-lg italic opacity-70 mt-4">
+                                                                    {currentData.quote}
+                                                                </h1>
+
+                                                                <h1 className="text-sm sm:text-sm md:text-lg italic opacity-70 mt-4">
+                                                                    <a href={currentData.url} className="underline cursor-pointer">
+                                                                        {currentData.url}
+                                                                    </a>
+                                                                </h1>
+                                                            </div>
+
+                                                        /* FAILED TEMPLATE */
+                                                        ) : (
+                                                            <div className="space-y-2 text-lg">
+                                                                <h1>Mohon maaf, kamu</h1>
+                                                                <div className="py-2 border-y border-dashed border-[#092338]/40 my-2">
+                                                                    <span className="text-red-700/80 font-black text-4xl md:text-5xl tracking-wide block">
+                                                                        BELUM LULUS
+                                                                    </span>
+                                                                </div>
+                                                                <h1>pada tahap ini.</h1>
+
+                                                                {/* --- VARIABLE QUOTE HERE --- */}
+                                                                <h1 className="text-xs sm:text-sm md:text-lg italic opacity-70 mt-4">
+                                                                    {currentData.quote}
+                                                                </h1>
+                                                            </div>
+                                                        )}
+
+                                                    </div>
+                                                </div>
+
+                                                {/* 2. RENDER ACTION BUTTON (LINK) */}
+                                                {userStatus === 'passed' ? (
+                                                    <>
+                                                        <div className="relative z-20 w-full h-28 md:h-40 flex justify-center items-end pb-2">
+                                                            <button
+                                                                onClick={() => router.visit("/user/shift")}
+                                                                className="group relative w-64 sm:w-80 md:w-96 h-28 md:h-40 transition-all duration-300 hover:scale-105 active:scale-95"
+                                                            >
+                                                                <img
+                                                                    src={buttonShiftImg}
+                                                                    alt="Large Action Button"
+                                                                    className="absolute inset-0 w-full h-full object-contain drop-shadow-[0_6px_8px_rgba(0,0,0,0.3)] scale-110"
+                                                                />
+                                                                <div className="absolute inset-0 flex items-center justify-center gap-2 pt-1">
+                                                                    <span className="font-bold text-xl sm:text-2xl md:text-3xl text-white mb-3 drop-shadow-md group-hover:text-cyan-100 transition-colors">
+                                                                        SELECT SHIFT
+                                                                    </span>
+                                                                </div>
+                                                            </button>
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div className="relative z-20 w-full h-28 md:h-40 flex justify-center items-end pb-2">
+                                                            <button
+                                                                onClick={() => router.visit("/user/home")}
+                                                                className="group relative w-64 sm:w-80 md:w-96 h-28 md:h-40 transition-all duration-300 hover:scale-105 active:scale-95"
+                                                            >
+                                                                <img
+                                                                    src={ButtonHomeImg}
+                                                                    alt="Large Action Button"
+                                                                    className="absolute inset-0 w-full h-full object-contain drop-shadow-[0_6px_8px_rgba(0,0,0,0.3)] scale-110"
+                                                                />
+                                                                <div className="absolute inset-0 flex items-center justify-center gap-2 pt-1">
+                                                                    <span className="font-bold text-xl sm:text-2xl md:text-3xl text-white mb-3 drop-shadow-md group-hover:text-cyan-100 transition-colors">
+                                                                        HOME
+                                                                    </span>
+                                                                </div>
+                                                            </button>
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        )}
+                                    </>
+                                ):(
+                                    <>
+                                        <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center pt-[5%] px-10 text-[#092338]`}>
+                                            <h1 className="font-bold text-xl text-center md:text-3xl tracking-[0.2em] mb-2 uppercase opacity-90 max-w-[400px]">
+                                                There's nothing here yet
+                                            </h1>
+                                            <h1 className="text-lg font-serif text-center italic opacity-70 max-w-[280px] sm:max-w-[320px]">
+                                                Check out later next time for the latest information!
+                                            </h1>
+                                            <button
+                                                onClick={() => router.visit("/user/home")}
+                                                className="group relative w-64 sm:w-80 md:w-96 h-28 md:h-40 transition-all duration-300 hover:scale-105 active:scale-95"
+                                            >
+                                                <img
+                                                    src={ButtonHomeImg}
+                                                    alt="Large Action Button"
+                                                    className="absolute inset-0 w-full h-full object-contain drop-shadow-[0_6px_8px_rgba(0,0,0,0.3)] scale-110"
+                                                />
+                                                <div className="absolute inset-0 flex items-center justify-center gap-2 pt-1">
+                                                    <span className="font-bold text-xl sm:text-2xl md:text-3xl text-white mb-3 drop-shadow-md group-hover:text-cyan-100 transition-colors">
+                                                        HOME
+                                                    </span>
+                                                </div>
+                                            </button>
+                                        </div>
+                                    </>
                                 )}
                             </div>
                         </div>

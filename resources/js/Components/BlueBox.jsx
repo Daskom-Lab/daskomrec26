@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
+
+// --- ASSETS ---
 import PCboard from '@assets/backgrounds/01-ABoard_PC.png';
 import Mobileboard from '@assets/backgrounds/02-ABoard_Mobile.png';
-import btnCloseXImg from '@assets/buttons/07-Button.png';
+import Chains1 from '@assets/others/DECORATIONS/Chains/01-Chain.png';
+import Chains2 from '@assets/others/DECORATIONS/Chains/01-Chain.png';
 
 export default function BlueModalWrapper({ isOpen, onClose, children, className = "" }) {
     const [shouldRender, setShouldRender] = useState(false);
@@ -10,61 +13,98 @@ export default function BlueModalWrapper({ isOpen, onClose, children, className 
     useEffect(() => {
         if (isOpen) {
             setShouldRender(true);
-
-            const timer = setTimeout(() => {
+            const frame = requestAnimationFrame(() => {
                 setAnimateTrigger(true);
-            }, 20);
-
-            return () => clearTimeout(timer);
-
+            });
+            return () => cancelAnimationFrame(frame);
         } else {
             setAnimateTrigger(false);
-
             const timer = setTimeout(() => {
                 setShouldRender(false);
-            }, 300);
-
+            }, 1000);
             return () => clearTimeout(timer);
         }
     }, [isOpen]);
 
+    const styles = `
+        @keyframes dropIn {
+            0% { transform: translateY(-150%); opacity: 0; }
+            60% { transform: translateY(5%); opacity: 1; }
+            80% { transform: translateY(-5%); }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes pullUp {
+            0% { transform: translateY(0); opacity: 1; }
+            20% { transform: translateY(5%); }
+            100% { transform: translateY(-150%); opacity: 0; }
+        }
+        @keyframes sway {
+            0%, 100% { transform: rotate(0deg); }
+            33% { transform: rotate(1.5deg); }
+            66% { transform: rotate(-1.5deg); }
+        }
+        @keyframes chainLeftPhysics { 0%, 100% { transform: scaleY(1); } 33% { transform: scaleY(0.97); } 66% { transform: scaleY(1.03); } }
+        @keyframes chainRightPhysics { 0%, 100% { transform: scaleY(1); } 33% { transform: scaleY(1.03); } 66% { transform: scaleY(0.97); } }
+
+        .animate-drop { animation: dropIn 1s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 1 !important; }
+        .animate-exit { animation: pullUp 1s cubic-bezier(0.5, -0.5, 0.5, 1) forwards; }
+        .animate-sway-container { animation: sway 7s ease-in-out infinite; transform-origin: top center; }
+        .animate-chain-left { animation: chainLeftPhysics 7s ease-in-out infinite; transform-origin: top center; }
+        .animate-chain-right { animation: chainRightPhysics 7s ease-in-out infinite; transform-origin: top center; }
+    `;
+
     if (!shouldRender) return null;
 
     return (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <style>{styles}</style>
 
             {/* Backdrop */}
             <div
-                className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ease-out
+                className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-1500
                 ${animateTrigger ? 'opacity-100' : 'opacity-0'}`}
                 onClick={onClose}
             />
 
-            <div
-                className={`relative z-10 w-full max-w-[350px] sm:max-w-[900px] transition-all duration-300 cubic-bezier(0.34, 1.56, 0.64, 1) transform origin-center
-                ${animateTrigger ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
-            >
+            {/* Main Wrapper */}
+            <div className={`relative z-10 w-full max-w-[350px] sm:max-w-[900px] opacity-0
+                ${animateTrigger ? 'animate-drop' : 'animate-exit'}`}>
 
-                {/* Mobile layout */}
-                <div
-                    className="block sm:hidden w-full aspect-3/4 bg-contain bg-center bg-no-repeat flex-col"
-                    style={{ backgroundImage: `url(${Mobileboard})` }}
-                >
-                    <div className={`w-full h-full p-8 pt-24 pb-12 overflow-y-auto no-scrollbar ${className}`}>
-                        {children}
+                <div className="w-full h-full animate-sway-container relative">
+
+                    {/* Chains - Added pointer-events-none so they don't block clicks */}
+                    <div className="absolute -top-80 sm:-top-70 left-[15%] h-100 z-0 animate-chain-left pointer-events-none">
+                        <img src={Chains1} alt="Chain Left" className="w-full h-full object-contain" />
+                    </div>
+                    <div className="absolute -top-80 sm:-top-70 right-[15%] h-100 z-0 animate-chain-right pointer-events-none">
+                        <img src={Chains2} alt="Chain Right" className="w-full h-full object-contain" />
+                    </div>
+
+                    {/* Board Content - Added pointer-events-auto to ensure children are clickable */}
+                    <div className="relative z-10 drop-shadow-2xl pointer-events-auto">
+
+                        {/* Mobile layout */}
+                        <div
+                            className="block sm:hidden w-full aspect-3/4 bg-contain bg-center bg-no-repeat flex-col"
+                            style={{ backgroundImage: `url(${Mobileboard})` }}
+                        >
+                            <div className={`w-full h-full p-8 pt-24 pb-12 overflow-y-auto no-scrollbar ${className}`}>
+                                {children}
+                            </div>
+                        </div>
+
+                        {/* Desktop layout */}
+                        <div
+                            className="hidden sm:block w-full aspect-4/3 bg-contain bg-center bg-no-repeat flex-col"
+                            style={{ backgroundImage: `url(${PCboard})` }}
+                        >
+                            <div className={`w-full h-full p-16 pt-24 overflow-y-auto custom-scrollbar ${className}`}>
+                                {children}
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-
-                {/* Desktop layout */}
-                <div
-                    className="hidden sm:block w-full aspect-4/3 bg-contain bg-center bg-no-repeat flex-col"
-                    style={{ backgroundImage: `url(${PCboard})` }}
-                >
-                    <div className={`w-full h-full p-16 pt-24 overflow-y-auto custom-scrollbar ${className}`}>
-                        {children}
-                    </div>
-                </div>
-
             </div>
         </div>
     );

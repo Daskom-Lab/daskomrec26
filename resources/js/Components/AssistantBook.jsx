@@ -5,12 +5,15 @@ import coverImage from '@assets/cards/books/FrontCover.png';
 import backCoverImage from '@assets/cards/books/BackCover.png';
 
 const TOTAL_PAGES = 89;
-const PATH_FILTERED = 'https://ik.imagekit.io/kyla08/foto-asisten-filter'; 
+const PATH_FILTERED = 'https://ik.imagekit.io/kyla08/foto-asisten-filter';
 const PATH_NORMAL   = 'https://ik.imagekit.io/kyla08/foto-asisten-polos';
 
 const SEPIA_COLOR = '#f2e8d5';
-const SIZE_FILTERED = '145% 115%'; 
-const SIZE_NORMAL   = '110% 110%'; 
+const SIZE_FILTERED = '141% 115%';
+const SIZE_NORMAL   = '101% 110%';
+
+const CROP_WIDTH = '145%';
+const CROP_HEIGHT = '115%';
 
 const COVER_WIDTH = '210%';
 const COVER_HEIGHT = '115%';
@@ -18,41 +21,43 @@ const COVER_HEIGHT = '115%';
 const MAX_ROTATION = 5;
 const BUBBLE_COUNT = 12;
 
-  const Page = forwardRef((props, ref) => {
-  const isRightPage = props.number % 2 !== 0; 
+const FILTERED = false;
+
+const Page = forwardRef((props, ref) => {
+  const isRightPage = props.number % 2 !== 0;
   const currentBgSize = props.isFiltered ? SIZE_FILTERED : SIZE_NORMAL;
-  
+
   return (
     <div className="page" ref={ref} data-density="soft">
-      <div 
+      <div
         className="relative w-full h-full overflow-hidden"
         style={{
            backgroundColor: SEPIA_COLOR,
            border: 'none',
         }}
       >
-        <div 
+        <div
           className="absolute inset-0 w-full h-full"
           style={{
             backgroundImage: `url(${props.contentImage})`,
-            backgroundSize: currentBgSize, 
-            backgroundPosition: 'center center', 
+            backgroundSize: currentBgSize,
+            backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat',
-            boxShadow: isRightPage 
-                ? 'inset 15px 0 20px -10px rgba(0,0,0,0.7)' 
-                : 'inset -15px 0 20px -10px rgba(0,0,0,0.7)' 
+            boxShadow: isRightPage
+                ? 'inset 15px 0 20px -10px rgba(0,0,0,0.7)'
+                : 'inset -15px 0 20px -10px rgba(0,0,0,0.7)'
           }}
         />
 
-        <div 
-            className="absolute inset-0 pointer-events-none" 
-            style={{ 
-              boxShadow: isRightPage 
-                ? 'inset -15px 0 20px -10px rgba(0,0,0,0.7)' 
-                : 'inset 15px 0 20px -10px rgba(0,0,0,0.7)' 
-            }} 
+        <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              boxShadow: isRightPage
+                ? 'inset -15px 0 20px -10px rgba(0,0,0,0.7)'
+                : 'inset 15px 0 20px -10px rgba(0,0,0,0.7)'
+            }}
         />
-        
+
         <span className="absolute bottom-4 right-4 text-[10px] text-gray-500 font-sans opacity-70">
           {props.number}
         </span>
@@ -69,9 +74,9 @@ const Cover = forwardRef((props, ref) => {
         className="relative w-full h-full"
         style={{
           backgroundImage: `url(${props.bgImage})`,
-          backgroundSize: `${COVER_WIDTH} ${COVER_HEIGHT}`, 
+          backgroundSize: `${COVER_WIDTH} ${COVER_HEIGHT}`,
           backgroundPosition: 'center',
-          boxShadow: 'inset 0 0 15px rgba(0,0,0,0)', 
+          boxShadow: 'inset 0 0 15px rgba(0,0,0,0)',
           filter: `
                 brightness(1.1)
                 contrast(0.9)
@@ -88,13 +93,13 @@ const Cover = forwardRef((props, ref) => {
 });
 Cover.displayName = 'Cover';
 
-const AssistantBook = forwardRef(({ 
-    onPageChange, 
+const AssistantBook = forwardRef(({
+    onPageChange,
     width = 400,
     height = 600,
-    initialFilterState = false //changes foto filter state
+    initialFilterState = FILTERED //changes foto filter state
 }, ref) => {
-    
+
   const bookRef = useRef(null);
   const containerRef = useRef(null);
   const pages = Array.from({ length: TOTAL_PAGES }, (_, i) => i + 1);
@@ -104,7 +109,7 @@ const AssistantBook = forwardRef(({
   const [clicked, setClicked] = useState(false);
 
   // --- LOGIKA FILTER (Controlled by Prop or State) ---
-  const [isFiltered, setIsFiltered] = useState(initialFilterState); 
+  const [isFiltered, setIsFiltered] = useState(initialFilterState);
   useEffect(() => {
     setIsFiltered(initialFilterState);
   }, [initialFilterState]);
@@ -130,7 +135,7 @@ const AssistantBook = forwardRef(({
   // --- 3D INTERACTION (TILT) ---
   const handlePointerMove = (e) => {
     if (!containerRef.current) return;
-    if (e.buttons === 1) return; 
+    if (e.buttons === 1) return;
 
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -166,11 +171,25 @@ const AssistantBook = forwardRef(({
       const edge = Math.floor(Math.random() * 4);
       let left, top;
       switch (edge) {
-        case 0: left = Math.random() * 100; top = -10; break; 
-        case 1: left = 105; top = Math.random() * 100; break; 
-        case 2: left = Math.random() * 100; top = 105; break; 
-        case 3: left = -10; top = Math.random() * 100; break; 
-        default: left = 0; top = 0;
+        case 0:
+            left = Math.random() * 100;
+            top = 0;
+            break;
+        case 1:
+            left = 100;
+            top = Math.random() * 100;
+            break;
+        case 2:
+            left = Math.random() * 100;
+            top = 100;
+            break;
+        case 3:
+            left = 0;
+            top = Math.random() * 100;
+            break;
+        default:
+            left = 0;
+            top = 0;
       }
       return {
         id: Date.now() + i,
@@ -186,7 +205,7 @@ const AssistantBook = forwardRef(({
 
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center">
-
+      {/* SVG FILTERS for Wet Effect */}
       <svg style={{ display: 'none' }}>
         <defs>
           <filter id="wet-glimmer">
@@ -220,16 +239,16 @@ const AssistantBook = forwardRef(({
             pointer-events: none;
         }
         .book-inner {
-          z-index: 10; 
+          z-index: 10;
           transform: rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--scale));
           transition: transform 0.2s cubic-bezier(0.1, 0.4, 0.3, 1);
           will-change: transform;
-          transform-style: preserve-3d; 
+          transform-style: preserve-3d;
         }
 
         /* WET EFFECT LAYERS */
         .wet-overlay {
-          opacity: 0.6; 
+          opacity: 0.6;
           mix-blend-mode: hard-light;
           pointer-events: none;
           filter: url(#wet-glimmer) brightness(1.1) contrast(1.2);
@@ -256,7 +275,7 @@ const AssistantBook = forwardRef(({
         }
       `}</style>
 
-      <div 
+      <div
         className="relative"
         ref={containerRef}
         onPointerMove={handlePointerMove}
@@ -264,12 +283,12 @@ const AssistantBook = forwardRef(({
         onPointerDown={handlePointerDown}
       >
         <div className="book-wrapper relative">
-          
+
           {/* 1. Shadow Layer */}
           <div className="book-shadow" />
 
           {/* 2. Book Inner (The tilting part) */}
-          <div 
+          <div
             className="book-inner relative"
             style={{ '--scale': clicked ? 0.98 : 1 }}
           >
@@ -295,12 +314,12 @@ const AssistantBook = forwardRef(({
                 {pages.map((pageNum) => {
                   const basePath = isFiltered ? PATH_FILTERED : PATH_NORMAL;
                   const fileName = isFiltered ? `${pageNum}.png` : `${pageNum}_dlor.png`;
-                  
+
                   return (
-                    <Page 
-                      key={pageNum} 
-                      number={pageNum} 
-                      contentImage={`${basePath}/${fileName}?tr=w-400,q-80,f-auto`} 
+                    <Page
+                      key={pageNum}
+                      number={pageNum}
+                      contentImage={`${basePath}/${fileName}?tr=w-400,q-80,f-auto`}
                       isFiltered={isFiltered}
                     />
                   );
@@ -311,11 +330,11 @@ const AssistantBook = forwardRef(({
             {/* THE WET LAYERS */}
             <div className="wet-overlay absolute inset-0 z-40 rounded-sm bg-white/5" />
             <div className="wet-glint absolute inset-0 z-50 rounded-sm" />
-            
+
           </div>
-          
+
           {/* 3. Bubbles Layer */}
-          <div className="absolute inset-0 pointer-events-none z-[1000]">
+          <div className="absolute inset-0 pointer-events-none z-1000">
             {bubbles.map((b) => (
               <div
                 key={b.id}

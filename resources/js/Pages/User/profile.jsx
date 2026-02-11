@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import { Head, router } from '@inertiajs/react';
 
 import UnderwaterEffect from '@components/UnderwaterEffect';
-import background from '@assets/backgrounds/AssistantBackground.png';
+import Background from '@assets/backgrounds/AssistantBackground.png';
 import ButtonSidebar from '@components/ButtonSidebar';
 import ButtonHome from '@components/ButtonHome';
 import UserSidebar from '@components/UserSidebar';
@@ -150,7 +150,7 @@ export default function Home() {
 
     return (
         <>
-            <Head title="Home" />
+            <Head title="Profile" />
             <style>{styles}</style>
 
             <div className="relative w-full min-h-screen overflow-hidden">
@@ -165,20 +165,20 @@ export default function Home() {
                 <div className="absolute inset-0 cold-blue-filter">
                     <img
                         ref={backgroundRef}
-                        src={background}
+                        src={Background}
                         alt="background"
                         onLoad={() => setImageLoaded(true)}
                         className="w-full h-full object-cover pointer-events-none"
                         style={getBackgroundStyle()}
                     />
                 </div>
-        
-        
+
+
                 {/* Blue opacity overlay */}
                 <div
                     className="absolute inset-0 pointer-events-none transition-opacity duration-1000"
                     style={{
-                        background: 'rgba(2, 99, 196, 0.2)', // deep blue
+                        background: 'rgba(2, 99, 196, 0.2)' // deep blue
                     }}
                 />
 

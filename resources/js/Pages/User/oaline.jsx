@@ -8,7 +8,7 @@ import UnderwaterEffect from '@components/UnderwaterEffect';
 
 // --- ASSETS ---
 import Background3 from '@assets/backgrounds/Background3.png';
-import logoImg from '@assets/logo/ORB_DLOR 1.png'; // Used as BG Watermark
+import logoImg from '@assets/logo/ORB_DLOR 1.png';
 import PCboard from '@assets/backgrounds/01-ABoard_PC.png';
 import Mobileboard from '@assets/backgrounds/02-ABoard_Mobile.png';
 import qrCodeImg from '@assets/logo/Code.jpeg';
@@ -42,7 +42,7 @@ export default function OaLinePage() {
 
     useEffect(() => {
         const boardTimer = setTimeout(() => setShowBoard(true), 100);
-        const unlockTimer = setTimeout(() => setInputLocked(false), 1200);
+        const unlockTimer = setTimeout(() => setInputLocked(false), 800);
         return () => {
             clearTimeout(boardTimer);
             clearTimeout(unlockTimer);
@@ -72,7 +72,7 @@ export default function OaLinePage() {
 
     return (
         <>
-            <Head title="OA Line Information" />
+            <Head title="OA Line" />
             <style>{styles}</style>
 
             <div className="relative w-full min-h-screen overflow-hidden text-white font-caudex bg-slate-900">
@@ -80,7 +80,7 @@ export default function OaLinePage() {
                 {/* --- BACKGROUND LAYER --- */}
                 <div className="absolute inset-0 z-0">
                     <img src={Background3} alt="Background" className="w-full h-full object-cover brightness-[0.6] blur-sm scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-cyan-900/30" />
+                    <div className="absolute inset-0 bg-linear-to-t from-slate-900 via-slate-900/50 to-cyan-900/30" />
                 </div>
                 <div className="absolute inset-0 z-10 pointer-events-none mix-blend-screen opacity-50">
                     <UnderwaterEffect />
@@ -123,7 +123,6 @@ export default function OaLinePage() {
                                     className="hidden sm:block absolute inset-0 w-full h-full object-contain pointer-events-none"
                                 />
 
-                                {/* LOGO AS BACKGROUND WATERMARK (The Change) */}
                                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.08] scale-110">
                                     <img src={logoImg} className="w-[80%] max-w-[300px] grayscale" alt="Orb Background" />
                                 </div>

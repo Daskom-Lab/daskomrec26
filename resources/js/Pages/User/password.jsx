@@ -393,8 +393,11 @@ export default function ChangePassword() {
                 />
 
                 <div
-                    className="fixed inset-0 z-60 pointer-events-none bg-[#0a2a4a] transition-opacity duration-1000"
-                    style={{ opacity: isLoggingOut ? 1 : 0 }}
+                    className="fixed inset-0 z-70 pointer-events-none transition-opacity duration-1000"
+                    style={{
+                        background: 'linear-gradient(to bottom, #0a2a4a, #0c365b)',
+                        opacity: isLoggingOut ? 1 : 0
+                    }}
                 />
 
                 {/* === FOOTER === */}

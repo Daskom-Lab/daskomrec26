@@ -327,8 +327,13 @@ export default function Assistants() {
                 {/* === OVERLAYS === */}
                 <UserSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} onLogout={handleLogout} />
 
-                <div className="fixed inset-0 z-70 pointer-events-none transition-opacity duration-1000"
-                     style={{ background: 'linear-gradient(to bottom, #0a2a4a, #0c365b)', opacity: isLoggingOut ? 1 : 0 }} />
+                <div
+                    className="fixed inset-0 z-70 pointer-events-none transition-opacity duration-1000"
+                    style={{
+                        background: 'linear-gradient(to bottom, #0a2a4a, #0c365b)',
+                        opacity: isLoggingOut ? 1 : 0
+                    }}
+                />
 
                 {inputLocked && <div className="fixed inset-0 z-80 pointer-events-auto" />}
             </div>
