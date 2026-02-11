@@ -8,6 +8,7 @@ import ButtonHome from '@components/ButtonHome';
 import UserSidebar from '@components/UserSidebar';
 import CoresMap from '@components/CoresMap';
 import UnlockDialog from '@components/UnlockDialog';
+import Rumput from '@assets/others/DECORATIONS/Seaweed & Coral Reefs/32.png';
 
 const CLUE = {
     xurith: 'Look underneath',
@@ -137,6 +138,21 @@ export default function Cores() {
         .cold-blue-filter {
             filter: brightness(1.1) contrast(1.2) saturate(1) hue-rotate(15deg) sepia(0);
         }
+        /* --- ANIMASI RUMPUT --- */
+        @keyframes swaySeaweed {
+            0%, 100% { transform: rotate(-4deg); }
+            50% { transform: rotate(4deg); }
+        }
+        
+        .seaweed-anim-1 {
+            animation: swaySeaweed 5s ease-in-out infinite;
+            transform-origin: bottom center;
+        }
+        
+        .seaweed-anim-2 {
+            animation: swaySeaweed 7s ease-in-out infinite reverse; /* Gerakan berlawanan & lebih lambat */
+            transform-origin: bottom center;
+        }
     `;
 
     const getBackgroundStyle = () => {
@@ -198,6 +214,41 @@ export default function Cores() {
 
                 <UnderwaterEffect isLoaded={showImage && imageLoaded} isZooming={false} />
 
+                {/* Seaweed Decorations */}
+                <div className={`absolute inset-0 z-20 pointer-events-none hidden md:block transition-opacity duration-1000 ${isMapPlacing || isExiting ? 'opacity-0' : 'opacity-100'}`}>
+                    <div className="absolute bottom-[-5%] left-[-10%] w-[45vw] max-w-[620px] rotate-20 origin-bottom]">
+                        <img 
+                            src={Rumput} 
+                            alt="Seaweed Left Back"
+                            className="w-full h-auto seaweed-anim-2 brightness-75"
+                        />
+                    </div>
+                    <div className="absolute bottom-[-10%] left-[-10%] w-[45vw] max-w-[580px] rotate-20 origin-bottom">
+                        <img 
+                            src={Rumput} 
+                            alt="Seaweed Left Front"
+                            className="w-full h-auto seaweed-anim-1"
+                        />
+                    </div>
+
+                    <div className="absolute bottom-0 right-0 w-[40vw] h-[40vh] scale-x-[-1]">
+                         <div className="absolute bottom-[-10%] left-[-40%] w-[45vw] max-w-[620px] rotate-20 origin-bottom">
+                            <img 
+                                src={Rumput} 
+                                alt="Seaweed Right Back"
+                                className="w-full h-auto seaweed-anim-2 opacity-80 brightness-75"
+                            />
+                        </div>
+                        <div className="absolute bottom-[-25%] left-[-30%] w-[45vw] max-w-[580px] rotate-20 origin-bottom">
+                            <img 
+                                src={Rumput} 
+                                alt="Seaweed Right Front"
+                                className="w-full h-auto seaweed-anim-1 opacity-100"
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/30 pointer-events-none transition-opacity duration-1000" style={{ opacity: showImage && imageLoaded ? 1 : 0 }} />
 
                 <div className={`absolute top-6 left-6 z-60 transition-all duration-700 ease-out ${!inputLocked && !isLoggingOut ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6 pointer-events-none'}`}>
@@ -221,6 +272,18 @@ export default function Cores() {
                 <div className="fixed inset-0 z-70 pointer-events-none transition-opacity duration-1000" style={{ background: 'linear-gradient(to bottom, #0a2a4a, #0c365b)', opacity: isLoggingOut ? 1 : 0 }} />
 
                 {inputLocked && <div className="fixed inset-0 z-80 pointer-events-auto" />}
+
+                {/* === FOOTER === */}
+                <div className={`
+                    absolute bottom-4 w-full text-center z-40 pointer-events-none
+                    transition-opacity duration-1000 delay-500
+                    ${isMapPlacing || isExiting ? 'opacity-0' : 'opacity-100'}
+                `}>
+                    <p className="text-white font-caudex text-[10px] md:text-xl tracking-widest drop-shadow-md">
+                        @Atlantis.DLOR2026. All Right Served
+                    </p>
+                </div>
+
             </div>
         </>
     );

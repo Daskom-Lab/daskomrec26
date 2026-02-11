@@ -9,6 +9,7 @@ import AssistantBook from '@components/AssistantBook';
 import BookControls from '@components/BookControls';
 
 import background from '@assets/backgrounds/AssistantBackground.png';
+import Rumput from '@assets/others/DECORATIONS/Seaweed & Coral Reefs/32.png';
 
 export default function Assistants() {
     const backgroundRef = useRef(null);
@@ -28,7 +29,7 @@ export default function Assistants() {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [isExiting, setIsExiting] = useState(false);
 
-useEffect(() => {
+    useEffect(() => {
         const handleResize = () => {
             const w = window.innerWidth;
             const h = window.innerHeight;
@@ -153,6 +154,22 @@ useEffect(() => {
         .animate-float {
             animation: floatBook 6s ease-in-out infinite;
         }
+        
+                /* --- ANIMASI RUMPUT --- */
+        @keyframes swaySeaweed {
+            0%, 100% { transform: rotate(-4deg); }
+            50% { transform: rotate(4deg); }
+        }
+        
+        .seaweed-anim-1 {
+            animation: swaySeaweed 5s ease-in-out infinite;
+            transform-origin: bottom center;
+        }
+        
+        .seaweed-anim-2 {
+            animation: swaySeaweed 7s ease-in-out infinite reverse; /* Gerakan berlawanan & lebih lambat */
+            transform-origin: bottom center;
+        }
     `;
 
     const getBackgroundStyle = () => {
@@ -214,6 +231,40 @@ useEffect(() => {
                 <UnderwaterEffect isLoaded={showImage && imageLoaded} isZooming={false} />
                 <div className="absolute inset-0 z-20 bg-linear-to-b from-black/25 via-transparent to-black/30 pointer-events-none transition-opacity duration-1000" style={{ opacity: showImage && imageLoaded ? 1 : 0 }} />
 
+                {/* Seaweed Decorations */}
+                <div className={`absolute inset-0 z-20 pointer-events-none hidden md:block transition-opacity duration-1000 ${isBookPlacing || isExiting ? 'opacity-0' : 'opacity-100'}`}>
+                    <div className="absolute bottom-[-5%] left-[-10%] w-[45vw] max-w-[620px] rotate-20 origin-bottom]">
+                        <img 
+                            src={Rumput} 
+                            alt="Seaweed Left Back"
+                            className="w-full h-auto seaweed-anim-2 brightness-75"
+                        />
+                    </div>
+                    <div className="absolute bottom-[-10%] left-[-10%] w-[45vw] max-w-[580px] rotate-20 origin-bottom">
+                        <img 
+                            src={Rumput} 
+                            alt="Seaweed Left Front"
+                            className="w-full h-auto seaweed-anim-1"
+                        />
+                    </div>
+
+                    <div className="absolute bottom-0 right-0 w-[40vw] h-[40vh] scale-x-[-1]">
+                         <div className="absolute bottom-[-10%] left-[-40%] w-[45vw] max-w-[620px] rotate-20 origin-bottom">
+                            <img 
+                                src={Rumput} 
+                                alt="Seaweed Right Back"
+                                className="w-full h-auto seaweed-anim-2 opacity-80 brightness-75"
+                            />
+                        </div>
+                        <div className="absolute bottom-[-25%] left-[-30%] w-[45vw] max-w-[580px] rotate-20 origin-bottom">
+                            <img 
+                                src={Rumput} 
+                                alt="Seaweed Right Front"
+                                className="w-full h-auto seaweed-anim-1 opacity-100"
+                            />
+                        </div>
+                    </div>
+                </div>
 
                 {/* === TOP SECTION: TITLE & NAVIGATION === */}
                 <div className="relative z-50 w-full shrink-0 pt-0 md:pt-6 pb-2 px-4 flex flex-col items-center justify-center pointer-events-none">
