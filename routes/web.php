@@ -8,6 +8,8 @@ use App\Http\Controllers\CaasstageController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\PasswordController;
+use App\Http\Controllers\User\ShiftController as UserShiftController;
+use App\Http\Controllers\User\AnnouncementController;
 use Illuminate\Support\Facades\Route;
 
 Route::resource('shifts', ShiftController::class)->except(['index']);
@@ -49,13 +51,10 @@ Route::middleware('auth')->group(function (){
         return inertia('User/oaline');
     });
 
-    Route::get('/user/shift', function () {
-        return inertia('User/shift');
-    });
+    Route::get('/user/shift', [UserShiftController::class, 'index'])->name('user.shift.index');
+    Route::post('/user/shift', [UserShiftController::class, 'store'])->name('user.shift.store');
 
-    Route::get('/user/announcement', function () {
-        return inertia('User/announcement');
-    });
+    Route::get('/user/announcement', [AnnouncementController::class, 'index'])->name('user.announcement');
 
 Route::get('/admin/home', [HomeController::class, 'index']);
 Route::put('/admin/home/current-stage', [HomeController::class, 'setCurrentStage']);
@@ -65,6 +64,7 @@ Route::put('/admin/home/messages/{stage}', [HomeController::class, 'updateStageM
 Route::get('/admin/shift', [ShiftController::class, 'index']);
 
 Route::get('/admin/plottingan', [PlottinganController::class, 'index']);
+Route::get('/admin/plottingan/export', [PlottinganController::class, 'export'])->name('plottingan.export');
 Route::get('/admin/plottingan/shift/{shiftId}', [PlottinganController::class, 'shiftUsers']);
 
 Route::get('/admin/configuration', [StageController::class, 'index']);
@@ -73,6 +73,9 @@ Route::put('/admin/configuration/{stage}', [StageController::class, 'update']);
 
 Route::get('/admin/caas', [UserController::class, 'index']);
 Route::post('/admin/caas', [UserController::class, 'store']);
+Route::get('/admin/caas/export', [UserController::class, 'export'])->name('caas.export');
+Route::post('/admin/caas/import', [UserController::class, 'import'])->name('caas.import');
 
 Route::put('/admin/caas/{caasstage}/stage', [CaasstageController::class, 'updateStage']);
 Route::put('/admin/caas/{caasstage}/status', [CaasstageController::class, 'updateStatus']);
+});

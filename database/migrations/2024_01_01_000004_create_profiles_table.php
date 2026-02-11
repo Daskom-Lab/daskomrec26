@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->unique()->constrained()->onDelete('cascade');
             $table->string('name', 100)->nullable();
-            $table->string('major', 100)->nullable();
+            $table->enum('major', ['Teknik Elektro', 'Teknik Biomedis', 'Teknik Fisika', 'Teknik Telekomunikasi', 'Teknik Sistem Energi'])->nullable();
             $table->string('class', 50)->nullable();
             $table->enum('gender', ['Male', 'Female'])->nullable();
         });

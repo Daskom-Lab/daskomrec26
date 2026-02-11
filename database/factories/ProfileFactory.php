@@ -18,10 +18,9 @@ class ProfileFactory extends Factory
     public function definition(): array
     {
         return [
-            //
-            'user_id' => User::pluck('id')->shuffle()->pop(), // Associate profile with a user
+            'user_id' => User::factory(), // Create a new unique user for each profile
             'name' => fake()->name(),
-            'major' => fake()->word(),
+            'major' => fake()->randomElement(['Teknik Elektro', 'Teknik Biomedis', 'Teknik Fisika', 'Teknik Telekomunikasi', 'Teknik Sistem Energi']),
             'class' => fake()->word(),
             'gender' => fake()->randomElement(['Male', 'Female']),
         ];

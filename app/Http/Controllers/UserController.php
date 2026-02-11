@@ -4,8 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Stage;
+use App\Models\CaasStage;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Exports\CaasExport;
+use App\Imports\CaasImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -19,7 +24,6 @@ class UserController extends Controller
         
         $users = User::with('profile', 'caasStage.stage')
             ->join('caas_stages', 'users.id', '=', 'caas_stages.user_id')
-            ->orderBy('caas_stages.stage_id', 'desc')
             ->select('users.*')
             ->paginate($perPage);
 
@@ -41,20 +45,28 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        //
         $user = User::create([
             'nim' => $request->nim,
-            'password' => bcrypt($request->password),
+            'password' => bcrypt($request->nim),
         ]);
 
         // Create profile
         $user->profile()->create([
             'name' => $request->name,
-            'email' => $request->email,
             'major' => $request->major,
             'class' => $request->class,
             'gender' => $request->gender,
         ]);
+
+        // Create CaasStage with Administration stage (default)
+        $administrationStage = Stage::where('name', 'Administration')->first();
+        if ($administrationStage) {
+            CaasStage::create([
+                'user_id' => $user->id,
+                'stage_id' => $administrationStage->id,
+                'status' => 'PROSES', // Default status
+            ]);
+        }
 
         return back()->with('success', 'User created successfully.');
     }
@@ -80,16 +92,13 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
-        //
         $user->update([
             'nim' => $request->nim,
-            'password' => bcrypt($request->password),
         ]);
 
         // Update profile
         $user->profile()->update([
             'name' => $request->name,
-            'email' => $request->email,
             'major' => $request->major,
             'class' => $request->class,
             'gender' => $request->gender,
@@ -107,5 +116,53 @@ class UserController extends Controller
         User::destroy($user->id);
         return back()
             ->with('success', 'User deleted successfully.');
+    }
+
+    /**
+     * Export all CaAs users to Excel
+     */
+    public function export()
+    {
+        return Excel::download(new CaasExport, 'CaAs_Manifest_Archive.xlsx');
+    }
+
+    /**
+     * Import CaAs users from Excel
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:10240',
+        ], [
+            'file.required' => 'Please select a file to import.',
+            'file.mimes' => 'File must be in Excel format (.xlsx, .xls, or .csv).',
+            'file.max' => 'File size must not exceed 10MB.',
+        ]);
+
+        try {
+            $import = new CaasImport;
+            Excel::import($import, $request->file('file'));
+            
+            $imported = $import->getImportedCount();
+            $skipped = $import->getSkippedCount();
+            
+            $message = "Successfully imported {$imported} user(s).";
+            if ($skipped > 0) {
+                $message .= " Skipped {$skipped} duplicate(s).";
+            }
+            
+            return back()->with('success', $message);
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $errors = [];
+            
+            foreach ($failures as $failure) {
+                $errors[] = "Row {$failure->row()}: " . implode(', ', $failure->errors());
+            }
+            
+            return back()->with('error', 'Import validation failed: ' . implode(' | ', array_slice($errors, 0, 5)));
+        } catch (\Exception $e) {
+            return back()->with('error', 'Import failed: ' . $e->getMessage());
+        }
     }
 }
