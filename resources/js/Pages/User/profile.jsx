@@ -194,6 +194,7 @@ export default function Home() {
                     style={{ opacity: showImage && imageLoaded ? 1 : 0 }}
                 />
 
+                {/* Seaweed Decorations */}
                 <div className={`absolute inset-0 z-20 pointer-events-none hidden md:block transition-opacity duration-1000 ${isCardPlacing ? 'opacity-0' : 'opacity-100'}`}>
                     <div className="absolute bottom-[-10%] left-[-10%] w-[45vw] max-w-[620px] rotate-20 origin-bottom]">
                         <img 
@@ -202,7 +203,6 @@ export default function Home() {
                             className="w-full h-auto seaweed-anim-2 brightness-75"
                         />
                     </div>
-                    {/* Rumput Depan (Lebih kecil, gerakan normal) */}
                     <div className="absolute bottom-[-15%] left-[-10%] w-[45vw] max-w-[580px] rotate-20 origin-bottom">
                         <img 
                             src={Rumput} 
@@ -211,11 +211,7 @@ export default function Home() {
                         />
                     </div>
 
-
-                    {/* --- KANAN (Dibalik / Mirror) --- */}
-                    {/* Wrapper kanan menggunakan scale-x-[-1] untuk membalik posisi */}
                     <div className="absolute bottom-0 right-0 w-[40vw] h-[40vh] scale-x-[-1]">
-                         {/* Rumput Belakang */}
                          <div className="absolute bottom-[-10%] left-[-40%] w-[45vw] max-w-[620px] rotate-20 origin-bottom">
                             <img 
                                 src={Rumput} 
@@ -223,7 +219,6 @@ export default function Home() {
                                 className="w-full h-auto seaweed-anim-2 opacity-80 brightness-75"
                             />
                         </div>
-                        {/* Rumput Depan */}
                         <div className="absolute bottom-[-25%] left-[-30%] w-[45vw] max-w-[580px] rotate-20 origin-bottom">
                             <img 
                                 src={Rumput} 
@@ -232,7 +227,6 @@ export default function Home() {
                             />
                         </div>
                     </div>
-
                 </div>
 
                 {/* Sidebar Button */}
@@ -288,7 +282,7 @@ export default function Home() {
 
                 {/* Footer */}
                 <div className={`
-                    absolute bottom-4 w-full text-center z-50 pointer-events-none
+                    absolute bottom-4 w-full text-center z-40 pointer-events-none
                     transition-opacity duration-1000 delay-500
                     ${isCardPlacing ? 'opacity-0' : 'opacity-100'}
                 `}>

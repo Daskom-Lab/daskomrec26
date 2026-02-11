@@ -399,7 +399,7 @@ export default function ChangePassword() {
 
                 {/* === FOOTER === */}
                 <div className={`
-                    absolute bottom-4 w-full text-center z-50 pointer-events-none
+                    absolute bottom-4 w-full text-center z-40 pointer-events-none
                     transition-opacity duration-1000 delay-500
                     ${isZooming ? 'opacity-0' : 'opacity-100'}
                 `}>

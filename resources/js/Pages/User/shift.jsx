@@ -14,7 +14,7 @@ import buttonImg from '@assets/buttons/ButtonRegular.png';
 import Mobileboard from '@assets/backgrounds/02-ABoard_Mobile.png';
 import logoImg from '@assets/logo/ORB_DLOR 1.png';
 
-const IS_PASSED = true; 
+const IS_PASSED = false; 
 
 export default function ShiftPage() {
     const backgroundRef = useRef(null);
@@ -182,7 +182,7 @@ export default function ShiftPage() {
                                     Mohon Maaf, <br /> Kamu Belum Lulus.
                                 </h1>
 
-                                <p className="text-xs sm:text-sm italic opacity-70 font-serif leading-relaxed px-2">
+                                <p className="text-xs sm:text-sm italic opacity-70 font-serif leading-relaxed px-3">
                                     "Jangan berkecil hati, perjalananmu masih panjang. Silakan coba lagi di kesempatan berikutnya."
                                 </p>
 
