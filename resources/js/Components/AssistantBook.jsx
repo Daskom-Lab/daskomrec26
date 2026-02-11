@@ -5,7 +5,7 @@ import coverImage from '@assets/cards/books/FrontCover.png';
 import backCoverImage from '@assets/cards/books/BackCover.png';
 
 const TOTAL_PAGES = 89;
-const IMAGE_PATH_PREFIX = '/assets/cards/books'; 
+const IMAGE_PATH_PREFIX = 'https://ik.imagekit.io/kyla08/foto-asisten-filter'; 
 const SEPIA_COLOR = '#f2e8d5';
 
 const CROP_WIDTH = '145%'; 
@@ -295,13 +295,13 @@ const AssistantBook = forwardRef(({
               onFlip={onFlip}
             >
               <Cover key="front-cover" bgImage={coverImage} />
-              {pages.map((pageNum) => (
-                <Page 
-                  key={pageNum} 
-                  number={pageNum} 
-                  contentImage={`${IMAGE_PATH_PREFIX}/${pageNum}.png`} 
-                />
-              ))}
+                {pages.map((pageNum) => (
+                  <Page 
+                    key={pageNum} 
+                    number={pageNum} 
+                    contentImage={`${IMAGE_PATH_PREFIX}/${pageNum}.png?tr=w-400,q-80,f-auto`} 
+                  />
+                ))}
               <Cover key="back-cover" bgImage={backCoverImage} />
             </HTMLFlipBook>
 
