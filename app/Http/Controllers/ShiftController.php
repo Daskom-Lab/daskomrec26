@@ -11,17 +11,49 @@ class ShiftController extends Controller
     /**
      * Display a listing of the resource.
      */
+    // Mapping nama hari Indonesia ke DAYOFWEEK MySQL (1=Sunday, 2=Monday, ...)
+    private const DAY_MAP = [
+        'minggu' => 1,
+        'senin' => 2,
+        'selasa' => 3,
+        'rabu' => 4,
+        'kamis' => 5,
+        'jumat' => 6,
+        'sabtu' => 7,
+    ];
+
     public function index()
     {
-        $perPage = request('perPage', 5); // Default to 5 items per page
-        $perPage = in_array($perPage, [5, 10]) ? $perPage : 5; // Validate: only allow 5 or 10
-        
+        $perPage = request('perPage', 5);
+        $perPage = in_array($perPage, [5, 10]) ? $perPage : 5;
+        $search = request('search', '');
+
         $shifts = Shift::with(['plottingans.user.profile'])
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('shift_no', 'like', "%{$search}%")
+                      ->orWhere('date', 'like', "%{$search}%");
+
+                    // Cek apakah search cocok dengan nama hari
+                    $searchLower = strtolower($search);
+                    foreach (self::DAY_MAP as $day => $dayOfWeek) {
+                        if (str_contains($day, $searchLower)) {
+                            $q->orWhereRaw('DAYOFWEEK(date) = ?', [$dayOfWeek]);
+                        }
+                    }
+                });
+            })
             ->orderBy('date', 'asc')
             ->orderBy('time_start', 'asc')
-            ->paginate($perPage);
+            ->paginate($perPage)
+            ->appends(['search' => $search, 'perPage' => $perPage]);
     
-        return inertia('Admin/shift', ['shifts' => $shifts]);
+        return inertia('Admin/shift', [
+            'shifts' => $shifts,
+            'filters' => [
+                'search' => $search,
+            ],
+        ]);
     }
 
     /**
