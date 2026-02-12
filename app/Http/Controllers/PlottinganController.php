@@ -6,6 +6,8 @@ use App\Models\Plottingan;
 use App\Models\Shift;
 use App\Http\Requests\StoreplottinganRequest;
 use App\Http\Requests\UpdateplottinganRequest;
+use App\Exports\PlottinganExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PlottinganController extends Controller
 {
@@ -82,5 +84,13 @@ class PlottinganController extends Controller
     public function destroy(plottingan $plottingan)
     {
         //
+    }
+
+    /**
+     * Export all plottingan data to Excel
+     */
+    public function export()
+    {
+        return Excel::download(new PlottinganExport, 'Plottingan_Export.xlsx');
     }
 }

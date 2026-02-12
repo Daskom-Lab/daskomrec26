@@ -8,6 +8,7 @@ import background from "@assets/backgrounds/AssistantBackground.png";
 import ButtonSidebar from "@components/ButtonSidebar";
 import ButtonHome from "@components/ButtonHome";
 import AdminSidebar from "@components/AdminSidebar";
+import RichTextEditor from "@components/RichTextEditor";
 
 // Icons
 import {
@@ -41,6 +42,7 @@ export default function Configuration({ stages }) {
     // Edit form modal state
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [formProcessing, setFormProcessing] = useState(false);
+    const [isPreviewMode, setIsPreviewMode] = useState(false);
     const [formData, setFormData] = useState({
         stageId: null,
         stageName: "",
@@ -127,6 +129,7 @@ export default function Configuration({ stages }) {
             isi_jadwal_on: config.isi_jadwal_on,
             puzzles_on: config.puzzles_on,
         });
+        setIsPreviewMode(false);
         setIsFormOpen(true);
     };
 
@@ -385,96 +388,178 @@ export default function Configuration({ stages }) {
                 {/* EDIT MODAL */}
                 {isFormOpen &&
                     createPortal(
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-y-auto">
                             <div
                                 className="absolute inset-0 bg-[#020406]/90 backdrop-blur-sm"
                                 onClick={closeAllModals}
                             />
-                            <div className="relative w-full max-w-xl bg-[#0a121d] border-2 border-double border-cyan-600/30 p-10 shadow-2xl animate-popIn">
+                            <div className="relative w-full max-w-xl bg-[#0a121d] border-2 border-double border-cyan-600/30 shadow-2xl animate-popIn my-8">
                                 <button
                                     onClick={closeAllModals}
-                                    className="absolute top-4 right-4 text-white/40 hover:text-white transition-all"
+                                    className="absolute top-4 right-4 text-white/40 hover:text-white transition-all z-10"
                                 >
                                     <XMarkIcon className="w-6 h-6" />
                                 </button>
-                                <div className="flex items-center gap-4 border-b border-white/5 pb-4 mb-8">
+                                {/* Header */}
+                                <div className="flex items-center gap-4 p-6 border-b border-white/5">
                                     <PencilSquareIcon
                                         className="w-8 h-8"
                                         style={{ color: "#ffffff" }}
                                     />
-                                    <h2 className="text-3xl font-serif font-bold text-cyan-100 uppercase tracking-widest">
+                                    <h2 className="text-2xl font-serif font-bold text-cyan-100 uppercase tracking-widest">
                                         {formData.stageName}
                                     </h2>
                                 </div>
-                                <form
-                                    onSubmit={handleSaveStage}
-                                    className="flex flex-col gap-6 text-sm text-white"
-                                >
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-cyan-500/60 font-bold uppercase tracking-widest text-[10px]">
-                                            Success Message
-                                        </label>
-                                        <textarea
-                                            className="input-etched w-full resize-none"
-                                            rows={3}
-                                            value={formData.success_message}
-                                            onChange={(e) =>
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    success_message:
-                                                        e.target.value,
-                                                }))
-                                            }
-                                        />
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-cyan-500/60 font-bold uppercase tracking-widest text-[10px]">
-                                            Fail Message
-                                        </label>
-                                        <textarea
-                                            className="input-etched w-full resize-none"
-                                            rows={3}
-                                            value={formData.fail_message}
-                                            onChange={(e) =>
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    fail_message:
-                                                        e.target.value,
-                                                }))
-                                            }
-                                        />
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-cyan-500/60 font-bold uppercase tracking-widest text-[10px]">
-                                            Link
-                                        </label>
-                                        <input
-                                            type="url"
-                                            className="input-etched w-full"
-                                            placeholder="https://..."
-                                            value={formData.link}
-                                            onChange={(e) =>
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    link: e.target.value,
-                                                }))
-                                            }
-                                        />
-                                    </div>
+                                {/* Edit/Preview Toggle */}
+                                <div className="flex border-b border-white/5">
                                     <button
-                                        type="submit"
-                                        disabled={formProcessing}
-                                        className={`w-full py-4 border font-bold font-serif uppercase tracking-[0.2em] transition-all ${
-                                            formProcessing
-                                                ? "bg-gray-600/20 border-gray-500/30 text-gray-400 cursor-not-allowed"
-                                                : "bg-cyan-700/20 border-cyan-500/50 text-cyan-100 hover:bg-cyan-600 hover:text-black"
-                                        }`}
+                                        type="button"
+                                        onClick={() => setIsPreviewMode(false)}
+                                        className={`flex-1 py-3 text-xs font-serif font-bold uppercase tracking-widest transition-all ${!isPreviewMode ? "bg-cyan-700/20 text-cyan-100 border-b-2 border-cyan-500" : "text-white/30 hover:text-white/60 hover:bg-white/5"}`}
                                     >
-                                        {formProcessing
-                                            ? "Processing..."
-                                            : "Save Changes"}
+                                        Edit
                                     </button>
-                                </form>
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsPreviewMode(true)}
+                                        className={`flex-1 py-3 text-xs font-serif font-bold uppercase tracking-widest transition-all ${isPreviewMode ? "bg-cyan-700/20 text-cyan-100 border-b-2 border-cyan-500" : "text-white/30 hover:text-white/60 hover:bg-white/5"}`}
+                                    >
+                                        Preview
+                                    </button>
+                                </div>
+                                {/* Content */}
+                                <div className="p-8">
+                                    {!isPreviewMode ? (
+                                        <form
+                                            onSubmit={handleSaveStage}
+                                            className="flex flex-col gap-6 text-sm text-white"
+                                        >
+                                            <div className="flex flex-col gap-2">
+                                                <label className="text-cyan-500/60 font-bold uppercase tracking-widest text-[10px]">
+                                                    Success Message
+                                                </label>
+                                                <RichTextEditor
+                                                    editorKey={`success-${formData.stageId}`}
+                                                    value={
+                                                        formData.success_message
+                                                    }
+                                                    onChange={(value) =>
+                                                        setFormData((prev) => ({
+                                                            ...prev,
+                                                            success_message:
+                                                                value,
+                                                        }))
+                                                    }
+                                                    placeholder="Enter success message..."
+                                                />
+                                            </div>
+                                            <div className="flex flex-col gap-2">
+                                                <label className="text-cyan-500/60 font-bold uppercase tracking-widest text-[10px]">
+                                                    Fail Message
+                                                </label>
+                                                <RichTextEditor
+                                                    editorKey={`fail-${formData.stageId}`}
+                                                    value={
+                                                        formData.fail_message
+                                                    }
+                                                    onChange={(value) =>
+                                                        setFormData((prev) => ({
+                                                            ...prev,
+                                                            fail_message: value,
+                                                        }))
+                                                    }
+                                                    placeholder="Enter fail message..."
+                                                />
+                                            </div>
+                                            <div className="flex flex-col gap-2">
+                                                <label className="text-cyan-500/60 font-bold uppercase tracking-widest text-[10px]">
+                                                    Link
+                                                </label>
+                                                <input
+                                                    type="url"
+                                                    className="input-etched w-full"
+                                                    placeholder="https://..."
+                                                    value={formData.link}
+                                                    onChange={(e) =>
+                                                        setFormData((prev) => ({
+                                                            ...prev,
+                                                            link: e.target
+                                                                .value,
+                                                        }))
+                                                    }
+                                                />
+                                            </div>
+                                            <button
+                                                type="submit"
+                                                disabled={formProcessing}
+                                                className={`w-full py-4 border font-bold font-serif uppercase tracking-[0.2em] transition-all ${
+                                                    formProcessing
+                                                        ? "bg-gray-600/20 border-gray-500/30 text-gray-400 cursor-not-allowed"
+                                                        : "bg-cyan-700/20 border-cyan-500/50 text-cyan-100 hover:bg-cyan-600 hover:text-black"
+                                                }`}
+                                            >
+                                                {formProcessing
+                                                    ? "Processing..."
+                                                    : "Save Changes"}
+                                            </button>
+                                        </form>
+                                    ) : (
+                                        <div className="flex flex-col gap-6 text-sm text-white">
+                                            <div className="border border-emerald-500/20 bg-emerald-900/10 p-6 relative">
+                                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
+                                                <h4 className="text-lg font-serif text-emerald-400 mb-4 text-center uppercase tracking-widest">
+                                                    Success Message Preview
+                                                </h4>
+                                                <div
+                                                    className="text-emerald-100/80 leading-relaxed font-light prose prose-invert prose-sm max-w-none"
+                                                    dangerouslySetInnerHTML={{
+                                                        __html:
+                                                            formData.success_message ||
+                                                            "<p class='text-emerald-100/40 italic'>No message set</p>",
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="border border-rose-500/20 bg-rose-900/10 p-6 relative">
+                                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-rose-500/50 to-transparent"></div>
+                                                <h4 className="text-lg font-serif text-rose-400 mb-4 text-center uppercase tracking-widest">
+                                                    Fail Message Preview
+                                                </h4>
+                                                <div
+                                                    className="text-rose-100/80 leading-relaxed font-light prose prose-invert prose-sm max-w-none"
+                                                    dangerouslySetInnerHTML={{
+                                                        __html:
+                                                            formData.fail_message ||
+                                                            "<p class='text-rose-100/40 italic'>No message set</p>",
+                                                    }}
+                                                />
+                                            </div>
+                                            {formData.link && (
+                                                <div className="border border-cyan-500/20 bg-cyan-900/10 p-4">
+                                                    <span className="text-cyan-500/60 font-bold uppercase tracking-widest text-[10px] block mb-2">
+                                                        Link
+                                                    </span>
+                                                    <a
+                                                        href={formData.link}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="text-cyan-300 hover:text-cyan-100 underline break-all"
+                                                    >
+                                                        {formData.link}
+                                                    </a>
+                                                </div>
+                                            )}
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setIsPreviewMode(false)
+                                                }
+                                                className="w-full py-4 border bg-cyan-700/20 border-cyan-500/50 text-cyan-100 hover:bg-cyan-600 hover:text-black font-bold font-serif uppercase tracking-[0.2em] transition-all"
+                                            >
+                                                Back to Edit
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>,
                         document.body,
