@@ -73,7 +73,7 @@ const StatCard = ({ label, value, type }) => {
     );
 };
 
-export default function Shift({ shifts }) {
+export default function Shift({ shifts, filters }) {
     const backgroundRef = useRef(null);
     const [showImage, setShowImage] = useState(false);
     const [imageLoaded, setImageLoaded] = useState(false);
@@ -84,14 +84,32 @@ export default function Shift({ shifts }) {
     const [viewMode, setViewMode] = useState("regular");
     const ITEMS_PER_PAGE = viewMode === "compact" ? 10 : 5;
 
-    const [searchQuery, setSearchQuery] = useState("");
+    const [searchQuery, setSearchQuery] = useState(filters?.search || "");
     const [jumpPage, setJumpPage] = useState("");
+    const searchTimeoutRef = useRef(null);
+
+    // Debounced search - kirim ke backend
+    const handleSearch = (value) => {
+        setSearchQuery(value);
+
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+
+        searchTimeoutRef.current = setTimeout(() => {
+            router.get(
+                "/admin/shift",
+                { search: value, perPage: ITEMS_PER_PAGE },
+                { preserveState: true, replace: true },
+            );
+        }, 300);
+    };
 
     // Update pagination when view mode changes
     useEffect(() => {
         router.get(
             "/admin/shift",
-            { perPage: ITEMS_PER_PAGE },
+            { perPage: ITEMS_PER_PAGE, search: searchQuery },
             { preserveState: true, replace: true },
         );
     }, [viewMode]);
@@ -151,6 +169,7 @@ export default function Shift({ shifts }) {
         return () => {
             clearTimeout(showTimer);
             clearTimeout(zoomTimer);
+            if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
             window.removeEventListener("keydown", handleKeyDown);
             window.removeEventListener("click", skipIntro);
         };
@@ -219,7 +238,7 @@ export default function Shift({ shifts }) {
             if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= totalPages) {
                 router.get(
                     "/admin/shift",
-                    { page: pageNum, perPage: ITEMS_PER_PAGE },
+                    { page: pageNum, perPage: ITEMS_PER_PAGE, search: searchQuery },
                     { preserveState: true },
                 );
             }
@@ -247,7 +266,7 @@ export default function Shift({ shifts }) {
         setIsSidebarOpen(false);
         setTimeout(() => {
             setIsLoggingOut(true);
-            setTimeout(() => router.visit("/"), 300);
+            setTimeout(() => router.post("/logout"), 300);
         }, 350);
     };
 
@@ -376,10 +395,10 @@ export default function Shift({ shifts }) {
                                     <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cyan-500/50" />
                                     <input
                                         type="text"
-                                        placeholder="Filter table..."
+                                        placeholder="Search shift or date..."
                                         value={searchQuery}
                                         onChange={(e) =>
-                                            setSearchQuery(e.target.value)
+                                            handleSearch(e.target.value)
                                         }
                                         className="w-full bg-black/30 border border-white/10 rounded-sm pl-10 pr-4 py-2.5 text-xs text-cyan-100 focus:outline-none focus:border-cyan-500/50 transition-all tracking-wider"
                                     />

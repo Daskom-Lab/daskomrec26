@@ -303,7 +303,7 @@ export default function Caas({ users, stages }) {
         setIsSidebarOpen(false);
         setTimeout(() => {
             setIsLoggingOut(true);
-            setTimeout(() => router.visit("/"), 300);
+            setTimeout(() => router.post("/logout"), 300);
         }, 350);
     };
 
