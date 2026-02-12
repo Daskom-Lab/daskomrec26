@@ -7,23 +7,21 @@ import ButtonSidebar from '@components/ButtonSidebar';
 import ButtonHome from '@components/ButtonHome';
 import UserSidebar from '@components/UserSidebar';
 import CoresMap from '@components/CoresMap';
-import UnlockDialog from '@components/UnlockDialog'; // Import the dialog
-
-// --- Configuration ---
-const PROGRESSION = ['xurith', 'thevia', 'euprus', 'northgard'];
+import UnlockDialog from '@components/UnlockDialog';
+import Rumput from '@assets/others/DECORATIONS/Seaweed & Coral Reefs/32.png';
 
 const CLUE = {
-    xurith: 'Look underneath',
-    thevia: 'the twilight star',
-    euprus: 'shining it\'s briliance',
-    northgard: 'within the night sky',
+    Xurith: 'Look underneath',
+    Thevia: 'the twilight star',
+    Euprus: 'shining it\'s briliance',
+    Northgard: 'within the night sky',
 }
 
 const PASSCODES = {
-    xurith: '1234',
-    thevia: '1234',
-    euprus: '1234',
-    northgard: '1234',
+    Xurith: '1234',
+    Thevia: '1234',
+    Euprus: '1234',
+    Northgard: '1234',
 };
 
 const STATUS = {
@@ -35,49 +33,52 @@ const STATUS = {
 export default function Cores() {
     const backgroundRef = useRef(null);
 
-    // --- Logic for Map Progression ---
     const [territoryStates, setTerritoryStates] = useState({
-        xurith: STATUS.LOCKED,
-        thevia: STATUS.HIDDEN,
-        euprus: STATUS.HIDDEN,
-        northgard: STATUS.HIDDEN,
+        Xurith: STATUS.LOCKED,
+        Thevia: STATUS.LOCKED,
+        Euprus: STATUS.LOCKED,
+        Northgard: STATUS.LOCKED,
     });
 
     const [dialogState, setDialogState] = useState({
         isOpen: false,
         territoryId: null,
         isError: false,
+        isAlreadyUnlocked: false,
     });
 
+    // --- MODIFIED HANDLER ---
     const handleMapInteract = (id) => {
         const currentStatus = territoryStates[id];
-        if (currentStatus === STATUS.LOCKED) {
-            setDialogState({ isOpen: true, territoryId: id, isError: false });
+
+        // Allow opening if Locked OR Unlocked
+        if (currentStatus === STATUS.LOCKED || currentStatus === STATUS.UNLOCKED) {
+            setDialogState({
+                isOpen: true,
+                territoryId: id,
+                isError: false,
+                isAlreadyUnlocked: currentStatus === STATUS.UNLOCKED
+            });
         }
     };
 
     const handleUnlockSubmit = (inputCode) => {
         const { territoryId } = dialogState;
-        
+
         if (inputCode === PASSCODES[territoryId]) {
-            // Success: Unlock current, Reveal next
-            const currentIndex = PROGRESSION.indexOf(territoryId);
-            const nextId = PROGRESSION[currentIndex + 1];
+            setTerritoryStates(prev => ({
+                ...prev,
+                [territoryId]: STATUS.UNLOCKED
+            }));
 
-            setTerritoryStates(prev => {
-                const newState = { ...prev, [territoryId]: STATUS.UNLOCKED };
-                if (nextId) newState[nextId] = STATUS.LOCKED;
-                return newState;
-            });
-
-            setDialogState({ isOpen: false, territoryId: null, isError: false });
+            // Reset state on success
+            setDialogState({ isOpen: false, territoryId: null, isError: false, isAlreadyUnlocked: false });
         } else {
-            // Failure
             setDialogState(prev => ({ ...prev, isError: true }));
         }
     };
 
-    // --- Standard Page States ---
+    // --- Standard Page States (No changes below) ---
     const [showImage, setShowImage] = useState(false);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [inputLocked, setInputLocked] = useState(true);
@@ -143,6 +144,18 @@ export default function Cores() {
         .cold-blue-filter {
             filter: brightness(1.1) contrast(1.2) saturate(1) hue-rotate(15deg) sepia(0);
         }
+        @keyframes swaySeaweed {
+            0%, 100% { transform: rotate(-4deg); }
+            50% { transform: rotate(4deg); }
+        }
+        .seaweed-anim-1 {
+            animation: swaySeaweed 5s ease-in-out infinite;
+            transform-origin: bottom center;
+        }
+        .seaweed-anim-2 {
+            animation: swaySeaweed 7s ease-in-out infinite reverse;
+            transform-origin: bottom center;
+        }
     `;
 
     const getBackgroundStyle = () => {
@@ -176,13 +189,15 @@ export default function Cores() {
             <Head title="Home" />
             <style>{styles}</style>
 
-            {/* --- DIALOG IS HERE (Highest Z-Index, outside effects) --- */}
-            <UnlockDialog 
+            {/* --- DIALOG --- */}
+            <UnlockDialog
                 isOpen={dialogState.isOpen}
                 territoryName={dialogState.territoryId}
                 isError={dialogState.isError}
                 onClose={() => setDialogState({ ...dialogState, isOpen: false })}
                 onSubmit={handleUnlockSubmit}
+                clue={CLUE[dialogState.territoryId]}
+                isAlreadyUnlocked={dialogState.isAlreadyUnlocked} // Pass the new prop
             />
 
             <div className="relative w-full min-h-screen overflow-hidden">
@@ -198,10 +213,28 @@ export default function Cores() {
                         style={getBackgroundStyle()}
                     />
                 </div>
-       
+
                 <div className="absolute inset-0 pointer-events-none transition-opacity duration-1000" style={{ background: 'rgba(2, 99, 196, 0.2)' }} />
 
                 <UnderwaterEffect isLoaded={showImage && imageLoaded} isZooming={false} />
+
+                {/* Seaweed Decorations */}
+                <div className={`absolute inset-0 z-20 pointer-events-none hidden md:block transition-opacity duration-1000 ${isMapPlacing || isExiting ? 'opacity-0' : 'opacity-100'}`}>
+                    <div className="absolute bottom-[-5%] left-[-10%] w-[45vw] max-w-[620px] rotate-20 origin-bottom]">
+                        <img src={Rumput} alt="Seaweed" className="w-full h-auto seaweed-anim-2 brightness-75" />
+                    </div>
+                    <div className="absolute bottom-[-10%] left-[-10%] w-[45vw] max-w-[580px] rotate-20 origin-bottom">
+                        <img src={Rumput} alt="Seaweed" className="w-full h-auto seaweed-anim-1" />
+                    </div>
+                    <div className="absolute bottom-0 right-0 w-[40vw] h-[40vh] scale-x-[-1]">
+                         <div className="absolute bottom-[-10%] left-[-40%] w-[45vw] max-w-[620px] rotate-20 origin-bottom">
+                            <img src={Rumput} alt="Seaweed" className="w-full h-auto seaweed-anim-2 opacity-80 brightness-75" />
+                        </div>
+                        <div className="absolute bottom-[-25%] left-[-30%] w-[45vw] max-w-[580px] rotate-20 origin-bottom">
+                            <img src={Rumput} alt="Seaweed" className="w-full h-auto seaweed-anim-1 opacity-100" />
+                        </div>
+                    </div>
+                </div>
 
                 <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/30 pointer-events-none transition-opacity duration-1000" style={{ opacity: showImage && imageLoaded ? 1 : 0 }} />
 
@@ -217,16 +250,20 @@ export default function Cores() {
 
                 {/* --- MAP CONTAINER --- */}
                 <div className="absolute inset-0 flex items-center justify-center" style={getMapStyle()}>
-                    {/* Passing states and handler down to the map */}
-                    <CoresMap 
+                    <CoresMap
                         territoryStates={territoryStates}
                         onTerritoryClick={handleMapInteract}
                     />
                 </div>
 
                 <div className="fixed inset-0 z-70 pointer-events-none transition-opacity duration-1000" style={{ background: 'linear-gradient(to bottom, #0a2a4a, #0c365b)', opacity: isLoggingOut ? 1 : 0 }} />
-
                 {inputLocked && <div className="fixed inset-0 z-80 pointer-events-auto" />}
+
+                <div className={`absolute bottom-4 w-full text-center z-40 pointer-events-none transition-opacity duration-1000 delay-500 ${isMapPlacing || isExiting ? 'opacity-0' : 'opacity-100'}`}>
+                    <p className="text-white font-caudex text-[10px] md:text-xl tracking-widest drop-shadow-md">
+                        @Atlantis.DLOR2026. All Right Served
+                    </p>
+                </div>
             </div>
         </>
     );

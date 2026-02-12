@@ -60,7 +60,6 @@ export default function ShiftPage({
         [rawShifts],
     );
 
-    // --- INTRO ANIMATION LOGIC ---
     useEffect(() => {
         const showTimer = setTimeout(() => setShowImage(true), 300);
         const zoomTimer = setTimeout(() => {
@@ -74,6 +73,9 @@ export default function ShiftPage({
             setShowImage(true);
             setIsZooming(false);
             setInputLocked(false);
+            if (!IS_PASSED) {
+                setShowGateModal(true);
+            }
         };
 
         window.addEventListener(
@@ -90,7 +92,11 @@ export default function ShiftPage({
         };
     }, []);
 
-    // --- HANDLERS ---
+    const handleGateBackHome = () => {
+        setIsLoggingOut(true);
+        setTimeout(() => router.visit("/user/home"), 500);
+    };
+
     const handleAddClick = (shift) => {
         if (hasChosen) return;
         // Normalize to use time_start/time_end for the modal
@@ -148,13 +154,16 @@ export default function ShiftPage({
         .cold-blue-filter { filter: brightness(0.8) contrast(1.1) saturate(1.2); }
     `;
 
+    const isNavigationVisible = !isZooming && !isLoggingOut;
+    const isAnyModalOpen = showModal || showSuccess;
+
     return (
         <>
             <Head title="Choose Shift" />
             <style>{styles}</style>
 
             <div className="fixed inset-0 w-full h-full text-white font-caudex bg-[#0a2a4a] overflow-y-auto md:overflow-hidden">
-                {/* 1. Background Layer with Zoom & Pulse */}
+                {/* 1. Background Layer */}
                 <div className="fixed inset-0 z-0 pointer-events-none">
                     <img
                         ref={backgroundRef}

@@ -2,11 +2,12 @@ import { useRef, useState, useEffect } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 
 import UnderwaterEffect from '@components/UnderwaterEffect';
-import background from '@assets/backgrounds/AssistantBackground.png';
+import Background from '@assets/backgrounds/AssistantBackground.png';
 import ButtonSidebar from '@components/ButtonSidebar';
 import ButtonHome from '@components/ButtonHome';
 import UserSidebar from '@components/UserSidebar';
 import CardCaas from '@components/CaasCard';
+import Rumput from '@assets/others/DECORATIONS/Seaweed & Coral Reefs/32.png';
 
 export default function Profile() {
     const backgroundRef = useRef(null);
@@ -97,6 +98,22 @@ export default function Profile() {
         .pulse-effect {
             animation: subtlePulse 3s ease-in-out infinite;
         }
+
+        /* --- ANIMASI RUMPUT --- */
+        @keyframes swaySeaweed {
+            0%, 100% { transform: rotate(-4deg); }
+            50% { transform: rotate(4deg); }
+        }
+        
+        .seaweed-anim-1 {
+            animation: swaySeaweed 5s ease-in-out infinite;
+            transform-origin: bottom center;
+        }
+        
+        .seaweed-anim-2 {
+            animation: swaySeaweed 7s ease-in-out infinite reverse; /* Gerakan berlawanan & lebih lambat */
+            transform-origin: bottom center;
+        }
     `;
 
     const getBackgroundStyle = () => {
@@ -133,11 +150,12 @@ export default function Profile() {
             transition: 'transform 1s ease-in-out, opacity 1s ease-in-out',
             perspective: '1000px',
         };
+        
     };
 
     return (
         <>
-            <Head title="Home" />
+            <Head title="Profile" />
             <style>{styles}</style>
 
             <div className="relative w-full min-h-screen overflow-hidden">
@@ -152,20 +170,20 @@ export default function Profile() {
                 <div className="absolute inset-0 cold-blue-filter">
                     <img
                         ref={backgroundRef}
-                        src={background}
+                        src={Background}
                         alt="background"
                         onLoad={() => setImageLoaded(true)}
                         className="w-full h-full object-cover pointer-events-none"
                         style={getBackgroundStyle()}
                     />
                 </div>
-        
-        
+
+
                 {/* Blue opacity overlay */}
                 <div
                     className="absolute inset-0 pointer-events-none transition-opacity duration-1000"
                     style={{
-                        background: 'rgba(2, 99, 196, 0.2)', // deep blue
+                        background: 'rgba(2, 99, 196, 0.2)' // deep blue
                     }}
                 />
 
@@ -180,6 +198,41 @@ export default function Profile() {
                     className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/30 pointer-events-none transition-opacity duration-1000"
                     style={{ opacity: showImage && imageLoaded ? 1 : 0 }}
                 />
+
+                {/* Seaweed Decorations */}
+                <div className={`absolute inset-0 z-20 pointer-events-none hidden md:block transition-opacity duration-1000 ${isCardPlacing ? 'opacity-0' : 'opacity-100'}`}>
+                    <div className="absolute bottom-[-10%] left-[-10%] w-[45vw] max-w-[620px] rotate-20 origin-bottom]">
+                        <img 
+                            src={Rumput} 
+                            alt="Seaweed Left Back"
+                            className="w-full h-auto seaweed-anim-2 brightness-75"
+                        />
+                    </div>
+                    <div className="absolute bottom-[-15%] left-[-10%] w-[45vw] max-w-[580px] rotate-20 origin-bottom">
+                        <img 
+                            src={Rumput} 
+                            alt="Seaweed Left Front"
+                            className="w-full h-auto seaweed-anim-1"
+                        />
+                    </div>
+
+                    <div className="absolute bottom-0 right-0 w-[40vw] h-[40vh] scale-x-[-1]">
+                         <div className="absolute bottom-[-10%] left-[-40%] w-[45vw] max-w-[620px] rotate-20 origin-bottom">
+                            <img 
+                                src={Rumput} 
+                                alt="Seaweed Right Back"
+                                className="w-full h-auto seaweed-anim-2 opacity-80 brightness-75"
+                            />
+                        </div>
+                        <div className="absolute bottom-[-25%] left-[-30%] w-[45vw] max-w-[580px] rotate-20 origin-bottom">
+                            <img 
+                                src={Rumput} 
+                                alt="Seaweed Right Front"
+                                className="w-full h-auto seaweed-anim-1 opacity-100"
+                            />
+                        </div>
+                    </div>
+                </div>
 
                 {/* Sidebar Button */}
                 <div
@@ -231,6 +284,17 @@ export default function Profile() {
                 {inputLocked && (
                     <div className="fixed inset-0 z-80 pointer-events-auto" />
                 )}
+
+                {/* Footer */}
+                <div className={`
+                    absolute bottom-4 w-full text-center z-40 pointer-events-none
+                    transition-opacity duration-1000 delay-500
+                    ${isCardPlacing ? 'opacity-0' : 'opacity-100'}
+                `}>
+                    <p className="text-white font-caudex text-[10px] md:text-xl tracking-widest drop-shadow-md">
+                        @Atlantis.DLOR2026. All Right Served
+                    </p>
+                </div>
             </div>
         </>
     );

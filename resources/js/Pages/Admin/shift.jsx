@@ -1,7 +1,6 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import { Head, router, useForm } from "@inertiajs/react";
 import { createPortal } from "react-dom";
-import * as XLSX from "xlsx";
 
 // Components
 import UnderwaterEffect from "@components/UnderwaterEffect";
@@ -75,6 +74,8 @@ const StatCard = ({ label, value, type }) => {
 
 export default function Shift({ shifts }) {
     const backgroundRef = useRef(null);
+    const fileInputRef = useRef(null);
+
     const [showImage, setShowImage] = useState(false);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [isZooming, setIsZooming] = useState(true);
@@ -347,13 +348,6 @@ export default function Shift({ shifts }) {
                                     className="px-6 py-3 bg-cyan-600/80 border border-cyan-400/50 hover:bg-cyan-500 rounded-sm font-serif font-bold uppercase tracking-widest flex items-center gap-2 shadow-lg transition-all text-xs"
                                 >
                                     <PlusIcon className="w-4 h-4" /> New Shift
-                                </button>
-                                <button
-                                    onClick={handleExportExcel}
-                                    className="p-3 border border-emerald-500/40 text-emerald-300 rounded-sm hover:bg-emerald-900/20 transition-all"
-                                    title="Export excel"
-                                >
-                                    <ArrowDownTrayIcon className="w-5 h-5" />
                                 </button>
                             </div>
 

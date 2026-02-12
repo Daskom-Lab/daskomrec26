@@ -11,6 +11,7 @@ use App\Http\Controllers\User\PasswordController;
 use App\Http\Controllers\User\ShiftController as UserShiftController;
 use App\Http\Controllers\User\AnnouncementController;
 use Illuminate\Support\Facades\Route;
+use inertia\inertia;
 
 Route::resource('shifts', ShiftController::class)->except(['index']);
 
@@ -55,6 +56,7 @@ Route::middleware('auth')->group(function (){
     Route::post('/user/shift', [UserShiftController::class, 'store'])->name('user.shift.store');
 
     Route::get('/user/announcement', [AnnouncementController::class, 'index'])->name('user.announcement');
+});
 
 Route::get('/admin/home', [HomeController::class, 'index']);
 Route::put('/admin/home/current-stage', [HomeController::class, 'setCurrentStage']);
@@ -78,4 +80,8 @@ Route::post('/admin/caas/import', [UserController::class, 'import'])->name('caas
 
 Route::put('/admin/caas/{caasstage}/stage', [CaasstageController::class, 'updateStage']);
 Route::put('/admin/caas/{caasstage}/status', [CaasstageController::class, 'updateStatus']);
+
+
+Route::fallback(function () {
+    return inertia::render('404_NotFound'); 
 });

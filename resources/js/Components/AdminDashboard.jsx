@@ -3,8 +3,6 @@ import { createPortal } from "react-dom";
 import { router } from "@inertiajs/react";
 import RichTextEditor from "@components/RichTextEditor";
 
-// --- 1. THEMED SUB-COMPONENTS (With Standard Wording) ---
-
 const StatCard = ({ label, value, type }) => {
     const isTotal = type === "total";
     return (
@@ -127,7 +125,7 @@ const StatusBadge = ({ isOn, activeText, inactiveText }) => (
 
 const CoreCard = ({ core, onRequestUpdate }) => {
     const [localCode, setLocalCode] = useState(core.code);
-    const [localClue, setLocalClue] = useState(core.clue || ""); // New Clue State
+    const [localClue, setLocalClue] = useState(core.clue || "");
     const [showCode, setShowCode] = useState(false);
 
     // Check if either field has changed
@@ -172,17 +170,18 @@ const CoreCard = ({ core, onRequestUpdate }) => {
                         onChange={(e) => setLocalClue(e.target.value)}
                         placeholder="Enter hint text..."
                         className={`
-                            w-full bg-black/10 border-b border-white/10 
-                            text-left text-xs font-serif italic text-amber-100/70 py-2 
-                            focus:outline-none focus:border-amber-500/40 focus:bg-black/30 
+                            w-full bg-black/10 border-b border-white/10
+                            text-left text-sm font-serif italic text-amber-100/70 py-2
+                            focus:outline-none focus:border-amber-500/40 focus:bg-black/30
                             transition-all placeholder-white/10
+                            pl-2
                         `}
                     />
                 </div>
 
                 {/* --- PASSCODE INPUT SECTION --- */}
                 <div className="relative group/input">
-                    <label className="text-[9px] text-cyan-200/40 uppercase font-bold absolute -top-2 left-0 tracking-widest">
+                    <label className="text-[9px] text-cyan-200/40 uppercase font-bold absolute -top-3 left-0 tracking-widest">
                         Passcode Key
                     </label>
                     <div className="relative">
@@ -191,7 +190,7 @@ const CoreCard = ({ core, onRequestUpdate }) => {
                             value={localCode}
                             onChange={(e) => setLocalCode(e.target.value)}
                             className={`
-                                w-full bg-black/20 border-b-2 text-center text-sm font-mono tracking-[0.3em] py-3 focus:outline-none transition-all pr-8
+                                w-full bg-black/20 border-b-2 text-center text-sm font-mono tracking-[0.3em] py-2 focus:outline-none transition-all
                                 ${
                                     hasChanges
                                         ? "border-amber-500 text-amber-200 shadow-[0_10px_20px_-10px_rgba(245,158,11,0.2)]"
@@ -323,34 +322,33 @@ export default function AdminDashboard({
         setFailMessage(currentStage?.fail_message || "");
     }, [currentStage]);
 
-    // Added 'clue' to data structure
     const [cores, setCores] = useState([
         {
             id: 1,
-            name: "Core Xurith",
-            code: "8921",
-            clue: "Binary sequence start",
+            name: "Xurith Core",
+            code: "Vega",
+            clue: "Look over",
             isSolved: true,
         },
         {
             id: 2,
-            name: "Core Thevia",
-            code: "X-99",
-            clue: "Look under the desk",
+            name: "Thevia Core",
+            code: "Altair",
+            clue: "The twilight star",
             isSolved: false,
         },
         {
             id: 3,
-            name: "Core Euprus",
-            code: "7712",
-            clue: "Year of establishment",
+            name: "Euprus Core",
+            code: "Closed",
+            clue: "Where hope shines",
             isSolved: false,
         },
         {
             id: 4,
-            name: "Core Northgard",
-            code: "33-B",
-            clue: "Sector 7 G",
+            name: "Northgard Core",
+            code: "Epigraph",
+            clue: "Within our heart",
             isSolved: false,
         },
     ]);
@@ -378,7 +376,6 @@ export default function AdminDashboard({
         setIsConfirmOpen(true);
     };
 
-    // Updated to accept newClue argument
     const requestCoreUpdate = (id, newCode, newClue, name) => {
         setPendingAction({
             type: "core",
@@ -541,37 +538,40 @@ export default function AdminDashboard({
                     </div>
 
                     {/* RIGHT COLUMN */}
-                    <div className="flex flex-col justify-center">
-                        <label className={labelStyle}>Current Phase</label>
-                        <div className="relative group w-full">
-                            {/* Decorative Corners for Dropdown */}
-                            <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-amber-500/50 pointer-events-none"></div>
-                            <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-amber-500/50 pointer-events-none"></div>
-                            <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-amber-500/50 pointer-events-none"></div>
-                            <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-amber-500/50 pointer-events-none"></div>
+                    <div className="flex flex-col justify-center gap-12">
+                        {/* RIGHT COLUMN */}
+                        <div className="flex flex-col justify-center">
+                            <label className={labelStyle}>Current Phase</label>
+                            <div className="relative group w-full">
+                                {/* Decorative Corners for Dropdown */}
+                                <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-amber-500/50 pointer-events-none"></div>
+                                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-amber-500/50 pointer-events-none"></div>
+                                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-amber-500/50 pointer-events-none"></div>
+                                <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-amber-500/50 pointer-events-none"></div>
 
-                            <select
-                                value={currentStageId || ""}
-                                onChange={(e) =>
-                                    requestChange(
-                                        "state",
-                                        parseInt(e.target.value),
-                                    )
-                                }
-                                className="w-full bg-[#04090f]/80 border border-white/10 text-amber-100 text-xl font-serif px-8 py-6 focus:outline-none focus:border-amber-500/30 appearance-none cursor-pointer transition-all hover:bg-white/5 tracking-wide"
-                            >
-                                {stateOptions.map((opt) => (
-                                    <option
-                                        key={opt.id}
-                                        value={opt.id}
-                                        className="bg-[#0f1c2e] text-amber-100/80 py-2"
-                                    >
-                                        {opt.name}
-                                    </option>
-                                ))}
-                            </select>
-                            <div className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none text-amber-500/50 transition-transform duration-300 group-hover:translate-y-[-20%]">
-                                ▼
+                                <select
+                                    value={currentStageId || ""}
+                                    onChange={(e) =>
+                                        requestChange(
+                                            "state",
+                                            parseInt(e.target.value),
+                                        )
+                                    }
+                                    className="w-full bg-[#04090f]/80 border border-white/10 text-amber-100 text-xl font-serif px-8 py-6 focus:outline-none focus:border-amber-500/30 appearance-none cursor-pointer transition-all hover:bg-white/5 tracking-wide"
+                                >
+                                    {stateOptions.map((opt) => (
+                                        <option
+                                            key={opt.id}
+                                            value={opt.id}
+                                            className="bg-[#0f1c2e] text-amber-100/80 py-2"
+                                        >
+                                            {opt.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <div className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none text-amber-500/50 transition-transform duration-300 group-hover:translate-y-[-20%]">
+                                    ▼
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -598,7 +598,7 @@ export default function AdminDashboard({
             {isConfirmOpen &&
                 typeof document === "object" &&
                 createPortal(
-                    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
                         <div
                             className="absolute inset-0 bg-[#020406]/90 backdrop-blur-sm"
                             onClick={cancelChange}
@@ -613,7 +613,7 @@ export default function AdminDashboard({
                             <div className="text-amber-100/70 text-base leading-relaxed text-center font-light">
                                 {pendingAction.type === "core" ? (
                                     <>
-                                        Changing data for{" "}
+                                        Changing data for
                                         <span className="text-white font-bold">
                                             {pendingAction.value.name}
                                         </span>
@@ -645,15 +645,11 @@ export default function AdminDashboard({
                                     </>
                                 ) : (
                                     <>
-                                        Changing status to:{" "}
+                                        Changing status to:
                                         <span className="text-white font-bold block mt-2 text-xl font-serif">
                                             {pendingAction.type === "state"
-                                                ? stages.find(
-                                                      (s) =>
-                                                          s.id ===
-                                                          pendingAction.value,
-                                                  )?.name || pendingAction.value
-                                                : `${pendingAction.type} ${pendingAction.value ? "Active" : "Dormant"}`}
+                                                ? pendingAction.value
+                                                : `${pendingAction.type} ${pendingAction.value ? "On" : "Off"}`}
                                         </span>
                                     </>
                                 )}
