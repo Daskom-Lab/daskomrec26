@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { router } from "@inertiajs/react";
+import RichTextEditor from "@components/RichTextEditor";
 
 // --- 1. THEMED SUB-COMPONENTS (With Standard Wording) ---
 
@@ -721,14 +722,12 @@ export default function AdminDashboard({
                                                     <label className="text-[10px] uppercase font-bold text-emerald-500/40 mb-3 tracking-widest">
                                                         Message
                                                     </label>
-                                                    <textarea
+                                                    <RichTextEditor
+                                                        editorKey={`pass-${currentStageId}`}
                                                         value={tempPass}
-                                                        onChange={(e) =>
-                                                            setTempPass(
-                                                                e.target.value,
-                                                            )
+                                                        onChange={(value) =>
+                                                            setTempPass(value)
                                                         }
-                                                        className="w-full flex-1 bg-[#050a10]/50 border border-emerald-500/10 p-6 text-emerald-100/90 resize-none text-xl font-serif leading-relaxed focus:outline-none focus:border-emerald-500/30 placeholder-emerald-900/50"
                                                         placeholder="Enter message..."
                                                     />
                                                 </div>
@@ -761,9 +760,14 @@ export default function AdminDashboard({
                                                 <h4 className="text-2xl font-serif text-emerald-400 mb-6 text-center">
                                                     Status: PASSED
                                                 </h4>
-                                                <p className="text-emerald-100/80 leading-loose text-lg font-light text-center italic">
-                                                    {tempPass}
-                                                </p>
+                                                <div
+                                                    className="text-emerald-100/80 leading-loose text-lg font-light prose prose-invert prose-emerald max-w-none"
+                                                    dangerouslySetInnerHTML={{
+                                                        __html:
+                                                            tempPass ||
+                                                            "<p class='text-emerald-100/40 italic text-center'>No message set</p>",
+                                                    }}
+                                                />
                                                 {tempPassLink && (
                                                     <a
                                                         href={tempPassLink}
@@ -793,14 +797,12 @@ export default function AdminDashboard({
                                                     <label className="text-[10px] uppercase font-bold text-rose-500/40 mb-3 tracking-widest">
                                                         Message
                                                     </label>
-                                                    <textarea
+                                                    <RichTextEditor
+                                                        editorKey={`fail-${currentStageId}`}
                                                         value={tempFail}
-                                                        onChange={(e) =>
-                                                            setTempFail(
-                                                                e.target.value,
-                                                            )
+                                                        onChange={(value) =>
+                                                            setTempFail(value)
                                                         }
-                                                        className="w-full flex-1 bg-[#050a10]/50 border border-rose-500/10 p-6 text-rose-100/90 resize-none text-xl font-serif leading-relaxed focus:outline-none focus:border-rose-500/30 placeholder-rose-900/50"
                                                         placeholder="Enter message..."
                                                     />
                                                 </div>
@@ -811,9 +813,14 @@ export default function AdminDashboard({
                                                 <h4 className="text-2xl font-serif text-rose-400 mb-6 text-center">
                                                     Status: NOT SELECTED
                                                 </h4>
-                                                <p className="text-rose-100/80 leading-loose text-lg font-light text-center italic">
-                                                    {tempFail}
-                                                </p>
+                                                <div
+                                                    className="text-rose-100/80 leading-loose text-lg font-light prose prose-invert prose-rose max-w-none"
+                                                    dangerouslySetInnerHTML={{
+                                                        __html:
+                                                            tempFail ||
+                                                            "<p class='text-rose-100/40 italic text-center'>No message set</p>",
+                                                    }}
+                                                />
                                             </div>
                                         )}
                                     </div>

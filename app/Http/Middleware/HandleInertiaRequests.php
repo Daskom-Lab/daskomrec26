@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Configuration;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -35,9 +36,10 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $userStageId = $request->user()?->caasStage?->stage_id;
+        
         return [
             ...parent::share($request),
-            //
 
             'session' => [
                 'status' =>fn () => $request-> session() -> get('status')
@@ -46,6 +48,12 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => fn () => $request -> user() ?$request->user() : null,
             ],
+
+            'config' => fn () => $userStageId 
+                ? Configuration::where('stage_id', $userStageId)->first() 
+                : null,
+
+            'userStageId' => $userStageId,
         ];
     }
 }

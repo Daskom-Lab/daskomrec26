@@ -16,6 +16,7 @@ import {
     ChevronRightIcon,
     XMarkIcon,
     IdentificationIcon,
+    ArrowDownTrayIcon,
     ListBulletIcon,
     TableCellsIcon,
     ChartBarIcon,
@@ -298,6 +299,16 @@ export default function Plottingan({ shifts }) {
                                         <ListBulletIcon className="w-5 h-5" />
                                     </button>
                                 </div>
+                                <button
+                                    onClick={() =>
+                                        (window.location.href =
+                                            "/admin/plottingan/export")
+                                    }
+                                    className="p-3 border border-emerald-500/40 text-emerald-300 rounded-sm hover:bg-emerald-900/20 transition-all"
+                                    title="Export all plottingan data"
+                                >
+                                    <ArrowDownTrayIcon className="w-5 h-5" />
+                                </button>
                                 <div className="relative group w-48 md:w-64">
                                     <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cyan-500/50" />
                                     <input

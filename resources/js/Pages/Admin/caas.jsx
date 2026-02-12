@@ -1,7 +1,6 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import { Head, router, useForm } from "@inertiajs/react";
 import { createPortal } from "react-dom";
-import * as XLSX from "xlsx";
 
 // Components
 import UnderwaterEffect from "@components/UnderwaterEffect";
@@ -118,9 +117,7 @@ export default function Caas({ users, stages }) {
     const form = useForm({
         id: null,
         nim: "",
-        password: "",
         name: "",
-        email: "",
         major: "",
         class: "",
         gender: "",
@@ -242,25 +239,48 @@ export default function Caas({ users, stages }) {
     };
 
     const handleExportExcel = () => {
-        const exportData = users.data.map((u) => ({
-            NIM: u.nim,
-            Name: u.profile?.name || "N/A",
-            Email: u.profile?.email || "N/A",
-            Major: u.profile?.major || "N/A",
-            Class: u.profile?.class || "N/A",
-            Gender: u.profile?.gender || "N/A",
-        }));
-        const worksheet = XLSX.utils.json_to_sheet(exportData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "CaAs");
-        XLSX.writeFile(workbook, "CaAs_Manifest_Archive.xlsx");
+        // Use backend route to export all records
+        window.location.href = "/admin/caas/export";
     };
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        // TODO: Implement backend API call to import users from Excel
-        console.log("Import file:", file.name);
+
+        // Use FormData to send file to backend
+        const formData = new FormData();
+        formData.append("file", file);
+
+        router.post("/admin/caas/import", formData, {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: (page) => {
+                // Show success message from backend
+                if (page.props.flash?.success) {
+                    setConfirmModal({
+                        isOpen: true,
+                        title: "Import Successful",
+                        message: page.props.flash.success,
+                        onConfirm: closeAllModals,
+                    });
+                }
+            },
+            onError: (errors) => {
+                // Show error message
+                const errorMsg =
+                    errors.file ||
+                    errors.error ||
+                    Object.values(errors)[0] ||
+                    "Import failed. Please check your file format.";
+                setConfirmModal({
+                    isOpen: true,
+                    title: "Import Failed",
+                    message: errorMsg,
+                    onConfirm: closeAllModals,
+                });
+            },
+        });
+
         e.target.value = null;
     };
 
@@ -398,7 +418,7 @@ export default function Caas({ users, stages }) {
                                     type="file"
                                     ref={fileInputRef}
                                     onChange={handleFileChange}
-                                    accept=".xlsx, .xls"
+                                    accept=".xlsx, .xls, .csv"
                                     className="hidden"
                                 />
                             </div>
@@ -599,17 +619,10 @@ export default function Caas({ users, stages }) {
                                                                 form.setData({
                                                                     id: item.id,
                                                                     nim: item.nim,
-                                                                    password:
-                                                                        "",
                                                                     name:
                                                                         item
                                                                             .profile
                                                                             ?.name ||
-                                                                        "",
-                                                                    email:
-                                                                        item
-                                                                            .profile
-                                                                            ?.email ||
                                                                         "",
                                                                     major:
                                                                         item
@@ -808,45 +821,32 @@ export default function Caas({ users, stages }) {
                                             />
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-6">
+                                    <div className="grid grid-cols-1 gap-6">
                                         <div>
-                                            <label className="text-cyan-500/60 text-[10px] font-bold uppercase tracking-widest block mb-2">
-                                                Email Address
+                                            <label className="text-cyan-500/60 text-[10px] font-bold uppercase tracking-widest block">
+                                                Gender
                                             </label>
-                                            <input
-                                                type="email"
+                                            <select
                                                 required
                                                 className="input-etched w-full"
-                                                value={form.data.email}
+                                                value={form.data.gender}
                                                 onChange={(e) =>
                                                     form.setData(
-                                                        "email",
+                                                        "gender",
                                                         e.target.value,
                                                     )
                                                 }
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="text-cyan-500/60 text-[10px] font-bold uppercase tracking-widest block mb-2">
-                                                Password
-                                            </label>
-                                            <input
-                                                type="password"
-                                                required={!form.data.id}
-                                                placeholder={
-                                                    form.data.id
-                                                        ? "Leave blank to keep current"
-                                                        : ""
-                                                }
-                                                className="input-etched w-full font-mono"
-                                                value={form.data.password}
-                                                onChange={(e) =>
-                                                    form.setData(
-                                                        "password",
-                                                        e.target.value,
-                                                    )
-                                                }
-                                            />
+                                            >
+                                                <option value="">
+                                                    Select Gender
+                                                </option>
+                                                <option value="Male">
+                                                    Male
+                                                </option>
+                                                <option value="Female">
+                                                    Female
+                                                </option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-6">
@@ -854,8 +854,7 @@ export default function Caas({ users, stages }) {
                                             <label className="text-cyan-500/60 text-[10px] font-bold uppercase tracking-widest block mb-2">
                                                 Major
                                             </label>
-                                            <input
-                                                type="text"
+                                            <select
                                                 required
                                                 className="input-etched w-full"
                                                 value={form.data.major}
@@ -865,7 +864,26 @@ export default function Caas({ users, stages }) {
                                                         e.target.value,
                                                     )
                                                 }
-                                            />
+                                            >
+                                                <option value="">
+                                                    Select Major
+                                                </option>
+                                                <option value="Teknik Elektro">
+                                                    Teknik Elektro
+                                                </option>
+                                                <option value="Teknik Biomedis">
+                                                    Teknik Biomedis
+                                                </option>
+                                                <option value="Teknik Fisika">
+                                                    Teknik Fisika
+                                                </option>
+                                                <option value="Teknik Telekomunikasi">
+                                                    Teknik Telekomunikasi
+                                                </option>
+                                                <option value="Teknik Sistem Energi">
+                                                    Teknik Sistem Energi
+                                                </option>
+                                            </select>
                                         </div>
                                         <div>
                                             <label className="text-cyan-500/60 text-[10px] font-bold uppercase tracking-widest block mb-2">
@@ -885,30 +903,7 @@ export default function Caas({ users, stages }) {
                                             />
                                         </div>
                                     </div>
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-cyan-500/60 text-[10px] font-bold uppercase tracking-widest block">
-                                            Gender
-                                        </label>
-                                        <select
-                                            required
-                                            className="input-etched w-full"
-                                            value={form.data.gender}
-                                            onChange={(e) =>
-                                                form.setData(
-                                                    "gender",
-                                                    e.target.value,
-                                                )
-                                            }
-                                        >
-                                            <option value="">
-                                                Select Gender
-                                            </option>
-                                            <option value="Male">Male</option>
-                                            <option value="Female">
-                                                Female
-                                            </option>
-                                        </select>
-                                    </div>
+
                                     <button
                                         type="submit"
                                         disabled={form.processing}

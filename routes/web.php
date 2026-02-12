@@ -8,6 +8,8 @@ use App\Http\Controllers\CaasStageController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\PasswordController;
+use App\Http\Controllers\User\ShiftController as UserShiftController;
+use App\Http\Controllers\User\AnnouncementController;
 use Illuminate\Support\Facades\Route;
 
 Route::resource('shifts', ShiftController::class)->except(['index']);
