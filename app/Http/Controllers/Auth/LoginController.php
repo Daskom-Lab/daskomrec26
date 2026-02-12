@@ -15,7 +15,7 @@ class LoginController extends Controller
      */
     public function index()
     {
-        return inertia('User/login');
+        return inertia('login');
     }
     
     /**
@@ -42,7 +42,12 @@ class LoginController extends Controller
 
             $request->session()->regenerate();
 
-            return redirect('User/home');
+            // Redirect berdasarkan role
+            if (Auth::user()->is_admin) {
+                return redirect('/admin/home');
+            }
+
+            return redirect('/User/home');
         }
 
         //if login fails
@@ -56,9 +61,12 @@ class LoginController extends Controller
      *
      * @return void
      */
-    public function destroy()
+    public function destroy(Request $request)
     {
         auth()->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect('/login');
     }

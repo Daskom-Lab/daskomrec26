@@ -56,7 +56,7 @@ export default function ChangePassword() {
         setIsSidebarOpen(false);
         setTimeout(() => {
             setIsLoggingOut(true);
-            setTimeout(() => router.visit("/"), 300);
+            setTimeout(() => router.post("/logout"), 1000);
         }, 350);
     };
 
