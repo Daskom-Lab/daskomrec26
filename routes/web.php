@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PuzzleController;
 use App\Http\Controllers\StageController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ShiftController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\PasswordController;
 use App\Http\Controllers\User\ShiftController as UserShiftController;
 use App\Http\Controllers\User\AnnouncementController;
+use App\Http\Controllers\User\CoresController;
 use Illuminate\Support\Facades\Route;
 use inertia\inertia;
 
@@ -60,9 +62,15 @@ Route::middleware('auth')->group(function (){
             return inertia('User/announcement');
         });
 
-        Route::get('/user/cores', function () {
-            return inertia('User/cores');
-        });
+        Route::get('/user/shift', [UserShiftController::class, 'index'])->name('user.shift.index');
+
+        Route::post('/user/shift', [UserShiftController::class, 'store'])->name('user.shift.store');
+
+        Route::get('/user/announcement', [AnnouncementController::class, 'index'])->name('user.announcement');
+
+        Route::get('/user/cores', [CoresController::class, 'index'])->name('user.cores.index');
+
+        Route::post('/user/cores/unlock/{puzzle}', [PuzzleController::class, 'unlock'])->name('user.puzzle.unlock');
     });
 
     // === ADMIN ROUTES ===
@@ -71,59 +79,34 @@ Route::middleware('auth')->group(function (){
         Route::put('/admin/home/current-stage', [HomeController::class, 'setCurrentStage']);
         Route::put('/admin/home/configuration/{stage}', [HomeController::class, 'updateConfiguration']);
         Route::put('/admin/home/messages/{stage}', [HomeController::class, 'updateStageMessages']);
-
-        Route::get('/admin/password', function () {
-            return inertia('Admin/password');
-        });
-        Route::put('/admin/password', [PasswordController::class, 'update']);
+        Route::put('/admin/puzzle/{puzzle}', [PuzzleController::class, 'update']);
 
         Route::get('/admin/shift', [ShiftController::class, 'index']);
 
         Route::get('/admin/plottingan', [PlottinganController::class, 'index']);
+        Route::get('/admin/plottingan/export', [PlottinganController::class, 'export'])->name('plottingan.export');
         Route::get('/admin/plottingan/shift/{shiftId}', [PlottinganController::class, 'shiftUsers']);
 
-        Route::get('/admin/configuration', [StageController::class, 'index']);
-        Route::put('/admin/configuration/{stage}', [StageController::class, 'update']);
+
+
 
         Route::get('/admin/caas', [UserController::class, 'index']);
         Route::post('/admin/caas', [UserController::class, 'store']);
+        Route::get('/admin/caas/export', [UserController::class, 'export'])->name('caas.export');
+        Route::post('/admin/caas/import', [UserController::class, 'import'])->name('caas.import');
 
-        Route::put('/admin/caas/{caasstage}/stage', [CaasStageController::class, 'updateStage']);
-        Route::put('/admin/caas/{caasstage}/status', [CaasStageController::class, 'updateStatus']);
+        Route::put('/admin/caas/{caasstage}/stage', [CaasstageController::class, 'updateStage']);
+            Route::put('/admin/caas/{caasstage}/status', [CaasstageController::class, 'updateStatus']);
+
     });
 
     Route::get('/user/oaline', function () {
         return inertia('User/oaline');
     });
-
-    Route::get('/user/shift', [UserShiftController::class, 'index'])->name('user.shift.index');
-    Route::post('/user/shift', [UserShiftController::class, 'store'])->name('user.shift.store');
-
-    Route::get('/user/announcement', [AnnouncementController::class, 'index'])->name('user.announcement');
 });
 
-Route::get('/admin/home', [HomeController::class, 'index']);
-Route::put('/admin/home/current-stage', [HomeController::class, 'setCurrentStage']);
-Route::put('/admin/home/configuration/{stage}', [HomeController::class, 'updateConfiguration']);
-Route::put('/admin/home/messages/{stage}', [HomeController::class, 'updateStageMessages']);
-
-Route::get('/admin/shift', [ShiftController::class, 'index']);
-
-Route::get('/admin/plottingan', [PlottinganController::class, 'index']);
-Route::get('/admin/plottingan/export', [PlottinganController::class, 'export'])->name('plottingan.export');
-Route::get('/admin/plottingan/shift/{shiftId}', [PlottinganController::class, 'shiftUsers']);
-
-Route::get('/admin/configuration', [StageController::class, 'index']);
-Route::put('/admin/configuration/{stage}', [StageController::class, 'update']);
-
-
-Route::get('/admin/caas', [UserController::class, 'index']);
-Route::post('/admin/caas', [UserController::class, 'store']);
-Route::get('/admin/caas/export', [UserController::class, 'export'])->name('caas.export');
-Route::post('/admin/caas/import', [UserController::class, 'import'])->name('caas.import');
-
-Route::put('/admin/caas/{caasstage}/stage', [CaasstageController::class, 'updateStage']);
-Route::put('/admin/caas/{caasstage}/status', [CaasstageController::class, 'updateStatus']);
+        Route::get('/admin/configuration', [StageController::class, 'index']);
+        Route::put('/admin/configuration/{stage}', [StageController::class, 'update']);
 
 
 Route::fallback(function () {

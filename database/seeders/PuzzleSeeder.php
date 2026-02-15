@@ -13,7 +13,15 @@ class PuzzleSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        Puzzle::factory()->count(4)->create();
+        $cores = [
+            ['name' => 'Xurith',    'clue' => 'Look underneath',           'answer' => '1234'],
+            ['name' => 'Thevia',    'clue' => 'The twilight star',          'answer' => '1234'],
+            ['name' => 'Euprus',    'clue' => 'Shining its brilliance',     'answer' => '1234'],
+            ['name' => 'Northgard', 'clue' => 'Within the night sky',       'answer' => '1234'],
+        ];
+
+        foreach ($cores as $core) {
+            Puzzle::create($core);
+        }
     }
 }

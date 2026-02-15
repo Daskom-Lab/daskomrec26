@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Puzzle;
 use App\Models\Stage;
 use App\Models\User;
 use App\Models\CaasStage;
@@ -19,11 +20,14 @@ class HomeController extends Controller
             ? CaasStage::where('stage_id', $currentStage->id)->where('status', 'LOLOS')->count()
             : 0;
 
+        $puzzles = Puzzle::all();
+
         return inertia('Admin/home', [
             'stages' => $stages,
             'currentStage' => $currentStage,
             'totalUsers' => $totalUsers,
             'passedUsers' => $passedUsers,
+            'puzzles' => $puzzles,
         ]);
     }
 

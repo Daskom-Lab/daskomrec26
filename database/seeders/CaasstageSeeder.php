@@ -16,21 +16,20 @@ class CaasStageSeeder extends Seeder
     public function run(): void
     {
         $users = User::all();
-        $administrationStage = Stage::where('name', 'Administration')->first();
+        $stages = Stage::all();
 
-        if ($users->isEmpty() || !$administrationStage) {
+        if ($users->isEmpty() || $stages->isEmpty()) {
             return;
         }
 
+        $statuses = ['GAGAL', 'LOLOS', 'PROSES'];
+
         foreach ($users as $user) {
-            // Only create if the user doesn't already have a CaasStage
-            if (!$user->caasStage) {
-                CaasStage::create([
-                    'user_id' => $user->id,
-                    'stage_id' => $administrationStage->id,
-                    'status' => 'GAGAL', // Default status
-                ]);
-            }
+            CaasStage::create([
+                'user_id' => $user->id,
+                'stage_id' => $stages->random()->id,
+                'status' => fake()->randomElement($statuses),
+            ]);
         }
     }
 }

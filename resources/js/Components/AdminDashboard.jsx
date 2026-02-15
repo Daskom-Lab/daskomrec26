@@ -288,6 +288,7 @@ export default function AdminDashboard({
     currentStage = null,
     totalUsers = 0,
     passedUsers = 0,
+    puzzles = [],
 }) {
     // Derive current config from the current stage's configurations
     const currentConfig = currentStage?.configurations?.[0] || {};
@@ -322,36 +323,27 @@ export default function AdminDashboard({
         setFailMessage(currentStage?.fail_message || "");
     }, [currentStage]);
 
-    const [cores, setCores] = useState([
-        {
-            id: 1,
-            name: "Xurith Core",
-            code: "Vega",
-            clue: "Look over",
-            isSolved: true,
-        },
-        {
-            id: 2,
-            name: "Thevia Core",
-            code: "Altair",
-            clue: "The twilight star",
-            isSolved: false,
-        },
-        {
-            id: 3,
-            name: "Euprus Core",
-            code: "Closed",
-            clue: "Where hope shines",
-            isSolved: false,
-        },
-        {
-            id: 4,
-            name: "Northgard Core",
-            code: "Epigraph",
-            clue: "Within our heart",
-            isSolved: false,
-        },
-    ]);
+    const [cores, setCores] = useState(
+        puzzles.map((p) => ({
+            id: p.id,
+            name: p.name + " Core",
+            code: p.answer,
+            clue: p.clue || "",
+            isSolved: p.status,
+        })),
+    );
+
+    useEffect(() => {
+        setCores(
+            puzzles.map((p) => ({
+                id: p.id,
+                name: p.name + " Core",
+                code: p.answer,
+                clue: p.clue || "",
+                isSolved: p.status,
+            })),
+        );
+    }, [puzzles]);
 
     // UI States
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -422,7 +414,7 @@ export default function AdminDashboard({
             );
         }
 
-        // Updated to save both code and clue
+        // Updated to save both code and clue via API
         if (type === "core") {
             setCores((prev) =>
                 prev.map((c) =>
@@ -430,6 +422,14 @@ export default function AdminDashboard({
                         ? { ...c, code: value.newCode, clue: value.newClue }
                         : c,
                 ),
+            );
+            router.put(
+                `/admin/puzzle/${value.id}`,
+                {
+                    answer: value.newCode,
+                    clue: value.newClue,
+                },
+                { preserveScroll: true, preserveState: true },
             );
         }
 

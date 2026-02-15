@@ -12,6 +12,7 @@ export default function HomeAdmin({
     currentStage,
     totalUsers,
     passedUsers,
+    puzzles,
 }) {
     const backgroundRef = useRef(null);
     const USER = "Jyothi";
@@ -198,6 +199,7 @@ export default function HomeAdmin({
                             currentStage={currentStage}
                             totalUsers={totalUsers}
                             passedUsers={passedUsers}
+                            puzzles={puzzles}
                         />
                     </div>
                 </div>
