@@ -11,15 +11,11 @@ class Stage extends Model
 
     protected $fillable = [
         'name',
+        'success_message',
+        'fail_message',
+        'link',
+        'current_stage',
     ];
-
-    /**
-     * Get the announcements for the stage.
-     */
-    public function announcements()
-    {
-        return $this->hasMany(Announcement::class);
-    }
 
     /**
      * Get the caas stages for the stage.
@@ -34,6 +30,6 @@ class Stage extends Model
      */
     public function configurations()
     {
-        return $this->hasMany(Configuration::class, 'current_stage_id');
+        return $this->hasMany(Configuration::class, 'stage_id');
     }
 }

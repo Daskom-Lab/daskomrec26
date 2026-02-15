@@ -73,10 +73,10 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the caas stages for the user.
+     * Get the caas stage for the user.
      */
-    public function caasStages()
+    public function caasStage()
     {
-        return $this->hasMany(CaasStage::class);
+        return $this->hasOne(CaasStage::class);
     }
 }

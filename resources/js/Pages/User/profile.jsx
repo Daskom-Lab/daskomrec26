@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 
 import UnderwaterEffect from '@components/UnderwaterEffect';
 import Background from '@assets/backgrounds/AssistantBackground.png';
@@ -9,8 +9,13 @@ import UserSidebar from '@components/UserSidebar';
 import CardCaas from '@components/CaasCard';
 import Rumput from '@assets/others/DECORATIONS/Seaweed & Coral Reefs/32.png';
 
-export default function Home() {
+export default function Profile() {
     const backgroundRef = useRef(null);
+
+    //Get data from controller
+    const { auth} = usePage().props;
+    const user = auth.user;
+    const profile= auth.profile|| {};
 
     // Intro states
     const [showImage, setShowImage] = useState(false);
@@ -44,7 +49,7 @@ export default function Home() {
 
         setTimeout(() => {
             setIsLoggingOut(true);
-            setTimeout(() => router.visit('/'), 1000);
+            setTimeout(() => router.post('/logout'), 1000);
         }, 350);
     };
 
@@ -258,11 +263,11 @@ export default function Home() {
                     style={getCardStyle()}
                 >
                     <CardCaas
-                        sex="male"
-                        name="Jyothi Divyananda"
-                        nim="101012400159"
-                        cls="TT-48-02"
-                        major="Teknik Telekomunikasi"
+                        sex= {profile.gender?.toLowerCase() || 'male'}
+                        name={profile.name|| "nothing"}
+                        nim={user.nim|| "0000000000"}
+                        cls={profile.class|| "A"}
+                        major={profile.major|| "No Major"}
                     />
                 </div>
 

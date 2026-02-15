@@ -33,6 +33,6 @@ class Configuration extends Model
      */
     public function currentStage()
     {
-        return $this->belongsTo(Stage::class, 'current_stage_id');
+        return $this->belongsTo(Stage::class, 'stage_id');
     }
 }

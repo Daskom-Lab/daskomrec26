@@ -11,7 +11,7 @@ class StoreShiftRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class StoreShiftRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'shift' => 'required|string|max:255',
+            'date' => 'required|date',
+            'timeStart' => 'required|date_format:H:i',
+            'timeEnd' => 'required|date_format:H:i',
+            'quota' => 'required|integer|min:1',
         ];
     }
 }

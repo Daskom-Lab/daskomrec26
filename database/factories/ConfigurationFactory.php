@@ -18,10 +18,9 @@ class ConfigurationFactory extends Factory
     {
         return [
             //
-            'pengumuman_on' => fake()->boolean(),
-            'isi_jadwal_on' => fake()->boolean(),
-            'puzzles_on' => fake()->boolean(),
-            'current_stage_id' => fake()->numberBetween(1, 5),
+            'pengumuman_on' => false,
+            'isi_jadwal_on' => false,
+            'puzzles_on' => false,
         ];
     }
 }

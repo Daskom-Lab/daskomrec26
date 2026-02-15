@@ -9,6 +9,8 @@ class CaasStage extends Model
 {
     use HasFactory;
 
+    protected $table = 'caas_stages';
+
     protected $fillable = [
         'status',
         'user_id',

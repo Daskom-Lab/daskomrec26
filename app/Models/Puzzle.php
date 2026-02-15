@@ -10,8 +10,7 @@ class Puzzle extends Model
     use HasFactory;
 
     protected $fillable = [
-        'question',
-        'description',
+        'name',
         'clue',
         'answer',
         'status',
@@ -22,7 +21,6 @@ class Puzzle extends Model
     ];
 
     protected $attributes = [
-        'answer' => '0',
         'status' => false,
     ];
 }

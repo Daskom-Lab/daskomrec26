@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->string('name', 100);
+            $table->text('success_message')->nullable();
+            $table->text('fail_message')->nullable();
+            $table->string('link')->nullable();
+            $table->boolean('current_stage')->default(false);
         });
     }
 

@@ -12,8 +12,18 @@ class StageSeeder extends Seeder
      * Run the database seeds.
      */
     public function run(): void
-    {
-        //
-        Stage::factory()->count(5)->create();
+{
+    $stages = [
+        ['name' => 'Administration'],
+        ['name' => 'Coding and Writing Test'],
+        ['name' => 'Interview'],
+        ['name' => 'Group Task'],
+        ['name' => 'Teaching Test'],
+        ['name' => 'Rising'],
+    ];
+    
+    foreach ($stages as $stage) {
+        Stage::create($stage);
     }
+}
 }
