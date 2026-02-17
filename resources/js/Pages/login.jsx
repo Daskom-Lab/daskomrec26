@@ -1,15 +1,15 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Head, router, useForm } from '@inertiajs/react';
+import React, { useRef, useState, useEffect } from "react";
+import { Head, useForm } from "@inertiajs/react";
 
-import background from '@assets/backgrounds/utama.png';
-import road from '@assets/backgrounds/road.png';
-import trial from '@assets/backgrounds/trial.png';
-import door_closed from '@assets/backgrounds/door2.png';
-import door_opened from '@assets/backgrounds/door2_open.png';
-import scroll from '@assets/backgrounds/scroll2.png';
-import Sign04 from '@assets/buttons/ButtonRegular.png';
-import BlueInputBox from '@components/BlueInputBox';
-import UnderwaterEffect from '@components/UnderwaterEffect';
+import background from "@assets/backgrounds/utama.png";
+import road from "@assets/backgrounds/road.png";
+import trial from "@assets/backgrounds/trial.png";
+import door_closed from "@assets/backgrounds/door2.png";
+import door_opened from "@assets/backgrounds/door2_open.png";
+import scroll from "@assets/backgrounds/scroll2.png";
+import Sign04 from "@assets/buttons/ButtonRegular.png";
+import BlueInputBox from "@components/BlueInputBox";
+import UnderwaterEffect from "@components/UnderwaterEffect";
 
 export default function Login() {
     const trialRef = useRef(null);
@@ -30,25 +30,31 @@ export default function Login() {
     };
 
     const [isIntro, setIsIntro] = useState(true);
-    const [cameraState, setCameraState] = useState('enter');
+    const [cameraState, setCameraState] = useState("enter");
     const [showColorFade, setShowColorFade] = useState(false);
     const [fadeScroll, setFadeScroll] = useState(false);
 
     // Added errors and setError for indicator logic
-    const { data, setData, processing, errors, setError, clearErrors } = useForm({
-        username: '',
-        password: ''
-    });
+    const { data, setData, post, processing, errors, setError, clearErrors } =
+        useForm({
+            nim: "",
+            password: "",
+        });
 
     const getTransform = (type) => {
         const scale = SCALE[type][cameraState] ?? SCALE[type].idle;
-        const offset = cameraState === 'out' ? OUT_OFFSET : (cameraState === 'in' ? IN_OFFSET : BASE_OFFSET);
+        const offset =
+            cameraState === "out"
+                ? OUT_OFFSET
+                : cameraState === "in"
+                  ? IN_OFFSET
+                  : BASE_OFFSET;
 
         return `translate(${offset.x}px, ${offset.y}px) scale(${scale})`;
     };
 
     const handleMouseMove = (e) => {
-        if (rafRef.current || isIntro || cameraState !== 'idle') return;
+        if (rafRef.current || isIntro || cameraState !== "idle") return;
 
         rafRef.current = requestAnimationFrame(() => {
             if (!trialRef.current || !roadRef.current) return;
@@ -66,51 +72,56 @@ export default function Login() {
 
     const handleMouseLeave = () => {
         if (!trialRef.current || !roadRef.current) return;
-        trialRef.current.style.transform = getTransform('bg');
-        roadRef.current.style.transform = getTransform('road');
+        trialRef.current.style.transform = getTransform("bg");
+        roadRef.current.style.transform = getTransform("road");
     };
 
     const handleOutsideClick = (e) => {
-        if (cameraState !== 'idle' || isIntro) return;
+        if (cameraState !== "idle" || isIntro) return;
         if (!scrollWrapperRef.current?.contains(e.target)) {
-            setCameraState('out');
-            setTimeout(() => router.visit('/'), 1200);
+            setCameraState("out");
+            setTimeout(() => router.visit("/"), 1200);
         }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (cameraState !== 'idle') return;
+        if (cameraState !== "idle") return;
 
         clearErrors();
 
-        if (data.password !== 'atlantis') {
-            setError('password', 'Incorrect key provided.');
-            return;
-        }
-
-        setFadeScroll(true);
-        setTimeout(() => setCameraState('in'), 500);
-        setTimeout(() => setShowColorFade(true), 800);
-        setTimeout(() => router.visit('/user/home'), 2000);
+        post("/login", {
+            onSuccess: () => {
+                setFadeScroll(true);
+                setTimeout(() => setCameraState("in"), 500);
+                setTimeout(() => setShowColorFade(true), 800);
+            },
+            onError: () => {},
+        });
     };
 
     useEffect(() => {
         const t = setTimeout(() => {
             setIsIntro(false);
-            setCameraState('idle');
+            setCameraState("idle");
         }, 0);
         return () => clearTimeout(t);
     }, []);
 
     const commonTransformStyle = {
-        transformOrigin: 'bottom center',
-        transition: 'transform 2000ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+        transformOrigin: "bottom center",
+        transition: "transform 2000ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
     };
 
-    const bgStyle = { ...commonTransformStyle, transform: getTransform('bg') };
-    const doorStyle = { ...commonTransformStyle, transform: getTransform('door') };
-    const roadStyle = { ...commonTransformStyle, transform: getTransform('road') };
+    const bgStyle = { ...commonTransformStyle, transform: getTransform("bg") };
+    const doorStyle = {
+        ...commonTransformStyle,
+        transform: getTransform("door"),
+    };
+    const roadStyle = {
+        ...commonTransformStyle,
+        transform: getTransform("road"),
+    };
 
     // Derived state for the shake animation
     const hasError = Object.keys(errors).length > 0;
@@ -152,7 +163,7 @@ export default function Login() {
                 onClick={handleOutsideClick}
                 className="relative w-full min-h-screen overflow-hidden bg-[#0a243b]"
             >
-                <UnderwaterEffect/>
+                <UnderwaterEffect />
 
                 {/* Main BG */}
                 <img
@@ -179,7 +190,7 @@ export default function Login() {
 
                 <img
                     ref={doorRef}
-                    src={cameraState === 'in' ? door_opened : door_closed}
+                    src={cameraState === "in" ? door_opened : door_closed}
                     alt="door"
                     className="absolute bottom-0 left-1/2 -translate-x-1/2 w-auto h-auto min-w-[1200px] max-w-[2000px] z-10 atlantis-sync"
                     style={doorStyle}
@@ -189,16 +200,28 @@ export default function Login() {
                 <div className="absolute inset-0 bg-gradient-to-b from-cyan-800/5 via-blue-900/10 to-indigo-900/15 z-25 pointer-events-none mix-blend-screen" />
 
                 {/* Scroll & Form */}
-                <div className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none" ref={scrollWrapperRef}>
+                <div
+                    className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none"
+                    ref={scrollWrapperRef}
+                >
                     <div
-                        className={`flex flex-col items-center justify-center transition-all duration-1000 ease-in-out ${hasError ? 'shake' : ''}`}
+                        className={`flex flex-col items-center justify-center transition-all duration-1000 ease-in-out ${hasError ? "shake" : ""}`}
                         style={{
                             transform: `scale(${SCALE.scroll[cameraState] ?? SCALE.scroll.idle})`,
-                            opacity: fadeScroll ? 0 : (cameraState === 'enter' || cameraState === 'out' ? 0 : 1),
-                            filter: cameraState === 'out' ? 'blur(8px)' : 'blur(0px)',
-                            pointerEvents: cameraState === 'idle' ? 'auto' : 'none',
-                            width: '520px',
-                            maxHeight: '90vh',
+                            opacity: fadeScroll
+                                ? 0
+                                : cameraState === "enter" ||
+                                    cameraState === "out"
+                                  ? 0
+                                  : 1,
+                            filter:
+                                cameraState === "out"
+                                    ? "blur(8px)"
+                                    : "blur(0px)",
+                            pointerEvents:
+                                cameraState === "idle" ? "auto" : "none",
+                            width: "520px",
+                            maxHeight: "90vh",
                         }}
                     >
                         <img
@@ -207,40 +230,49 @@ export default function Login() {
                             className="w-auto max-h-full object-contain cold-blue-filter-scroll origin-center scale-125 sm:scale-170 md:scale-190"
                         />
                         <div className="absolute inset-0 flex flex-col items-center justify-center px-14 sm:px-12 text-[#0b3a66] gap-1 sm:gap-6">
-                            <h1 className="font-serif font-extrabold tracking-wide drop-shadow-lg text-4xl sm:text-5xl md:text-6xl mb-2 sm:mb-4 text-center"
+                            <h1
+                                className="font-serif font-extrabold tracking-wide drop-shadow-lg text-4xl sm:text-5xl md:text-6xl mb-2 sm:mb-4 text-center"
                                 style={{
-                                    fontFamily: 'Cormorant Infant',
-                                    color: hasError ? '#7f1d1d' : '#0c365b', // Changes title to dark red on error
-                                    textShadow: '0 2px 10px rgba(12, 54, 91, 0.3), 0 0 20px rgba(96, 165, 250, 0.2)'
+                                    fontFamily: "Cormorant Infant",
+                                    color: hasError ? "#7f1d1d" : "#0c365b", // Changes title to dark red on error
+                                    textShadow:
+                                        "0 2px 10px rgba(12, 54, 91, 0.3), 0 0 20px rgba(96, 165, 250, 0.2)",
                                 }}
                             >
-                                {hasError ? 'Access Denied' : 'Insert The Key'}
+                                {hasError ? "Access Denied" : "Insert The Key"}
                             </h1>
 
-                            <form onSubmit={handleSubmit} className="w-[80%] sm:w-[90%] max-w-105 flex flex-col gap-3 sm:gap-4">
+                            <form
+                                onSubmit={handleSubmit}
+                                className="w-[80%] sm:w-[90%] max-w-105 flex flex-col gap-3 sm:gap-4"
+                            >
                                 <div className="flex flex-col gap-1">
                                     <label
                                         className="font-serif font-bold text-xl sm:text-2xl md:text-4xl"
                                         style={{
-                                            fontFamily: 'Cormorant Infant',
-                                            color: '#0c365b',
-                                            textShadow: '0 2px 10px rgba(12, 54, 91, 0.3), 0 0 20px rgba(96, 165, 250, 0.2)'
+                                            fontFamily: "Cormorant Infant",
+                                            color: "#0c365b",
+                                            textShadow:
+                                                "0 2px 10px rgba(12, 54, 91, 0.3), 0 0 20px rgba(96, 165, 250, 0.2)",
                                         }}
                                     >
-                                        Username
+                                        NIM
                                     </label>
                                     <BlueInputBox
-                                        value={data.username}
-                                        onChange={(e) => setData('username', e.target.value)}
+                                        value={data.nim}
+                                        onChange={(e) =>
+                                            setData("nim", e.target.value)
+                                        }
                                     />
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label
                                         className="font-serif font-bold text-xl sm:text-2xl md:text-4xl"
                                         style={{
-                                            fontFamily: 'Cormorant Infant',
-                                            color: '#0c365b',
-                                            textShadow: '0 2px 10px rgba(12, 54, 91, 0.3), 0 0 20px rgba(96, 165, 250, 0.2)'
+                                            fontFamily: "Cormorant Infant",
+                                            color: "#0c365b",
+                                            textShadow:
+                                                "0 2px 10px rgba(12, 54, 91, 0.3), 0 0 20px rgba(96, 165, 250, 0.2)",
                                         }}
                                     >
                                         Password
@@ -248,7 +280,9 @@ export default function Login() {
                                     <BlueInputBox
                                         type="password"
                                         value={data.password}
-                                        onChange={(e) => setData('password', e.target.value)}
+                                        onChange={(e) =>
+                                            setData("password", e.target.value)
+                                        }
                                     />
                                 </div>
 
@@ -272,9 +306,11 @@ export default function Login() {
                                     <span
                                         className="absolute inset-0 flex items-center justify-center text-xl sm:text-3xl font-extrabold tracking-[2px]"
                                         style={{
-                                            color: '#e0f2fe',
-                                            textShadow: '0 0 10px rgba(56, 189, 248, 0.7), 0 0 20px rgba(96, 165, 250, 0.5)'
-                                        }}>
+                                            color: "#e0f2fe",
+                                            textShadow:
+                                                "0 0 10px rgba(56, 189, 248, 0.7), 0 0 20px rgba(96, 165, 250, 0.5)",
+                                        }}
+                                    >
                                         Dive In
                                     </span>
                                 </button>
@@ -288,7 +324,11 @@ export default function Login() {
                 </div>
                 <div
                     className="fixed inset-0 z-50 pointer-events-none transition-opacity duration-1000 ease-in-out"
-                    style={{ background: 'linear-gradient(to bottom, #0a2a4a, #0c365b)', opacity: showColorFade ? 1 : 0 }}
+                    style={{
+                        background:
+                            "linear-gradient(to bottom, #0a2a4a, #0c365b)",
+                        opacity: showColorFade ? 1 : 0,
+                    }}
                 />
             </div>
         </>

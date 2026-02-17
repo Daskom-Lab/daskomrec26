@@ -1,15 +1,21 @@
-import { useRef, useState, useEffect } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { useRef, useState, useEffect } from "react";
+import { Head, router } from "@inertiajs/react";
 
-import UnderwaterEffect from '@components/UnderwaterEffect';
-import background from '@assets/backgrounds/Background3.png';
-import ButtonSidebar from '@components/ButtonSidebar';
-import AdminSidebar from '@components/AdminSidebar';
-import AdminDashboard from '@components/AdminDashboard';
+import UnderwaterEffect from "@components/UnderwaterEffect";
+import background from "@assets/backgrounds/Background3.png";
+import ButtonSidebar from "@components/ButtonSidebar";
+import AdminSidebar from "@components/AdminSidebar";
+import AdminDashboard from "@components/AdminDashboard";
 
-export default function HomeAdmin() {
+export default function HomeAdmin({
+    stages,
+    currentStage,
+    totalUsers,
+    passedUsers,
+    puzzles,
+}) {
     const backgroundRef = useRef(null);
-    const USER = 'Jyothi';
+    const USER = "Jyothi";
 
     // Intro states
     const [showImage, setShowImage] = useState(false);
@@ -28,7 +34,7 @@ export default function HomeAdmin() {
 
     const toggleSidebar = () => {
         if (inputLocked || isLoggingOut) return;
-        setIsSidebarOpen(prev => !prev);
+        setIsSidebarOpen((prev) => !prev);
     };
 
     const handleLogout = () => {
@@ -36,7 +42,7 @@ export default function HomeAdmin() {
         setIsSidebarOpen(false);
         setTimeout(() => {
             setIsLoggingOut(true);
-            setTimeout(() => router.visit('/'), 1000);
+            setTimeout(() => router.post("/logout"), 1000);
         }, 350);
     };
 
@@ -66,16 +72,16 @@ export default function HomeAdmin() {
         };
 
         const handleKeyDown = (e) => {
-            if (e.key === 'Escape') skipIntro();
+            if (e.key === "Escape") skipIntro();
         };
-        window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('click', skipIntro);
+        window.addEventListener("keydown", handleKeyDown);
+        window.addEventListener("click", skipIntro);
 
         return () => {
             clearTimeout(showTimer);
             clearTimeout(zoomTimer);
-            window.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('click', skipIntro);
+            window.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener("click", skipIntro);
         };
     }, []);
 
@@ -112,13 +118,15 @@ export default function HomeAdmin() {
             <style>{styles}</style>
 
             <div className="fixed inset-0 w-full h-full bg-[#0a2a4a] text-white overflow-hidden">
-
                 {/* Background Layer */}
                 <div className="absolute inset-0 z-0 pointer-events-none">
                     {/* Gradient */}
                     <div
-                        className={`absolute inset-0 transition-opacity duration-700 ${showImage ? 'opacity-0' : 'opacity-100'}`}
-                        style={{ background: 'linear-gradient(to bottom, #0a2a4a, #0c365b)' }}
+                        className={`absolute inset-0 transition-opacity duration-700 ${showImage ? "opacity-0" : "opacity-100"}`}
+                        style={{
+                            background:
+                                "linear-gradient(to bottom, #0a2a4a, #0c365b)",
+                        }}
                     />
 
                     {/* Image */}
@@ -129,40 +137,47 @@ export default function HomeAdmin() {
                         onLoad={() => setImageLoaded(true)}
                         className={`
                             absolute inset-0 w-full h-full object-cover transition-all duration-1500 ease-out
-                            ${showImage && imageLoaded ? 'opacity-100' : 'opacity-0'}
-                            ${!isZooming ? 'pulse-effect' : ''}
+                            ${showImage && imageLoaded ? "opacity-100" : "opacity-0"}
+                            ${!isZooming ? "pulse-effect" : ""}
                             cold-blue-filter
                         `}
                         style={{
-                            transform: showImage && imageLoaded ? (isZooming ? 'scale(1.5)' : 'scale(1.0)') : 'scale(1.3)',
-                            transformOrigin: 'center',
+                            transform:
+                                showImage && imageLoaded
+                                    ? isZooming
+                                        ? "scale(1.5)"
+                                        : "scale(1.0)"
+                                    : "scale(1.3)",
+                            transformOrigin: "center",
                         }}
                     />
 
                     {/* Effects */}
                     <UnderwaterEffect />
-                    <div className={`absolute inset-0 bg-linear-to-b from-black/25 via-transparent to-black/30 transition-opacity duration-1000 ${showImage && imageLoaded ? 'opacity-100' : 'opacity-0'}`} />
+                    <div
+                        className={`absolute inset-0 bg-linear-to-b from-black/25 via-transparent to-black/30 transition-opacity duration-1000 ${showImage && imageLoaded ? "opacity-100" : "opacity-0"}`}
+                    />
                 </div>
-
 
                 <div
                     className="absolute inset-0 z-10 overflow-y-auto overflow-x-hidden"
                     onScroll={handleScroll}
                 >
-                    <div className={`
+                    <div
+                        className={`
                         w-full min-h-full flex flex-col items-center justify-start
                         pt-24 pb-32 px-4 md:px-8
                         transition-all duration-1000
-                        ${isZooming ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}
-                    `}>
-
+                        ${isZooming ? "opacity-0 scale-95" : "opacity-100 scale-100"}
+                    `}
+                    >
                         {/* Header Text */}
                         <div className="text-center relative z-10 mb-8 mt-4 md:mt-10">
                             <h1
                                 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-4 leading-tight"
                                 style={{
-                                    fontFamily: 'Cormorant Infant, serif',
-                                    textShadow: '0 2px 20px rgba(0,0,0,.8)'
+                                    fontFamily: "Cormorant Infant, serif",
+                                    textShadow: "0 2px 20px rgba(0,0,0,.8)",
                                 }}
                             >
                                 Welcome back, {USER}
@@ -170,8 +185,8 @@ export default function HomeAdmin() {
                             <h1
                                 className="text-2xl md:text-3xl lg:text-5xl font-bold leading-tight"
                                 style={{
-                                    fontFamily: 'Cormorant Infant, serif',
-                                    textShadow: '0 2px 20px rgba(0,0,0,.8)'
+                                    fontFamily: "Cormorant Infant, serif",
+                                    textShadow: "0 2px 20px rgba(0,0,0,.8)",
                                 }}
                             >
                                 Let The Deep Uncover Your Purpose
@@ -179,28 +194,35 @@ export default function HomeAdmin() {
                         </div>
 
                         {/* Dashboard Component */}
-                        <AdminDashboard />
-
+                        <AdminDashboard
+                            stages={stages}
+                            currentStage={currentStage}
+                            totalUsers={totalUsers}
+                            passedUsers={passedUsers}
+                            puzzles={puzzles}
+                        />
                     </div>
                 </div>
 
-
                 {/* Sidebar Button & Click Me Text */}
-                <div className={`
+                <div
+                    className={`
                     absolute top-6 left-6 z-60
                     transition-all duration-700 ease-out
                     flex items-center
-                    ${!isZooming && !isLoggingOut ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6 pointer-events-none'}
-                `}>
-
+                    ${!isZooming && !isLoggingOut ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-6 pointer-events-none"}
+                `}
+                >
                     <ButtonSidebar onClick={toggleSidebar} />
 
                     {/* Animated Text - Hidden if sidebar open OR if scrolled */}
-                    <div className={`
+                    <div
+                        className={`
                         transition-all duration-500 ease-in-out
-                        ${!isSidebarOpen && !hasScrolled ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none'}
-                    `}>
-                         <div className="animate-nudge flex items-center mb-5 sm:mb-6">
+                        ${!isSidebarOpen && !hasScrolled ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"}
+                    `}
+                    >
+                        <div className="animate-nudge flex items-center mb-5 sm:mb-6">
                             <span className="text-7xl leading-none font-bold text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)] pb-2">
                                 ←
                             </span>
@@ -222,14 +244,16 @@ export default function HomeAdmin() {
                 <div
                     className="absolute inset-0 z-70 pointer-events-none transition-opacity duration-1000 ease-in-out"
                     style={{
-                        background: 'linear-gradient(to bottom, #0a2a4a, #0c365b)',
-                        opacity: isLoggingOut ? 1 : 0
+                        background:
+                            "linear-gradient(to bottom, #0a2a4a, #0c365b)",
+                        opacity: isLoggingOut ? 1 : 0,
                     }}
                 />
 
                 {/* Input Lock Overlay */}
-                {inputLocked && <div className="absolute inset-0 z-80 pointer-events-auto" />}
-
+                {inputLocked && (
+                    <div className="absolute inset-0 z-80 pointer-events-auto" />
+                )}
             </div>
         </>
     );

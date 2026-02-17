@@ -17,13 +17,10 @@ class PuzzleFactory extends Factory
     public function definition(): array
     {
         return [
-            //
-            'question' => fake()->sentence(),
-            'description' => fake()->paragraph(),
+            'name' => fake()->word(),
             'clue' => fake()->sentence(),
             'answer' => fake()->word(),
-            'status' => fake()->randomElement([0, 1]),
-
+            'status' => false,
         ];
     }
 }

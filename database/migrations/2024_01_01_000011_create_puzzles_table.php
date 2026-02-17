@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('puzzles', function (Blueprint $table) {
             $table->id();
-            $table->string('question');
-            $table->text('description')->nullable();
+            $table->string('name');
             $table->text('clue')->nullable();
-            $table->string('answer')->default('0');
+            $table->string('answer');
             $table->boolean('status')->default(false);
             $table->timestamps();
         });

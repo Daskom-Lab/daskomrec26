@@ -1,21 +1,27 @@
-import { useRef, useState, useEffect, useMemo } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { useRef, useState, useEffect } from "react";
+import { Head, router, useForm } from "@inertiajs/react";
 
-import ButtonSidebar from '@components/ButtonSidebar';
-import ButtonHome from '@components/ButtonHome';
-import UserSidebar from '@components/UserSidebar';
-import UnderwaterEffect from '@components/UnderwaterEffect'
-import BlueModalWrapper from '@components/BlueBox';
+import ButtonSidebar from "@components/ButtonSidebar";
+import ButtonHome from "@components/ButtonHome";
+import UserSidebar from "@components/UserSidebar";
+import UnderwaterEffect from "@components/UnderwaterEffect";
+import BlueModalWrapper from "@components/BlueBox";
 
-import utama from '@assets/backgrounds/utama.png';
-import build from '@assets/others/DECORATIONS/Atlantis Ruins/06-Building.png';
-import road from '@assets/backgrounds/road2.png';
-import seaweed from '@assets/others/DECORATIONS/Seaweed & Coral Reefs/29.png';
-import fishGroup from '@assets/others/DECORATIONS/Fish & Other Sea Creatures/02-Fish.png';
-import buttonImg from '@assets/buttons/ButtonRegular.png';
-import logoImg from '@assets/logo/ORB_DLOR 1.png';
+import utama from "@assets/backgrounds/utama.png";
+import build from "@assets/others/DECORATIONS/Atlantis Ruins/06-Building.png";
+import road from "@assets/backgrounds/road2.png";
+import seaweed from "@assets/others/DECORATIONS/Seaweed & Coral Reefs/29.png";
+import fishGroup from "@assets/others/DECORATIONS/Fish & Other Sea Creatures/02-Fish.png";
+import buttonImg from "@assets/buttons/ButtonRegular.png";
+import logoImg from "@assets/logo/ORB_DLOR 1.png";
 
 export default function ChangePassword() {
+    const { data, setData, put, errors, processing, reset } = useForm({
+        current_password: "",
+        password: "",
+        password_confirmation: "",
+    });
+
     const backgroundRef = useRef(null);
     const [showImage, setShowImage] = useState(false);
 
@@ -26,8 +32,8 @@ export default function ChangePassword() {
     const [showModal, setShowModal] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
 
-    const [oldPassword, setOldPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
+    const [oldPassword, setOldPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
 
     // Generate random bubbles for the effect
     const bubbles = useMemo(() => {
@@ -36,13 +42,13 @@ export default function ChangePassword() {
             size: `${Math.random() * 10 + 5}px`,
             duration: `${Math.random() * 5 + 5}s`,
             delay: `${Math.random() * 5}s`,
-            opacity: Math.random() * 0.5 + 0.1
+            opacity: Math.random() * 0.5 + 0.1,
         }));
     }, []);
 
     const toggleSidebar = () => {
         if (inputLocked || isLoggingOut) return;
-        setIsSidebarOpen(prev => !prev);
+        setIsSidebarOpen((prev) => !prev);
     };
 
     const handleLogout = () => {
@@ -50,7 +56,7 @@ export default function ChangePassword() {
         setIsSidebarOpen(false);
         setTimeout(() => {
             setIsLoggingOut(true);
-            setTimeout(() => router.visit('/'), 300);
+            setTimeout(() => router.post("/logout"), 1000);
         }, 350);
     };
 
@@ -59,13 +65,19 @@ export default function ChangePassword() {
     };
 
     const handleConfirmChange = () => {
-        setShowModal(false);
-        setTimeout(() => {
-            setShowSuccess(true);
-        }, 300);
-
-        setOldPassword('');
-        setNewPassword('');
+        put("/user/password", {
+            preserveScroll: true,
+            onSuccess: () => {
+                setShowModal(false);
+                reset();
+                setTimeout(() => {
+                    setShowSuccess(true);
+                }, 300);
+            },
+            onError: () => {
+                setShowModal(false);
+            },
+        });
     };
 
     useEffect(() => {
@@ -76,7 +88,7 @@ export default function ChangePassword() {
         }, 500);
 
         const handleKeyDown = (e) => {
-            if (e.key === 'Escape') {
+            if (e.key === "Escape") {
                 if (showModal) {
                     setShowModal(false);
                 } else {
@@ -88,23 +100,31 @@ export default function ChangePassword() {
                 }
             }
         };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
     }, [showModal]);
 
     const getBackgroundStyle = () => ({
-        transform: isZooming ? 'scale(1.5)' : 'scale(1)',
+        transform: isZooming ? "scale(1.5)" : "scale(1)",
         opacity: showImage ? 1 : 0,
-        filter: isSidebarOpen || showModal ? 'brightness(0.5) blur(3px)' : 'brightness(0.8) saturate(1.2)',
-        transition: 'transform 1.5s ease-out, opacity 0.7s ease-in, filter 0.5s ease',
+        filter:
+            isSidebarOpen || showModal
+                ? "brightness(0.5) blur(3px)"
+                : "brightness(0.8) saturate(1.2)",
+        transition:
+            "transform 1.5s ease-out, opacity 0.7s ease-in, filter 0.5s ease",
     });
 
     const getFormStyle = () => ({
         opacity: !inputLocked && !isLoggingOut ? 1 : 0,
-        transform: !inputLocked && !isLoggingOut ? 'translateY(0)' : 'translateY(20px)',
-        filter: showModal ? 'blur(5px)' : 'none',
-        pointerEvents: showModal ? 'none' : 'auto',
-        transition: 'opacity 0.8s ease 0.5s, transform 0.8s ease 0.5s, filter 0.3s',
+        transform:
+            !inputLocked && !isLoggingOut
+                ? "translateY(0)"
+                : "translateY(20px)",
+        filter: showModal ? "blur(5px)" : "none",
+        pointerEvents: showModal ? "none" : "auto",
+        transition:
+            "opacity 0.8s ease 0.5s, transform 0.8s ease 0.5s, filter 0.3s",
     });
 
     const customStyles = `
@@ -168,7 +188,7 @@ export default function ChangePassword() {
             <style>{customStyles}</style>
 
             <div className="relative w-full h-screen overflow-hidden text-white font-caudex">
-                <UnderwaterEffect/>
+                <UnderwaterEffect />
 
                 {/* 1. Background */}
                 <div className="absolute inset-0 z-0 pointer-events-none blur-[3px] transition-all duration-700">
@@ -200,7 +220,7 @@ export default function ChangePassword() {
                                 width: b.size,
                                 height: b.size,
                                 animation: `rise ${b.duration} linear ${b.delay} infinite`,
-                                opacity: b.opacity
+                                opacity: b.opacity,
                             }}
                         />
                     ))}
@@ -212,17 +232,27 @@ export default function ChangePassword() {
                         src={road}
                         alt="road"
                         className="absolute bottom-0 left-0 w-full h-auto object-cover"
-                        style={{ filter: 'sepia(1) hue-rotate(150deg) saturate(2) contrast(1.5) brightness(0.9)' }}
+                        style={{
+                            filter: "sepia(1) hue-rotate(150deg) saturate(2) contrast(1.5) brightness(0.9)",
+                        }}
                     />
                 </div>
 
                 {/* 3. IKAN */}
                 <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden">
                     <div className="absolute top-[20%] w-full fish-top-anim">
-                        <img src={fishGroup} alt="fish top" className="w-24 md:w-48 transform scale-x-[-1]" />
+                        <img
+                            src={fishGroup}
+                            alt="fish top"
+                            className="w-24 md:w-48 transform scale-x-[-1]"
+                        />
                     </div>
                     <div className="absolute bottom-[20%] w-full fish-bottom-anim">
-                        <img src={fishGroup} alt="fish bottom" className="w-32 md:w-56" />
+                        <img
+                            src={fishGroup}
+                            alt="fish bottom"
+                            className="w-32 md:w-56"
+                        />
                     </div>
                 </div>
 
@@ -242,34 +272,77 @@ export default function ChangePassword() {
 
                     <div className="w-full max-w-[450px] px-8 space-y-6">
                         <div className="group">
-                            <label className="block text-lg mb-1 ml-1 drop-shadow-md text-gray-100">Old Password</label>
+                            <label className="block text-lg mb-1 ml-1 drop-shadow-md text-gray-100">
+                                Old Password
+                            </label>
                             <input
                                 type="password"
-                                value={oldPassword}
-                                onChange={(e) => setOldPassword(e.target.value)}
-                                className="w-full h-12 bg-gray-300/80 backdrop-blur-sm text-gray-900 rounded-md px-4 shadow-inner border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all placeholder-gray-500"
+                                value={data.current_password}
+                                onChange={(e) =>
+                                    setData("current_password", e.target.value)
+                                }
+                                className="w-full h-12 bg-gray-300 text-gray-800 rounded-md px-4 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all placeholder-gray-500"
                             />
+                            {errors.current_password && (
+                                <div className="text-red-400 text-sm mt-1">
+                                    {errors.current_password}
+                                </div>
+                            )}
                         </div>
 
                         <div className="group">
-                            <label className="block text-lg mb-1 ml-1 drop-shadow-md text-gray-100">New Password</label>
+                            <label className="block text-lg mb-1 ml-1 drop-shadow-md text-gray-100">
+                                New Password
+                            </label>
                             <input
                                 type="password"
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                                className="w-full h-12 bg-gray-300/80 backdrop-blur-sm text-gray-900 rounded-md px-4 shadow-inner border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all placeholder-gray-500"
+                                value={data.password}
+                                onChange={(e) =>
+                                    setData("password", e.target.value)
+                                }
+                                className="w-full h-12 bg-gray-300 text-gray-800 rounded-md px-4 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all placeholder-gray-500"
                             />
+                            {errors.password && (
+                                <div className="text-red-400 text-sm mt-1">
+                                    {errors.password}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="group">
+                            <label className="block text-lg mb-1 ml-1 drop-shadow-md text-gray-100">
+                                Confirm Password
+                            </label>
+                            <input
+                                type="password"
+                                value={data.password_confirmation}
+                                onChange={(e) =>
+                                    setData(
+                                        "password_confirmation",
+                                        e.target.value,
+                                    )
+                                }
+                                className="w-full h-12 bg-gray-300 text-gray-800 rounded-md px-4 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all placeholder-gray-500"
+                            />
+                            {errors.password_confirmation && (
+                                <div className="text-red-400 text-sm mt-1">
+                                    {errors.password_confirmation}
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex justify-center mt-8">
                             <button
                                 onClick={handleChangeClick}
-                                className="relative w-64 h-16 flex items-center justify-center group active:scale-95 transition-transform">
+                                className="relative w-64 h-16 flex items-center justify-center group active:scale-95 transition-transform"
+                            >
                                 <img
                                     src={buttonImg}
                                     alt="change button"
                                     className="absolute inset-0 w-full h-full object-fill pointer-events-none drop-shadow-lg"
-                                    style={{ filter: 'brightness(0.9) hue-rotate(10deg) saturate(1.2)' }}
+                                    style={{
+                                        filter: "brightness(0.9) hue-rotate(10deg) saturate(1.2)",
+                                    }}
                                 />
                                 <span className="relative z-10 text-white text-3xl font-caudex tracking-widest pb-1 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
                                     Change
@@ -281,16 +354,16 @@ export default function ChangePassword() {
 
                 {/* 5. RUMPUT LAUT */}
                 <div className="absolute inset-0 z-10 pointer-events-none">
-                     <img
+                    <img
                         src={seaweed}
                         alt="seaweed left"
                         className="absolute bottom-0 left-[-30%] w-60  md:bottom-0 md:left-[-5%] md:w-85 filter brightness-90 seaweed-left-anim"
-                     />
-                     <img
+                    />
+                    <img
                         src={seaweed}
                         alt="seaweed right"
                         className="absolute bottom-0 right-[-35%] w-60 md:bottom-0 md:right-[-10%] md:w-85 filter brightness-90 seaweed-right-anim scale-x-[-1]"
-                     />
+                    />
                 </div>
 
                 {/* 6. KONFIRMASI PASSWORD */}
@@ -351,7 +424,8 @@ export default function ChangePassword() {
                 >
                     <div className="flex flex-col justify-center items-center text-center h-full w-full space-y-3 transition-all modal-anim">
                         <h1 className="font-caudex text-center text-2xl sm:text-4xl text-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.8)] leading-tight font-bold p-4 px-10 sm:px-30 sm:pl-32">
-                            Your password already changed, don't forget it again!
+                            Your password already changed, don't forget it
+                            again!
                         </h1>
 
                         <button
@@ -379,11 +453,17 @@ export default function ChangePassword() {
                 </BlueModalWrapper>
 
                 {/* Sidebar Button */}
-                <div className={`absolute top-6 left-6 z-60 transition-all duration-700 ease-out ${!isZooming && !isLoggingOut ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6 pointer-events-none'}`}>
-                    <ButtonSidebar onClick={() => setIsSidebarOpen(prev => !prev)} />
+                <div
+                    className={`absolute top-6 left-6 z-60 transition-all duration-700 ease-out ${!isZooming && !isLoggingOut ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-6 pointer-events-none"}`}
+                >
+                    <ButtonSidebar
+                        onClick={() => setIsSidebarOpen((prev) => !prev)}
+                    />
                 </div>
-                <div className={`absolute top-6 right-6 z-60 transition-all duration-700 ease-out ${!isZooming && !isLoggingOut ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-6 pointer-events-none'}`}>
-                    <ButtonHome onClick={() => router.visit('/user/home')} />
+                <div
+                    className={`absolute top-6 right-6 z-60 transition-all duration-700 ease-out ${!isZooming && !isLoggingOut ? "opacity-100 translate-x-0" : "opacity-0 translate-x-6 pointer-events-none"}`}
+                >
+                    <ButtonHome onClick={() => router.visit("/user/home")} />
                 </div>
 
                 <UserSidebar
@@ -395,22 +475,24 @@ export default function ChangePassword() {
                 <div
                     className="fixed inset-0 z-70 pointer-events-none transition-opacity duration-1000"
                     style={{
-                        background: 'linear-gradient(to bottom, #0a2a4a, #0c365b)',
-                        opacity: isLoggingOut ? 1 : 0
+                        background:
+                            "linear-gradient(to bottom, #0a2a4a, #0c365b)",
+                        opacity: isLoggingOut ? 1 : 0,
                     }}
                 />
 
                 {/* === FOOTER === */}
-                <div className={`
+                <div
+                    className={`
                     absolute bottom-4 w-full text-center z-40 pointer-events-none
                     transition-opacity duration-1000 delay-500
-                    ${isZooming ? 'opacity-0' : 'opacity-100'}
-                `}>
+                    ${isZooming ? "opacity-0" : "opacity-100"}
+                `}
+                >
                     <p className="text-white font-caudex text-[10px] md:text-xl tracking-widest drop-shadow-md">
                         @Atlantis.DLOR2026. All Right Served
                     </p>
                 </div>
-
             </div>
         </>
     );

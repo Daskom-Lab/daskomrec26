@@ -11,7 +11,7 @@ class UpdateStageRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,12 @@ class UpdateStageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'success_message' => ['nullable', 'string'],
+            'fail_message' => ['nullable', 'string'],
+            'link' => ['nullable', 'string', 'url'],
+            'pengumuman_on' => ['required', 'boolean'],
+            'isi_jadwal_on' => ['required', 'boolean'],
+            'puzzles_on' => ['required', 'boolean'],
         ];
     }
 }

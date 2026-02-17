@@ -17,13 +17,12 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             StageSeeder::class,
-            UserSeeder::class,
             ShiftSeeder::class,
             PuzzleSeeder::class,
             ProfileSeeder::class,
-            AnnouncementSeeder::class,
             PlottinganSeeder::class,
             ConfigurationSeeder::class,
+            CaasStageSeeder::class,
         ]);
     }
 }
