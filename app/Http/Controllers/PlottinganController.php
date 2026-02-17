@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Plottingan;
 use App\Models\Shift;
-use App\Http\Requests\StoreplottinganRequest;
-use App\Http\Requests\UpdateplottinganRequest;
 use App\Exports\PlottinganExport;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -26,29 +24,7 @@ class PlottinganController extends Controller
         return inertia('Admin/plottingan', ['shifts' => $shifts]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreplottinganRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(plottingan $plottingan)
-    {
-        //
-    }
 
     /**
      * Get all users assigned to a specific shift.
@@ -62,29 +38,7 @@ class PlottinganController extends Controller
         return response()->json($plottingans);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(plottingan $plottingan)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateplottinganRequest $request, plottingan $plottingan)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(plottingan $plottingan)
-    {
-        //
-    }
 
     /**
      * Export all plottingan data to Excel

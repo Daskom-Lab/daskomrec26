@@ -15,10 +15,6 @@ use App\Http\Controllers\User\CoresController;
 use Illuminate\Support\Facades\Route;
 use inertia\inertia;
 
-Route::resource('shifts', ShiftController::class)->except(['index']);
-
-Route::resource('users', UserController::class)->except(['index']);
-
 Route::get('/', function () {
     return inertia('welcome');
 });
@@ -54,14 +50,6 @@ Route::middleware('auth')->group(function (){
             return inertia('User/oaline');
         });
 
-        Route::get('/user/shift', function () {
-            return inertia('User/shift');
-        });
-
-        Route::get('/user/announcement', function () {
-            return inertia('User/announcement');
-        });
-
         Route::get('/user/shift', [UserShiftController::class, 'index'])->name('user.shift.index');
 
         Route::post('/user/shift', [UserShiftController::class, 'store'])->name('user.shift.store');
@@ -75,6 +63,9 @@ Route::middleware('auth')->group(function (){
 
     // === ADMIN ROUTES ===
     Route::middleware('admin')->group(function () {
+        Route::resource('shifts', ShiftController::class)->except(['index']);
+        Route::resource('users', UserController::class)->except(['index']);
+
         Route::get('/admin/home', [HomeController::class, 'index']);
         Route::put('/admin/home/current-stage', [HomeController::class, 'setCurrentStage']);
         Route::put('/admin/home/configuration/{stage}', [HomeController::class, 'updateConfiguration']);
@@ -98,16 +89,10 @@ Route::middleware('auth')->group(function (){
         Route::put('/admin/caas/{caasstage}/stage', [CaasstageController::class, 'updateStage']);
             Route::put('/admin/caas/{caasstage}/status', [CaasstageController::class, 'updateStatus']);
 
-    });
-
-    Route::get('/user/oaline', function () {
-        return inertia('User/oaline');
-    });
-});
-
         Route::get('/admin/configuration', [StageController::class, 'index']);
         Route::put('/admin/configuration/{stage}', [StageController::class, 'update']);
-
+    });
+});
 
 Route::fallback(function () {
     return inertia::render('404_NotFound'); 
