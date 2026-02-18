@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import Button from '@assets/buttons/ButtonRegular.png';
+import Button from '@assets/buttons/Regular.png';
 
 export default function UnlockDialog({
-  isOpen,
-  onClose,
-  onSubmit,
-  territoryName,
-  isError,
-  clue,
-  isAlreadyUnlocked // New prop
+  isOpen, onClose, onSubmit, territoryName, isError, clue, isAlreadyUnlocked
 }) {
   const [code, setCode] = useState('');
   const [isVisible, setIsVisible] = useState(false);
@@ -37,7 +31,6 @@ export default function UnlockDialog({
     if (e.target === e.currentTarget) onClose();
   };
 
-  // Button styles object to reuse
   const buttonTextStyle = {
     color: '#e0f2fe',
     textShadow: '0 0 10px rgba(56, 189, 248, 0.7), 0 0 20px rgba(96, 165, 250, 0.5)'
@@ -88,9 +81,7 @@ export default function UnlockDialog({
                 {isAlreadyUnlocked ? `"${clue}"` : ''}
             </p>
 
-            {/* --- CONDITIONAL RENDERING STARTS HERE --- */}
             {isAlreadyUnlocked ? (
-              // === VIEW ONLY MODE (Unlocked) ===
               <div className="flex gap-2 mt-2 justify-center">
                 <button
                     type="button"
@@ -110,7 +101,6 @@ export default function UnlockDialog({
                 </button>
               </div>
             ) : (
-              // === INPUT MODE (Locked) ===
               <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
                   <input

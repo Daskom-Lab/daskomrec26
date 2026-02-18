@@ -1,26 +1,34 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, useForm, router } from "@inertiajs/react";
+import axios from "axios";
 
-import background from "@assets/backgrounds/utama.png";
-import road from "@assets/backgrounds/road.png";
-import trial from "@assets/backgrounds/trial.png";
-import door_closed from "@assets/backgrounds/door2.png";
-import door_opened from "@assets/backgrounds/door2_open.png";
-import scroll from "@assets/backgrounds/scroll2.png";
-import Sign04 from "@assets/buttons/ButtonRegular.png";
+/* Background Assets */
+import ImgMain from '@assets/backgrounds/Main.png';
+import ImgRoad from '@assets/backgrounds/Road.png';
+import ImgOrb from '@assets/backgrounds/Orb.png';
+import ImgDoorLocked from '@assets/backgrounds/DoorLocked.png';
+import ImgDoorUnlocked from '@assets/backgrounds/DoorUnlocked.png';
+import ImgScroll from "@assets/backgrounds/Scroll.png";
+
+/* Other Assets */
+import ButtonLogin from "@assets/buttons/Regular.png";
 import BlueInputBox from "@components/BlueInputBox";
+
+/* Other Components */
 import UnderwaterEffect from "@components/UnderwaterEffect";
 
 export default function Login() {
-    const trialRef = useRef(null);
+    const orbRef = useRef(null);
     const rafRef = useRef(null);
     const scrollWrapperRef = useRef(null);
     const doorRef = useRef(null);
     const roadRef = useRef(null);
 
-    const BASE_OFFSET = { x: 0, y: 430 };
-    const OUT_OFFSET = { x: 0, y: 430 };
-    const IN_OFFSET = { x: 0, y: 1100 };
+    const OFFSET = {
+        base: {x: 0, y : 430},
+        out: {x: 0, y: 430},
+        in: {x:0, y: 1100},
+    }
 
     const SCALE = {
         bg: { enter: 1.0, idle: 1.7, out: 1.2 },
@@ -34,7 +42,7 @@ export default function Login() {
     const [showColorFade, setShowColorFade] = useState(false);
     const [fadeScroll, setFadeScroll] = useState(false);
 
-    // Added errors and setError for indicator logic
+    /* Form into Backend */
     const { data, setData, post, processing, errors, setError, clearErrors } =
         useForm({
             nim: "",
@@ -45,10 +53,10 @@ export default function Login() {
         const scale = SCALE[type][cameraState] ?? SCALE[type].idle;
         const offset =
             cameraState === "out"
-                ? OUT_OFFSET
+                ? OFFSET["out"]
                 : cameraState === "in"
-                  ? IN_OFFSET
-                  : BASE_OFFSET;
+                  ? OFFSET["in"]
+                  : OFFSET["base"];
 
         return `translate(${offset.x}px, ${offset.y}px) scale(${scale})`;
     };
@@ -57,13 +65,13 @@ export default function Login() {
         if (rafRef.current || isIntro || cameraState !== "idle") return;
 
         rafRef.current = requestAnimationFrame(() => {
-            if (!trialRef.current || !roadRef.current) return;
+            if (!orbRef.current || !roadRef.current) return;
 
             const { innerWidth, innerHeight } = window;
             const x = (e.clientX / innerWidth - 0.5) * 30;
             const y = (e.clientY / innerHeight - 0.5) * 30;
 
-            trialRef.current.style.transform = `translate(${x}px, ${y}px) scale(${SCALE.bg.idle})`;
+            orbRef.current.style.transform = `translate(${x}px, ${y}px) scale(${SCALE.bg.idle})`;
             roadRef.current.style.transform = `translate(${x}px, ${y}px) scale(${SCALE.road.idle})`;
 
             rafRef.current = null;
@@ -71,8 +79,8 @@ export default function Login() {
     };
 
     const handleMouseLeave = () => {
-        if (!trialRef.current || !roadRef.current) return;
-        trialRef.current.style.transform = getTransform("bg");
+        if (!orbRef.current || !roadRef.current) return;
+        orbRef.current.style.transform = getTransform("bg");
         roadRef.current.style.transform = getTransform("road");
     };
 
@@ -84,20 +92,36 @@ export default function Login() {
         }
     };
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (cameraState !== "idle") return;
 
+        if (cameraState !== "idle" || isSubmitting) return;
+
+        setIsSubmitting(true);
         clearErrors();
 
-        post("/login", {
-            onSuccess: () => {
+        axios.post("/login", data)
+            .then((response) => {
                 setFadeScroll(true);
                 setTimeout(() => setCameraState("in"), 500);
                 setTimeout(() => setShowColorFade(true), 800);
-            },
-            onError: () => {},
-        });
+                setTimeout(() => {
+                    window.location.href = response.data.redirect_url;
+                }, 2500);
+            })
+            .catch((error) => {
+                setIsSubmitting(false);
+                if (error.response && error.response.status === 422) {
+                    const serverErrors = error.response.data.errors;
+                    Object.keys(serverErrors).forEach((key) => {
+                        setError(key, serverErrors[key][0]);
+                    });
+                } else {
+                    console.error("Login error", error);
+                }
+            });
     };
 
     useEffect(() => {
@@ -113,49 +137,47 @@ export default function Login() {
         transition: "transform 2000ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
     };
 
-    const bgStyle = { ...commonTransformStyle, transform: getTransform("bg") };
-    const doorStyle = {
-        ...commonTransformStyle,
-        transform: getTransform("door"),
-    };
-    const roadStyle = {
-        ...commonTransformStyle,
-        transform: getTransform("road"),
-    };
+    const orbStyle = { ...commonTransformStyle, transform: getTransform("bg") };
+    const doorStyle = { ...commonTransformStyle, transform: getTransform("door"), };
+    const roadStyle = { ...commonTransformStyle, transform: getTransform("road"), };
 
-    // Derived state for the shake animation
     const hasError = Object.keys(errors).length > 0;
+
+    const styles = `
+        .atlantis-sync {
+            filter: sepia(1) hue-rotate(150deg) saturate(2) contrast(1.5) brightness(0.9);
+        }
+        .deep-ocean-bg {
+            filter: brightness(0.8) saturate(1.2) contrast(1.1);
+        }
+        .cold-blue-filter-scroll {
+            filter: brightness(1.1) contrast(1) saturate(0.2) hue-rotate(220deg) sepia(0.2);
+        }
+
+        .bottom-centered-asset {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+        }
+
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-10px); }
+            80% { transform: translateX(10px); }
+        }
+        .shake {
+            animation: errorShake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+    `
 
     return (
         <>
             <Head title="Login" />
-            <style>{`
-                .atlantis-sync {
-                     filter: sepia(1) hue-rotate(150deg) saturate(2) contrast(1.5) brightness(0.9);
-                }
-                .deep-ocean-bg {
-                    filter: brightness(0.8) saturate(1.2) contrast(1.1);
-                }
-                .cold-blue-filter-scroll { filter: brightness(1.1) contrast(1) saturate(0.2) hue-rotate(220deg) sepia(0.2); }
+            <style>{styles}</style>
 
-                .bottom-centered-asset {
-                    position: absolute;
-                    bottom: 0;
-                    left: 50%;
-                }
-
-                /* Shake Animation for wrong password */
-                @keyframes errorShake {
-                    0%, 100% { transform: translateX(0); }
-                    20% { transform: translateX(-10px); }
-                    40% { transform: translateX(10px); }
-                    60% { transform: translateX(-10px); }
-                    80% { transform: translateX(10px); }
-                }
-                .shake {
-                    animation: errorShake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-                }
-            `}</style>
+            <UnderwaterEffect />
 
             <div
                 onMouseMove={handleMouseMove}
@@ -163,41 +185,40 @@ export default function Login() {
                 onClick={handleOutsideClick}
                 className="relative w-full min-h-screen overflow-hidden bg-[#0a243b]"
             >
-                <UnderwaterEffect />
 
-                {/* Main BG */}
+                {/* Background */}
                 <img
-                    src={background}
+                    src={ImgMain}
                     alt="background"
-                    className="absolute inset-0 w-full h-full object-cover pointer-events-none deep-ocean-bg"
+                    className="absolute inset-0 w-full h-auto object-cover pointer-events-none deep-ocean-bg"
                 />
 
                 <img
                     ref={roadRef}
-                    src={road}
+                    src={ImgRoad}
                     alt="road"
-                    className="absolute bottom-0 left-1/2 -translate-x-1/2 w-auto h-auto min-w-[1200px] max-w-[2000px] z-5 atlantis-sync"
+                    className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-auto min-w-[2000px] z-5 atlantis-sync"
                     style={roadStyle}
                 />
 
                 <img
-                    ref={trialRef}
-                    src={trial}
+                    ref={orbRef}
+                    src={ImgOrb}
                     alt="background"
-                    className="absolute bottom-0 left-1/2 -translate-x-1/2 w-auto h-auto min-w-[1200px] max-w-[2000px] z-0 atlantis-sync"
-                    style={bgStyle}
+                    className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-auto min-w-[2000px] z-0 atlantis-sync"
+                    style={orbStyle}
                 />
 
-                <img
-                    ref={doorRef}
-                    src={cameraState === "in" ? door_opened : door_closed}
-                    alt="door"
-                    className="absolute bottom-0 left-1/2 -translate-x-1/2 w-auto h-auto min-w-[1200px] max-w-[2000px] z-10 atlantis-sync"
-                    style={doorStyle}
-                />
+            <img
+                ref={doorRef}
+                src={cameraState === "in" ? ImgDoorUnlocked : ImgDoorLocked}
+                alt="door"
+                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-auto min-w-[2000px] z-10 atlantis-sync"
+                style={doorStyle}
+            />
 
                 <div className="absolute inset-0 backdrop-blur-[2px] bg-black/10 z-20 pointer-events-none" />
-                <div className="absolute inset-0 bg-gradient-to-b from-cyan-800/5 via-blue-900/10 to-indigo-900/15 z-25 pointer-events-none mix-blend-screen" />
+                <div className="absolute inset-0 bg-linear-to-b from-cyan-800/5 via-blue-900/10 to-indigo-900/15 z-25 pointer-events-none mix-blend-screen" />
 
                 {/* Scroll & Form */}
                 <div
@@ -225,16 +246,16 @@ export default function Login() {
                         }}
                     >
                         <img
-                            src={scroll}
+                            src={ImgScroll}
                             alt="scroll"
-                            className="w-auto max-h-full object-contain cold-blue-filter-scroll origin-center scale-125 sm:scale-170 md:scale-190"
+                            className="w-auto max-h-full object-contain cold-blue-filter-scroll origin-center scale-150 sm:scale-170 md:scale-190"
                         />
                         <div className="absolute inset-0 flex flex-col items-center justify-center px-14 sm:px-12 text-[#0b3a66] gap-1 sm:gap-6">
                             <h1
                                 className="font-serif font-extrabold tracking-wide drop-shadow-lg text-4xl sm:text-5xl md:text-6xl mb-2 sm:mb-4 text-center"
                                 style={{
                                     fontFamily: "Cormorant Infant",
-                                    color: hasError ? "#7f1d1d" : "#0c365b", // Changes title to dark red on error
+                                    color: hasError ? "#7f1d1d" : "#0c365b",
                                     textShadow:
                                         "0 2px 10px rgba(12, 54, 91, 0.3), 0 0 20px rgba(96, 165, 250, 0.2)",
                                 }}
@@ -244,11 +265,11 @@ export default function Login() {
 
                             <form
                                 onSubmit={handleSubmit}
-                                className="w-[80%] sm:w-[90%] max-w-105 flex flex-col gap-3 sm:gap-4"
+                                className="w-auto sm:w-[90%] max-w-105 flex flex-col gap-3 sm:gap-4"
                             >
                                 <div className="flex flex-col gap-1">
                                     <label
-                                        className="font-serif font-bold text-xl sm:text-2xl md:text-4xl"
+                                        className="font-serif font-bold text-2xl md:text-4xl"
                                         style={{
                                             fontFamily: "Cormorant Infant",
                                             color: "#0c365b",
@@ -267,7 +288,7 @@ export default function Login() {
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label
-                                        className="font-serif font-bold text-xl sm:text-2xl md:text-4xl"
+                                        className="font-serif font-bold text-2xl md:text-4xl"
                                         style={{
                                             fontFamily: "Cormorant Infant",
                                             color: "#0c365b",
@@ -295,13 +316,13 @@ export default function Login() {
 
                                 <button
                                     type="submit"
-                                    disabled={processing}
-                                    className="mt-4 sm:mt-2 relative self-center transition-transform duration-300 hover:scale-110"
+                                    disabled={isSubmitting}
+                                    className="mt-4 sm:mt-8 relative self-center transition-transform duration-300 hover:scale-110"
                                 >
                                     <img
-                                        src={Sign04}
+                                        src={ButtonLogin}
                                         alt="Start"
-                                        className="w-45 sm:w-55 h-9 sm:h-13 drop-shadow-[0_0_20px_rgba(96,165,250,0.8)] cold-blue-filter-light"
+                                        className="w-45 sm:w-55 h-11 sm:h-13 drop-shadow-[0_0_20px_rgba(96,165,250,0.8)] cold-blue-filter-light"
                                     />
                                     <span
                                         className="absolute inset-0 flex items-center justify-center text-xl sm:text-3xl font-extrabold tracking-[2px]"
@@ -319,6 +340,7 @@ export default function Login() {
                     </div>
                 </div>
 
+                {/* Filters */}
                 <div className="absolute inset-0 z-30 pointer-events-none mix-blend-lighten opacity-30">
                     <div className="absolute inset-0 bg-linear-to-b from-cyan-400/5 via-transparent to-blue-500/5" />
                 </div>

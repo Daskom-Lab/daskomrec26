@@ -1,15 +1,21 @@
 import { useRef, useState, useEffect } from 'react';
 import { Head, router } from '@inertiajs/react';
 
-import UnderwaterEffect from '@components/UnderwaterEffect';
+/* Background Assets */
+import Background from '@assets/backgrounds/Alternate.png';
+
+/* Decor Assets */
+import DecorRumput from '@assets/others/DECORATIONS/Seaweed & Coral Reefs/32.png';
+
+/* Button Components */
 import ButtonSidebar from '@components/ButtonSidebar';
 import ButtonHome from '@components/ButtonHome';
+
+/* Other Components */
 import UserSidebar from '@components/UserSidebar';
 import AssistantBook from '@components/AssistantBook';
 import BookControls from '@components/BookControls';
-
-import background from '@assets/backgrounds/AssistantBackground.png';
-import Rumput from '@assets/others/DECORATIONS/Seaweed & Coral Reefs/32.png';
+import UnderwaterEffect from '@components/UnderwaterEffect';
 
 export default function Assistants() {
     const backgroundRef = useRef(null);
@@ -103,19 +109,22 @@ export default function Assistants() {
     }, []);
 
     const toggleSidebar = () => {
-        if (inputLocked || isLoggingOut) return;
+        if (inputLocked || isLoggingOut || isExiting) return;
         setIsSidebarOpen(prev => !prev);
     };
 
-    const goHome = () => {
-        if (inputLocked || isLoggingOut) return;
+    const handleNavigate = (url) => {
+        if (inputLocked || isLoggingOut || isExiting) return;
+
         setIsExiting(true);
         setInputLocked(true);
         setIsSidebarOpen(false);
-        setTimeout(() => router.visit('/user/home'), 1000);
+        setTimeout(() => router.visit(url), 1000);
     };
 
     const handleLogout = () => {
+        if (inputLocked || isLoggingOut || isExiting) return;
+
         setInputLocked(true);
         setIsSidebarOpen(false);
         setTimeout(() => {
@@ -154,18 +163,18 @@ export default function Assistants() {
         .animate-float {
             animation: floatBook 6s ease-in-out infinite;
         }
-        
-                /* --- ANIMASI RUMPUT --- */
+
+                /* --- ANIMASI DecorRumput --- */
         @keyframes swaySeaweed {
             0%, 100% { transform: rotate(-4deg); }
             50% { transform: rotate(4deg); }
         }
-        
+
         .seaweed-anim-1 {
             animation: swaySeaweed 5s ease-in-out infinite;
             transform-origin: bottom center;
         }
-        
+
         .seaweed-anim-2 {
             animation: swaySeaweed 7s ease-in-out infinite reverse; /* Gerakan berlawanan & lebih lambat */
             transform-origin: bottom center;
@@ -212,37 +221,40 @@ export default function Assistants() {
         <>
             <Head title="Assistants" />
             <style>{styles}</style>
+            <UnderwaterEffect
+                isLoaded={showImage && imageLoaded}
+                isZooming={false}
+            />
 
             <div className="relative w-full h-dvh overflow-hidden flex flex-col items-center justify-between">
 
-                {/* === BACKGROUND LAYERS === */}
-                <div className="absolute inset-0 z-0" style={{ background: 'linear-gradient(to bottom, #0a2a4a, #0c365b)' }} />
+                {/* Background */}
+                <div className="absolute inset-0 z-0" style={{ Background: 'linear-gradient(to bottom, #0a2a4a, #0c365b)' }} />
                 <div className="absolute inset-0 z-0 cold-blue-filter">
                     <img
                         ref={backgroundRef}
-                        src={background}
-                        alt="background"
+                        src={Background}
+                        alt="Background"
                         onLoad={() => setImageLoaded(true)}
                         className="w-full h-full object-cover pointer-events-none"
                         style={getBackgroundStyle()}
                     />
                 </div>
-                <div className="absolute inset-0 z-10 pointer-events-none transition-opacity duration-1000" style={{ background: 'rgba(2, 99, 196, 0.2)' }} />
-                <UnderwaterEffect isLoaded={showImage && imageLoaded} isZooming={false} />
+                <div className="absolute inset-0 z-10 pointer-events-none transition-opacity duration-1000" style={{ Background: 'rgba(2, 99, 196, 0.2)' }} />
                 <div className="absolute inset-0 z-20 bg-linear-to-b from-black/25 via-transparent to-black/30 pointer-events-none transition-opacity duration-1000" style={{ opacity: showImage && imageLoaded ? 1 : 0 }} />
 
-                {/* Seaweed Decorations */}
-                <div className={`absolute inset-0 z-20 pointer-events-none hidden md:block transition-opacity duration-1000 ${isBookPlacing || isExiting ? 'opacity-0' : 'opacity-100'}`}>
+                {/* Rumput Laut */}
+                <div className={`absolute inset-0 z-20 pointer-events-none hidden md:block transition-opacity duration-1000 ${isBookPlacing || isExiting || isLoggingOut ? 'opacity-0' : 'opacity-100'}`}>
                     <div className="absolute bottom-[-5%] left-[-10%] w-[45vw] max-w-[620px] rotate-20 origin-bottom]">
-                        <img 
-                            src={Rumput} 
+                        <img
+                            src={DecorRumput}
                             alt="Seaweed Left Back"
                             className="w-full h-auto seaweed-anim-2 brightness-75"
                         />
                     </div>
                     <div className="absolute bottom-[-10%] left-[-10%] w-[45vw] max-w-[580px] rotate-20 origin-bottom">
-                        <img 
-                            src={Rumput} 
+                        <img
+                            src={DecorRumput}
                             alt="Seaweed Left Front"
                             className="w-full h-auto seaweed-anim-1"
                         />
@@ -250,15 +262,15 @@ export default function Assistants() {
 
                     <div className="absolute bottom-0 right-0 w-[40vw] h-[40vh] scale-x-[-1]">
                          <div className="absolute bottom-[-10%] left-[-40%] w-[45vw] max-w-[620px] rotate-20 origin-bottom">
-                            <img 
-                                src={Rumput} 
+                            <img
+                                src={DecorRumput}
                                 alt="Seaweed Right Back"
                                 className="w-full h-auto seaweed-anim-2 opacity-80 brightness-75"
                             />
                         </div>
                         <div className="absolute bottom-[-25%] left-[-30%] w-[45vw] max-w-[580px] rotate-20 origin-bottom">
-                            <img 
-                                src={Rumput} 
+                            <img
+                                src={DecorRumput}
                                 alt="Seaweed Right Front"
                                 className="w-full h-auto seaweed-anim-1 opacity-100"
                             />
@@ -266,11 +278,11 @@ export default function Assistants() {
                     </div>
                 </div>
 
-                {/* === TOP SECTION: TITLE & NAVIGATION === */}
+                {/* Header */}
                 <div className="relative z-50 w-full shrink-0 pt-0 md:pt-6 pb-2 px-4 flex flex-col items-center justify-center pointer-events-none">
                     {/* Title Text */}
                     <div className={`text-center font-extrabold transition-all duration-700 mt-24 md:mt-4
-                        ${!inputLocked && !isLoggingOut ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-10'}`}
+                        ${!inputLocked && !isLoggingOut && !isExiting ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-10'}`}
                         style={{ fontFamily: 'Cormorant Infant, serif' }}
                     >
                         <h1 className="text-lg sm:text-2xl md:text-3xl text-cyan-200/80 leading-tight uppercase tracking-widest drop-shadow-md">
@@ -283,7 +295,7 @@ export default function Assistants() {
                 </div>
 
 
-                {/* === MIDDLE SECTION: THE BOOK === */}
+                {/* The Book */}
                 <div className="relative z-40 flex-1 w-full flex items-center justify-center p-4">
                     <div
                         className={`transition-all duration-1000 book-filter ${!isBookPlacing && !isExiting ? 'animate-float' : ''}`}
@@ -301,9 +313,9 @@ export default function Assistants() {
                 </div>
 
 
-                {/* === BOTTOM SECTION: CONTROLS === */}
+                {/* The Book Controls */}
                 <div className={`relative z-50 w-full shrink-0 flex justify-center pb-8 md:pb-10 transition-all duration-700
-                    ${!inputLocked && !isLoggingOut ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
+                    ${!inputLocked && !isLoggingOut && !isExiting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
                     <BookControls
                         onPrev={handlePrev}
                         onNext={handleNext}
@@ -313,19 +325,27 @@ export default function Assistants() {
                     />
                 </div>
 
-                {/* Navigation Buttons (Fixed & High Z-Index) */}
-                <div className="fixed top-6 left-6 z-60 pointer-events-auto transition-all duration-700 ease-out"
-                        style={{ opacity: !inputLocked && !isLoggingOut ? 1 : 0, transform: !inputLocked && !isLoggingOut ? 'translateX(0)' : 'translateX(-24px)' }}>
+                {/* Navigation Buttons */}
+                <div
+                    className={`fixed top-6 left-6 z-70 transition-all duration-700 ease-out
+                        ${!inputLocked && !isLoggingOut && !isExiting ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6 pointer-events-none'}`}
+                >
                     <ButtonSidebar onClick={toggleSidebar} />
                 </div>
 
-                <div className="fixed top-6 right-6 z-60 pointer-events-auto transition-all duration-700 ease-out"
-                        style={{ opacity: !inputLocked && !isLoggingOut ? 1 : 0, transform: !inputLocked && !isLoggingOut ? 'translateX(0)' : 'translateX(24px)' }}>
-                    <ButtonHome onClick={goHome} />
+                <div
+                    className={`fixed top-6 right-6 z-70 transition-all duration-700 ease-out
+                        ${!inputLocked && !isLoggingOut && !isExiting ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-6 pointer-events-none'}`}
+                >
+                    <ButtonHome onClick={() => handleNavigate('/User/home')} />
                 </div>
 
-                {/* === OVERLAYS === */}
-                <UserSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} onLogout={handleLogout} />
+                <UserSidebar
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)}
+                    onLogout={handleLogout}
+                    onNavigate={handleNavigate}
+                />
 
                 <div
                     className="fixed inset-0 z-70 pointer-events-none transition-opacity duration-1000"

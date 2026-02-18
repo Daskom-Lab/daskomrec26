@@ -1,14 +1,8 @@
 import React, { useState, useMemo } from "react";
 import {
-    MagnifyingGlassIcon,
-    ChevronLeftIcon,
-    ChevronRightIcon,
-    TableCellsIcon,
-    ListBulletIcon,
-    UserPlusIcon,
-    ClockIcon,
-    CalendarIcon,
-    MapPinIcon,
+    MagnifyingGlassIcon, ChevronLeftIcon, ChevronRightIcon,
+    TableCellsIcon, ListBulletIcon, UserPlusIcon,
+    ClockIcon, CalendarIcon, MapPinIcon,
     VideoCameraIcon,
 } from "@heroicons/react/24/outline";
 
@@ -23,8 +17,6 @@ const ShiftTable = ({ shifts = [], onAddShift, hasChosen = false }) => {
     });
     const ITEMS_PER_PAGE = viewMode === "compact" ? 8 : 5;
 
-    // --- LOGIC ---
-
     const formatDisplayDate = (dateString) => {
         if (!dateString) return "-";
         let date;
@@ -36,7 +28,6 @@ const ShiftTable = ({ shifts = [], onAddShift, hasChosen = false }) => {
         }
         if (isNaN(date.getTime())) return dateString;
 
-        // NEW FORMAT: Day dd/mm (e.g., Fri 17/08)
         const dayName = date.toLocaleDateString("id-ID", { weekday: "short" });
         const day = String(date.getDate()).padStart(2, "0");
         const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -116,7 +107,7 @@ const ShiftTable = ({ shifts = [], onAddShift, hasChosen = false }) => {
     `;
 
     return (
-        <div className="w-full max-w-[1200px] mx-auto font-sans text-white">
+        <div className="w-full max-w-300 mx-auto font-sans text-white">
             <style>{styles}</style>
 
             {/* HEADER */}

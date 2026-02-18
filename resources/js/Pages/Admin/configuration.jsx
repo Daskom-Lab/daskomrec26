@@ -2,13 +2,17 @@ import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import { Head, router } from "@inertiajs/react";
 import { createPortal } from "react-dom";
 
-// Components
-import UnderwaterEffect from "@components/UnderwaterEffect";
-import background from "@assets/backgrounds/AssistantBackground.png";
+/* Background Assets */
+import Background from "@assets/backgrounds/Alternate.png";
+
+/* Buttons Components */
 import ButtonSidebar from "@components/ButtonSidebar";
 import ButtonHome from "@components/ButtonHome";
+
+/* Other Components */
 import AdminSidebar from "@components/AdminSidebar";
 import RichTextEditor from "@components/RichTextEditor";
+import UnderwaterEffect from "@components/UnderwaterEffect";
 
 // Icons
 import {
@@ -225,13 +229,12 @@ export default function Configuration({ stages }) {
             <Head title="Configuration" />
             <style>{styles}</style>
 
-            {/* SCROLLABLE ONLY ON MOBILE via overflow-y-auto on small screens */}
             <div className="fixed inset-0 w-full h-full bg-[#0a2a4a] text-white overflow-y-auto md:overflow-hidden font-sans">
-                {/* Fixed Background */}
+                {/* Background */}
                 <div className="fixed inset-0 z-0 pointer-events-none">
                     <img
                         ref={backgroundRef}
-                        src={background}
+                        src={Background}
                         alt="bg"
                         onLoad={() => setImageLoaded(true)}
                         className={`absolute inset-0 w-full h-full object-cover transition-all duration-1500 ease-out ${showImage && imageLoaded ? "opacity-100" : "opacity-0"} ${!isZooming ? "pulse-effect" : ""} cold-blue-filter`}
@@ -251,7 +254,7 @@ export default function Configuration({ stages }) {
                     />
                 </div>
 
-                {/* Content Layer */}
+                {/* Contents */}
                 <div
                     className={`relative md:absolute md:inset-0 z-10 flex flex-col items-center justify-start md:justify-center p-4 md:p-8 transition-all duration-1000 ${isZooming ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
                 >
@@ -600,22 +603,13 @@ export default function Configuration({ stages }) {
                         </div>,
                         document.body,
                     )}
-                {/* UI Fixed Elements */}
-                <div
-                    className={`fixed top-6 left-6 z-[60] transition-all duration-700 ease-out ${!isZooming && !isLoggingOut ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-6 pointer-events-none"}`}
-                >
-                    <ButtonSidebar
-                        onClick={() => setIsSidebarOpen((prev) => !prev)}
-                    />
+
+                {/* Sidebar Button */}
+                <div className={`absolute top-6 left-6 z-60 transition-all duration-700 ease-out ${!isZooming && !isLoggingOut ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-6 pointer-events-none"}`} >
+                    <ButtonSidebar onClick={() => setIsSidebarOpen((prev) => !prev)} />
                 </div>
-                <div
-                    className={`fixed top-6 right-6 z-[60] transition-all duration-700 ease-out ${!isZooming && !isLoggingOut ? "opacity-100 translate-x-0" : "opacity-0 translate-x-6 pointer-events-none"}`}
-                >
-                    <ButtonHome
-                        onClick={() =>
-                            console.log("Navigate to home (backend disabled)")
-                        }
-                    />
+                <div className={`absolute top-6 right-6 z-60 transition-all duration-700 ease-out ${!isZooming && !isLoggingOut ? "opacity-100 translate-x-0" : "opacity-0 translate-x-6 pointer-events-none"}`} >
+                    <ButtonHome onClick={() => router.visit("/admin/home")} />
                 </div>
 
                 <AdminSidebar
@@ -625,7 +619,7 @@ export default function Configuration({ stages }) {
                 />
 
                 <div
-                    className="fixed inset-0 z-[70] pointer-events-none transition-opacity duration-1000 ease-in-out"
+                    className="fixed inset-0 z-70 pointer-events-none transition-opacity duration-1000 ease-in-out"
                     style={{
                         background:
                             "linear-gradient(to bottom, #0a2a4a, #0c365b)",
@@ -633,7 +627,7 @@ export default function Configuration({ stages }) {
                     }}
                 />
                 {inputLocked && (
-                    <div className="fixed inset-0 z-[80] pointer-events-auto" />
+                    <div className="fixed inset-0 z-80 pointer-events-auto" />
                 )}
             </div>
         </>

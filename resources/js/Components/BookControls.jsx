@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-// Make sure these paths match your project structure
-import ButtonLeft from '@assets/buttons/ButtonLeft.png';
-import ButtonRight from '@assets/buttons/ButtonRight.png';
+import ButtonLeft from '@assets/buttons/CircularLeft.png';
+import ButtonRight from '@assets/buttons/CircularRight.png';
 
-// === REUSABLE BUTTON COMPONENT ===
 const ControlButton = ({ onClick, disabled, src, alt }) => {
     const [pressed, setPressed] = useState(false);
 
@@ -20,7 +18,7 @@ const ControlButton = ({ onClick, disabled, src, alt }) => {
             className={`
                 relative focus:outline-none select-none
                 flex items-center justify-center
-                flex-shrink-0  /* <--- IMPORTANT: Prevents button from disappearing */
+                shrink-0
                 transition-opacity duration-300
                 ${disabled ? 'opacity-30 cursor-not-allowed grayscale' : 'cursor-pointer hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]'}
             `}
@@ -43,7 +41,6 @@ const ControlButton = ({ onClick, disabled, src, alt }) => {
     );
 };
 
-// === MAIN CONTROLS COMPONENT ===
 export default function BookControls({
     onPrev,
     onNext,
@@ -68,7 +65,6 @@ export default function BookControls({
 
     return (
         <div
-            // Reduced gap on mobile (gap-2) so buttons don't get pushed off
             className={`flex items-center justify-center gap-2 md:gap-8 ${className}`}
             style={{ fontFamily: 'Cormorant Infant, serif' }}
             onPointerDown={(e) => e.stopPropagation()}
@@ -84,7 +80,7 @@ export default function BookControls({
                 }
             `}</style>
 
-            {/* PREV BUTTON */}
+            {/* Previous */}
             <ControlButton
                 onClick={onPrev}
                 disabled={currentPage === 0}
@@ -92,7 +88,7 @@ export default function BookControls({
                 alt="Previous"
             />
 
-            {/* === THE PILL === */}
+            {/* The Pill */}
             <div
                 className={`
                     relative group flex items-center justify-center gap-1 md:gap-2
@@ -133,7 +129,7 @@ export default function BookControls({
                 </span>
             </div>
 
-            {/* NEXT BUTTON */}
+            {/* Next */}
             <ControlButton
                 onClick={onNext}
                 disabled={currentPage === totalPages}

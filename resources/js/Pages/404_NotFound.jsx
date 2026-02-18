@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Head } from '@inertiajs/react';
 
-import utama from '@assets/backgrounds/utama.png';
+/* Background Assets */
+import Background from '@assets/backgrounds/Main.png';
+
+/* Decor Assets */
 import Hijau from '@assets/others/mike.png';
+
+/* Other Components */
 import UnderwaterEffect from '@components/UnderwaterEffect'
 
 export default function NotFound() {
@@ -18,20 +23,21 @@ export default function NotFound() {
     return (
         <>
             <Head title="Page Not Found" />
+            <UnderwaterEffect/>
+
             <div className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center bg-[#001f3f]">
                 <div className="absolute inset-0 z-0">
                     <img
-                        src={utama}
+                        src={Background}
                         alt="Background Underwater"
                         className="w-full h-full object-cover brightness-[0.8]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-900/20 to-black/60" />
+                    <div className="absolute inset-0 bg-linear-to-b from-transparent via-cyan-900/20 to-black/60" />
                 </div>
                 <div className="relative z-10 flex flex-col items-center text-center px-4">
                     <div className="flex items-end justify-center gap-2 sm:gap-4 font-serif select-none">
                         <span
                             className="text-[120px] sm:text-[180px] md:text-[280px] leading-none text-white drop-shadow-2xl"
-                            style={{ fontFamily: '"Times New Roman", Times, serif' }} // Font serif tajam sesuai gambar
                         >
                             4
                         </span>
@@ -45,7 +51,6 @@ export default function NotFound() {
 
                         <span
                             className="text-[120px] sm:text-[180px] md:text-[280px] leading-none text-white drop-shadow-2xl scale-x-[-1]"
-                            style={{ fontFamily: '"Times New Roman", Times, serif' }}
                         >
                             4
                         </span>
@@ -59,8 +64,6 @@ export default function NotFound() {
 
                 <div className="absolute inset-0 z-20 pointer-events-none opacity-30 mix-blend-screen bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
             </div>
-
-            <UnderwaterEffect/>
         </>
     );
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import button from '@assets/buttons/01-Button.png'
+import button from '@assets/buttons/Sidebar.png'
 
 export default function ButtonSidebar({ onClick }) {
     return (
