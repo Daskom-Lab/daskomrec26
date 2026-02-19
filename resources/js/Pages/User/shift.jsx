@@ -73,9 +73,6 @@ export default function ShiftPage({
             setShowImage(true);
             setIsZooming(false);
             setInputLocked(false);
-            if (!IS_PASSED) {
-                setShowGateModal(true);
-            }
         };
 
         window.addEventListener(

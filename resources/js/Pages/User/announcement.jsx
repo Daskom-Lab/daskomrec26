@@ -12,6 +12,7 @@ import Chains2 from "@assets/others/DECORATIONS/Chains/01-Chain.png";
 import logoImg from "@assets/logo/ORB_DLOR 1.png";
 import Mobileboard from "@assets/backgrounds/02-ABoard_Mobile.png";
 import buttonShiftImg from "@assets/buttons/ButtonAnchor.png";
+import ButtonHomeImg from "@assets/buttons/ButtonAnchor.png";
 
 export default function AnnouncementPage({
     userStatus = "pending",
@@ -36,7 +37,7 @@ export default function AnnouncementPage({
     const [isUnlocking, setIsUnlocking] = useState(false);
 
     // 1. GET DYNAMIC DATA
-    const isLive = true;
+    const isLive = announcementEnabled;
 
     const toggleSidebar = () => {
         if (inputLocked || isLoggingOut) return;
@@ -265,6 +266,11 @@ export default function AnnouncementPage({
                                                             ? "CONGRATULATIONS"
                                                             : "ANNOUNCEMENT"}
                                                     </h1>
+                                                    {stageName && (
+                                                        <p className="text-sm md:text-base opacity-60 mt-1 tracking-wider">
+                                                            {stageName}
+                                                        </p>
+                                                    )}
                                                     <div className="w-24 md:w-48 h-1 bg-[#092338] mx-auto mt-2 rounded-full opacity-80"></div>
                                                 </div>
 
@@ -291,24 +297,29 @@ export default function AnnouncementPage({
                                                                 </h1>
 
                                                                 {/* --- VARIABLE QUOTE HERE --- */}
-                                                                <h1 className="text-sm sm:text-sm md:text-lg italic opacity-70 mt-4">
-                                                                    {
-                                                                        currentData.quote
-                                                                    }
-                                                                </h1>
+                                                                {successMessage && (
+                                                                    <div
+                                                                        className="text-sm sm:text-sm md:text-lg opacity-70 mt-4 prose prose-sm max-w-none text-[#092338]"
+                                                                        dangerouslySetInnerHTML={{
+                                                                            __html: successMessage,
+                                                                        }}
+                                                                    />
+                                                                )}
 
-                                                                <h1 className="text-sm sm:text-sm md:text-lg italic opacity-70 mt-4">
-                                                                    <a
-                                                                        href={
-                                                                            currentData.url
-                                                                        }
-                                                                        className="underline cursor-pointer"
-                                                                    >
-                                                                        {
-                                                                            currentData.url
-                                                                        }
-                                                                    </a>
-                                                                </h1>
+                                                                {link && (
+                                                                    <h1 className="text-sm sm:text-sm md:text-lg italic opacity-70 mt-4">
+                                                                        <a
+                                                                            href={
+                                                                                link
+                                                                            }
+                                                                            className="underline cursor-pointer"
+                                                                        >
+                                                                            {
+                                                                                link
+                                                                            }
+                                                                        </a>
+                                                                    </h1>
+                                                                )}
                                                             </div>
                                                         ) : (
                                                             /* FAILED TEMPLATE */
@@ -329,18 +340,22 @@ export default function AnnouncementPage({
                                                                 </h1>
 
                                                                 {/* --- VARIABLE QUOTE HERE --- */}
-                                                                <h1 className="text-xs sm:text-sm md:text-lg italic opacity-70 mt-4">
-                                                                    {
-                                                                        currentData.quote
-                                                                    }
-                                                                </h1>
+                                                                {failMessage && (
+                                                                    <div
+                                                                        className="text-xs sm:text-sm md:text-lg opacity-70 mt-4 prose prose-sm max-w-none text-[#092338]"
+                                                                        dangerouslySetInnerHTML={{
+                                                                            __html: failMessage,
+                                                                        }}
+                                                                    />
+                                                                )}
                                                             </div>
                                                         )}
                                                     </div>
                                                 </div>
 
                                                 {/* 2. RENDER ACTION BUTTON (LINK) */}
-                                                {userStatus === "passed" ? (
+                                                {userStatus === "passed" &&
+                                                shiftEnabled ? (
                                                     <>
                                                         <div className="relative z-20 w-full h-28 md:h-40 flex justify-center items-end pb-2">
                                                             <button
