@@ -1,6 +1,7 @@
 import './bootstrap';
 import { createInertiaApp } from '@inertiajs/react'
 import { createRoot } from 'react-dom/client'
+import { SoundProvider } from '@components/SoundProvider'
 
 createInertiaApp({
     resolve: name => {
@@ -8,7 +9,11 @@ createInertiaApp({
         return pages[`./Pages/${name}.jsx`]
     },
     setup({ el, App, props }) {
-        createRoot(el).render(<App {...props} />)
+        createRoot(el).render(
+            <SoundProvider>
+                <App {...props} />
+            </SoundProvider>
+        )
     },
     title: (title) => title ? `${title} - DLOR 2026` : 'DLOR 2026',
 })

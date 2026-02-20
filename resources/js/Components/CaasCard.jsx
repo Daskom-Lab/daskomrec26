@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useMemo } from 'react';
 
-import cardFemale from '@assets/cards/Female_CAAS.png';
-import cardMale from '@assets/cards/Male_CAAS.png';
+import CardFem from '@assets/cards/Female_CAAS.png';
+import CardBoy from '@assets/cards/Male_CAAS.png';
 
 const MAX_ROTATION = 8;
 const BUBBLE_COUNT = 15;
@@ -13,7 +13,7 @@ export default function CardCaas({ sex, name, nim, cls, major }) {
   const [bubbles, setBubbles] = useState([]);
   const [clicked, setClicked] = useState(false);
 
-  const cardImage = useMemo(() => (sex === 'female' ? cardFemale : cardMale), [sex]);
+  const cardImage = useMemo(() => (sex === 'female' ? CardFem : CardBoy), [sex]);
 
   const handlePointerMove = (e) => {
     if (!containerRef.current) return;

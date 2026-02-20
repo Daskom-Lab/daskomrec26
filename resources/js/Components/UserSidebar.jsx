@@ -1,28 +1,19 @@
 import { useState, useRef } from "react";
 import { router, usePage } from "@inertiajs/react";
 
-import ButtonRegular from "@assets/buttons/ButtonRegular.png";
-import ButtonStar from "@assets/buttons/ButtonStar.png";
-import ButtonAnchor from "@assets/buttons/ButtonAnchor.png";
-import ButtonChain from "@assets/buttons/ButtonChain.png";
+import ButtonRegular from "@assets/buttons/Regular.png";
+import ButtonStar from "@assets/buttons/Star.png";
+import ButtonAnchor from "@assets/buttons/Anchor.png";
+import ButtonChain from "@assets/buttons/Chain.png";
 
-import ButtonProfile from "@assets/buttons/07-Profile.png";
-import ButtonPassword from "@assets/buttons/08-ChangePass.png";
-import ButtonAssistants from "@assets/buttons/09-Assistants.png";
-import ButtonLine from "@assets/buttons/10-OALine.png";
-import ButtonAnnouncement from "@assets/buttons/11-Announcement.png";
-import ButtonShift from "@assets/buttons/12-Shift.png";
-import ButtonCoreUnlocked from "@assets/buttons/Cores.png";
-import ButtonCoreLocked from "@assets/buttons/06-Cores.png";
-import ButtonLogout from "@assets/buttons/13-LogOut.png";
+import ButtonCoreUnlocked from "@assets/buttons/CoresUnlocked.png";
+import ButtonCoreLocked from "@assets/buttons/CoresLocked.png";
 
-export default function UserSidebar({ isOpen, onClose, onLogout }) {
+export default function UserSidebar({ isOpen, onClose, onLogout, onNavigate }) {
     const { config, userStageId } = usePage().props;
 
-    // Check if user is in stage 6 (Rising)
     const isStage6 = userStageId === 6;
 
-    // Configuration flags
     const announcementEnabled = config?.pengumuman_on ?? false;
     const shiftEnabled = config?.isi_jadwal_on ?? false;
     const puzzleEnabled = config?.puzzles_on ?? false;
@@ -43,8 +34,15 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
     const imageStyleDisabled =
         "w-100 h-auto drop-shadow-[0_0_8px_rgba(96,165,250,0.3)] grayscale";
 
-    // Core button is unlocked only if user is in stage 6 AND puzzle config is enabled
     const coreUnlocked = isStage6 && puzzleEnabled;
+
+    const handleNav = (url) => {
+        if (onNavigate) {
+            onNavigate(url);
+        } else {
+            router.visit(url);
+        }
+    };
 
     const handleCoreClick = () => {
         if (!coreUnlocked) {
@@ -59,12 +57,12 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
                     2000,
                 );
                 if (newCount >= 3) {
-                    router.visit("/user");
+                    handleNav("/user");
                 }
                 return newCount;
             });
         } else {
-            router.visit("/user/cores");
+            handleNav("/user/cores");
         }
     };
 
@@ -112,9 +110,7 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
                             <button
                                 type="button"
                                 className={buttonWrapper}
-                                onClick={() => {
-                                    router.visit("/user/profile");
-                                }}
+                                onClick={() => handleNav("/user/profile")}
                             >
                                 <img
                                     src={ButtonStar}
@@ -135,9 +131,7 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
                             <button
                                 type="button"
                                 className={buttonWrapper}
-                                onClick={() => {
-                                    router.visit("/user/password");
-                                }}
+                                onClick={() => handleNav("/user/password")}
                             >
                                 <img
                                     src={ButtonRegular}
@@ -162,9 +156,7 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
                             <button
                                 type="button"
                                 className={buttonWrapper}
-                                onClick={() => {
-                                    router.visit("/user/assistants");
-                                }}
+                                onClick={() => handleNav("/user/assistants")}
                             >
                                 <img
                                     src={ButtonRegular}
@@ -185,9 +177,7 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
                             <button
                                 type="button"
                                 className={buttonWrapper}
-                                onClick={() => {
-                                    router.visit("/user/oaline");
-                                }}
+                                onClick={() => handleNav("/user/oaline")}
                             >
                                 <img
                                     src={ButtonAnchor}
@@ -218,7 +208,7 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
                                 }
                                 onClick={() => {
                                     if (announcementEnabled)
-                                        router.visit("/user/announcement");
+                                        handleNav("/user/announcement");
                                 }}
                                 disabled={!announcementEnabled}
                             >
@@ -251,7 +241,7 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
                                 }
                                 onClick={() => {
                                     if (shiftEnabled)
-                                        router.visit("/user/shift");
+                                        handleNav("/user/shift");
                                 }}
                                 disabled={!shiftEnabled}
                             >

@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Caudex:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -9,7 +10,6 @@
     --font-sans: 'Cormorant Infant', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
-@import url('https://fonts.googleapis.com/css2?family=Caudex:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 * {
   box-sizing: border-box;
@@ -58,19 +58,15 @@ html, body, #app {
   to { transform: translateX(-50vw) scaleX(-1); }
 }
 
-.fish-swim-right {
-  animation: swimRight 25s linear infinite;
-}
-
-.fish-swim-left {
-  animation: swimLeft 30s linear infinite;
-}
-
 .cormorant-infant-<uniquifier> {
   font-family: "Cormorant Infant", serif;
   font-optical-sizing: auto;
   font-weight: <weight>;
   font-style: normal;
+}
+
+.cold-blue-filter {
+    filter: brightness(1) contrast(.95) saturate(1.2) hue-rotate(5deg);
 }
 
 @keyframes softSway {
