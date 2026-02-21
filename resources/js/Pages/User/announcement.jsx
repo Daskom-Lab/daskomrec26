@@ -19,14 +19,6 @@ import ButtonHome from "@components/ButtonHome";
 import UserSidebar from "@components/UserSidebar";
 import UnderwaterEffect from "@components/UnderwaterEffect";
 
-import Background3 from "@assets/backgrounds/Background3.png";
-import Chains1 from "@assets/others/DECORATIONS/Chains/01-Chain.png";
-import Chains2 from "@assets/others/DECORATIONS/Chains/01-Chain.png";
-import logoImg from "@assets/logo/ORB_DLOR 1.png";
-import Mobileboard from "@assets/backgrounds/02-ABoard_Mobile.png";
-import buttonShiftImg from "@assets/buttons/ButtonAnchor.png";
-import ButtonHomeImg from "@assets/buttons/ButtonAnchor.png";
-
 export default function AnnouncementPage({
     userStatus = "pending",
     successMessage = "",
@@ -192,15 +184,15 @@ export default function AnnouncementPage({
     const getBackgroundStyle = () => {
         if (isExiting) {
             return {
-                transform: 'scale(1)',
-                filter: 'brightness(0.6) blur(15px)',
-                transition: 'transform 1s ease-in-out, filter 1s ease-in-out',
+                transform: "scale(1)",
+                filter: "brightness(0.6) blur(15px)",
+                transition: "transform 1s ease-in-out, filter 1s ease-in-out",
             };
         }
         return {
-            transform: 'scale(1.05)',
-            filter: 'brightness(0.6) blur(4px)',
-            transition: 'transform 1s ease-in-out, filter 1s ease-in-out',
+            transform: "scale(1.05)",
+            filter: "brightness(0.6) blur(4px)",
+            transition: "transform 1s ease-in-out, filter 1s ease-in-out",
         };
     };
 
@@ -210,10 +202,14 @@ export default function AnnouncementPage({
             <style>{styles}</style>
 
             <div className="relative w-full min-h-screen overflow-hidden text-white font-caudex bg-slate-900">
-                <div className={`absolute top-6 left-6 z-70 transition-all duration-700 ${!inputLocked && !isLoggingOut && !isExiting ? "opacity-100" : "opacity-0 -translate-x-10 pointer-events-none"}`} >
+                <div
+                    className={`absolute top-6 left-6 z-70 transition-all duration-700 ${!inputLocked && !isLoggingOut && !isExiting ? "opacity-100" : "opacity-0 -translate-x-10 pointer-events-none"}`}
+                >
                     <ButtonSidebar onClick={toggleSidebar} />
                 </div>
-                <div className={`absolute top-6 right-6 z-70 transition-all duration-700 ${!inputLocked && !isLoggingOut && !isExiting ? "opacity-100" : "opacity-0 translate-x-10 pointer-events-none"}`} >
+                <div
+                    className={`absolute top-6 right-6 z-70 transition-all duration-700 ${!inputLocked && !isLoggingOut && !isExiting ? "opacity-100" : "opacity-0 translate-x-10 pointer-events-none"}`}
+                >
                     <ButtonHome onClick={() => handleNavigate("/User/home")} />
                 </div>
                 <UserSidebar
@@ -239,14 +235,18 @@ export default function AnnouncementPage({
 
                 {/* Contents */}
                 <div className="relative z-30 w-full min-h-screen flex justify-center items-center py-10">
-                    <div className={`
+                    <div
+                        className={`
                         relative w-[95%] max-w-[420px] md:max-w-[700px] h-[600px] sm:h-[650px] md:h-[800px]
-                        ${(isExiting || isLoggingOut)
-                            ? "animate-retract opacity-100"
-                            : showBoard
-                                ? "animate-drop"
-                                : "opacity-0"}
-                    `} >
+                        ${
+                            isExiting || isLoggingOut
+                                ? "animate-retract opacity-100"
+                                : showBoard
+                                  ? "animate-drop"
+                                  : "opacity-0"
+                        }
+                    `}
+                    >
                         <div className="w-full h-full animate-sway-container">
                             {/* Chains */}
                             <div className="absolute -top-[300px] md:-top-[180px] left-[12%] h-[400px] md:h-[250px] z-10 animate-chain-left">
@@ -328,7 +328,9 @@ export default function AnnouncementPage({
                                             >
                                                 <div className="relative z-10 w-full mb-4">
                                                     <h1 className="text-2xl sm:text-4xl font-bold uppercase tracking-[0.15em] drop-shadow-sm">
-                                                        {userStatus === "passed" ? "CONGRATULATIONS" : "ANNOUNCEMENT"}
+                                                        {userStatus === "passed"
+                                                            ? "CONGRATULATIONS"
+                                                            : "ANNOUNCEMENT"}
                                                     </h1>
                                                     {stageName && (
                                                         <p className="text-sm md:text-base opacity-60 mt-1 tracking-wider">
@@ -340,28 +342,45 @@ export default function AnnouncementPage({
 
                                                 <div className="relative z-10 flex-1 flex flex-col justify-center items-center w-full space-y-4">
                                                     <div className="font-serif text-[15px] sm:text-[17px] md:text-xl leading-relaxed md:leading-loose max-w-[90%]">
-                                                        {userStatus === "passed" ? (
+                                                        {userStatus ===
+                                                        "passed" ? (
                                                             <>
                                                                 {/* Passed */}
                                                                 <div className="space-y-2 text-lg">
-                                                                    <h1> Selamat! Kamu dinyatakan </h1>
+                                                                    <h1>
+                                                                        {" "}
+                                                                        Selamat!
+                                                                        Kamu
+                                                                        dinyatakan{" "}
+                                                                    </h1>
                                                                     <div className="py-2 border-y border-dashed border-[#092338]/40 my-2">
                                                                         <span className="text-[#005f99] font-black text-4xl md:text-5xl tracking-wide block scale-110">
                                                                             LULUS
                                                                         </span>
                                                                     </div>
-                                                                    <h1> seleksi tahap ini. </h1>
+                                                                    <h1>
+                                                                        {" "}
+                                                                        seleksi
+                                                                        tahap
+                                                                        ini.{" "}
+                                                                    </h1>
 
                                                                     <h1 className="text-sm sm:text-sm md:text-lg italic opacity-70 mt-4">
-                                                                        { currentData.quote }
+                                                                        {
+                                                                            currentData.quote
+                                                                        }
                                                                     </h1>
 
                                                                     <h1 className="text-sm sm:text-sm md:text-lg italic opacity-70 mt-4">
                                                                         <a
-                                                                            href={ currentData.url }
+                                                                            href={
+                                                                                currentData.url
+                                                                            }
                                                                             className="underline cursor-pointer"
                                                                         >
-                                                                            { currentData.url }
+                                                                            {
+                                                                                currentData.url
+                                                                            }
                                                                         </a>
                                                                     </h1>
                                                                 </div>
@@ -394,21 +413,34 @@ export default function AnnouncementPage({
                                                                         </a>
                                                                     </h1>
                                                                 )}
-                                                            </div>
+                                                            </>
                                                         ) : (
                                                             <>
                                                                 {/* Failed */}
                                                                 <div className="space-y-2 text-lg">
-                                                                    <h1> Mohon maaf, kamu </h1>
+                                                                    <h1>
+                                                                        {" "}
+                                                                        Mohon
+                                                                        maaf,
+                                                                        kamu{" "}
+                                                                    </h1>
                                                                     <div className="py-2 border-y border-dashed border-[#092338]/40 my-2">
                                                                         <span className="text-red-700/80 font-black text-4xl md:text-5xl tracking-wide block">
-                                                                            BELUM LULUS
+                                                                            BELUM
+                                                                            LULUS
                                                                         </span>
                                                                     </div>
-                                                                    <h1> pada tahap ini. </h1>
+                                                                    <h1>
+                                                                        {" "}
+                                                                        pada
+                                                                        tahap
+                                                                        ini.{" "}
+                                                                    </h1>
 
                                                                     <h1 className="text-xs sm:text-sm md:text-lg italic opacity-70 mt-4">
-                                                                        { currentData.quote }
+                                                                        {
+                                                                            currentData.quote
+                                                                        }
                                                                     </h1>
                                                                 </div>
                                                                 <h1>
@@ -425,7 +457,7 @@ export default function AnnouncementPage({
                                                                         }}
                                                                     />
                                                                 )}
-                                                            </div>
+                                                            </>
                                                         )}
                                                     </div>
                                                 </div>
@@ -436,11 +468,15 @@ export default function AnnouncementPage({
                                                     <>
                                                         <div className="relative z-20 w-full h-28 md:h-40 flex justify-center items-end pb-2">
                                                             <button
-                                                                onClick={handleShiftClick}
+                                                                onClick={
+                                                                    handleShiftClick
+                                                                }
                                                                 className="group relative w-64 sm:w-80 md:w-96 h-28 md:h-40 transition-all duration-300 hover:scale-105 active:scale-95"
                                                             >
                                                                 <img
-                                                                    src={ ButtonShift }
+                                                                    src={
+                                                                        ButtonShift
+                                                                    }
                                                                     alt="Large Action Button"
                                                                     className="absolute inset-0 w-full h-full object-contain drop-shadow-[0_6px_8px_rgba(0,0,0,0.3)] scale-110"
                                                                 />
@@ -456,11 +492,17 @@ export default function AnnouncementPage({
                                                     <>
                                                         <div className="relative z-20 w-full h-28 md:h-40 flex justify-center items-end pb-2">
                                                             <button
-                                                                onClick={() => handleNavigate("/user/home")}
+                                                                onClick={() =>
+                                                                    handleNavigate(
+                                                                        "/user/home",
+                                                                    )
+                                                                }
                                                                 className="group relative w-64 sm:w-80 md:w-96 h-28 md:h-40 transition-all duration-300 hover:scale-105 active:scale-95"
                                                             >
                                                                 <img
-                                                                    src={ ButtonShift }
+                                                                    src={
+                                                                        ButtonShift
+                                                                    }
                                                                     alt="Large Action Button"
                                                                     className="absolute inset-0 w-full h-full object-contain drop-shadow-[0_6px_8px_rgba(0,0,0,0.3)] scale-110"
                                                                 />
@@ -489,11 +531,13 @@ export default function AnnouncementPage({
                                                 the latest information!
                                             </h1>
                                             <button
-                                                onClick={() => handleNavigate("/user/home") }
+                                                onClick={() =>
+                                                    handleNavigate("/user/home")
+                                                }
                                                 className="group relative w-64 sm:w-80 md:w-96 h-28 md:h-40 transition-all duration-300 hover:scale-105 active:scale-95"
                                             >
                                                 <img
-                                                    src={ ButtonShift }
+                                                    src={ButtonShift}
                                                     alt="Large Action Button"
                                                     className="absolute inset-0 w-full h-full object-contain drop-shadow-[0_6px_8px_rgba(0,0,0,0.3)] scale-110"
                                                 />
@@ -512,8 +556,10 @@ export default function AnnouncementPage({
                 </div>
 
                 {/* Footer */}
-                <div className={`absolute bottom-4 w-full text-center z-40 text-[10px] md:text-xs text-cyan-100/50 transition-opacity duration-1000
-                    ${isExiting || isLoggingOut ? 'opacity-0' : 'opacity-100'}`}>
+                <div
+                    className={`absolute bottom-4 w-full text-center z-40 text-[10px] md:text-xs text-cyan-100/50 transition-opacity duration-1000
+                    ${isExiting || isLoggingOut ? "opacity-0" : "opacity-100"}`}
+                >
                     <p>@Atlantis.DLOR2026. All Right Served</p>
                 </div>
 
@@ -521,7 +567,8 @@ export default function AnnouncementPage({
                 <div
                     className="fixed inset-0 z-70 pointer-events-none transition-opacity duration-1000"
                     style={{
-                        background: 'linear-gradient(to bottom, #0a2a4a, #0c365b)',
+                        background:
+                            "linear-gradient(to bottom, #0a2a4a, #0c365b)",
                         opacity: isLoggingOut ? 1 : 0,
                     }}
                 />
