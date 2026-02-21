@@ -105,6 +105,7 @@ export default function Caas({ users, stages }) {
     // --- Modals ---
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isViewOpen, setIsViewOpen] = useState(false);
+    const [isExportOpen, setIsExportOpen] = useState(false);
     const [confirmModal, setConfirmModal] = useState({
         isOpen: false,
         title: "",
@@ -112,6 +113,11 @@ export default function Caas({ users, stages }) {
         onConfirm: null,
     });
     const [viewData, setViewData] = useState(null);
+
+    // --- Export Modal State ---
+    const [exportAll, setExportAll] = useState(true);
+    const [exportStage, setExportStage] = useState("");
+    const [exportStatus, setExportStatus] = useState("");
 
     // Form for creating/editing users
     const form = useForm({
@@ -151,6 +157,7 @@ export default function Caas({ users, stages }) {
     const closeAllModals = useCallback(() => {
         setIsFormOpen(false);
         setIsViewOpen(false);
+        setIsExportOpen(false);
         setConfirmModal((prev) => ({ ...prev, isOpen: false }));
         form.reset();
     }, []);
@@ -239,8 +246,21 @@ export default function Caas({ users, stages }) {
     };
 
     const handleExportExcel = () => {
-        // Use backend route to export all records
-        window.location.href = "/admin/caas/export";
+        setExportAll(true);
+        setExportStage("");
+        setExportStatus("");
+        setIsExportOpen(true);
+    };
+
+    const handleExportSubmit = () => {
+        const params = new URLSearchParams();
+        if (!exportAll) {
+            if (exportStage) params.append("stage_id", exportStage);
+            if (exportStatus) params.append("status", exportStatus);
+        }
+        params.append("export_all", exportAll ? "1" : "0");
+        window.location.href = `/admin/caas/export?${params.toString()}`;
+        setIsExportOpen(false);
     };
 
     const handleFileChange = (e) => {
@@ -1011,6 +1031,119 @@ export default function Caas({ users, stages }) {
                                         className="px-14 py-4 bg-cyan-900/20 border border-white/10 text-white/60 hover:text-white transition-all text-xs font-serif font-bold uppercase tracking-[0.3em]"
                                     >
                                         Finalize Observation
+                                    </button>
+                                </div>
+                            </div>
+                        </div>,
+                        document.body,
+                    )}
+
+                {isExportOpen &&
+                    createPortal(
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                            <div
+                                className="absolute inset-0 bg-[#020406]/90 backdrop-blur-sm"
+                                onClick={() => setIsExportOpen(false)}
+                            />
+                            <div className="relative w-full max-w-lg bg-[#0a121d] border-2 border-double border-emerald-600/30 p-10 shadow-2xl animate-popIn">
+                                <button
+                                    onClick={() => setIsExportOpen(false)}
+                                    className="absolute top-4 right-4 text-white/40 hover:text-white transition-all"
+                                >
+                                    <XMarkIcon className="w-6 h-6" />
+                                </button>
+                                <h2 className="text-3xl font-serif font-bold text-emerald-100 border-b border-white/5 pb-4 mb-8 uppercase tracking-widest text-center">
+                                    Export Data
+                                </h2>
+                                <div className="flex flex-col gap-6">
+                                    {/* Export All Toggle */}
+                                    <label className="flex items-center gap-3 cursor-pointer group">
+                                        <input
+                                            type="checkbox"
+                                            checked={exportAll}
+                                            onChange={(e) =>
+                                                setExportAll(e.target.checked)
+                                            }
+                                            className="w-5 h-5 accent-emerald-500 cursor-pointer"
+                                        />
+                                        <span className="text-sm text-white font-serif uppercase tracking-widest group-hover:text-emerald-300 transition-colors">
+                                            Export All CaAs Data
+                                        </span>
+                                    </label>
+
+                                    {/* Stage Filter */}
+                                    <div
+                                        className={`transition-opacity duration-300 ${exportAll ? "opacity-30 pointer-events-none" : "opacity-100"}`}
+                                    >
+                                        <label className="text-emerald-500/60 text-[10px] font-bold uppercase tracking-widest block mb-2">
+                                            Stage
+                                        </label>
+                                        <select
+                                            value={exportStage}
+                                            onChange={(e) =>
+                                                setExportStage(e.target.value)
+                                            }
+                                            className="input-etched w-full"
+                                            disabled={exportAll}
+                                        >
+                                            <option value="">All Stages</option>
+                                            {stages.map((stage) => (
+                                                <option
+                                                    key={stage.id}
+                                                    value={stage.id}
+                                                    className="bg-[#0f1c2e]"
+                                                >
+                                                    {stage.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    {/* Status Filter */}
+                                    <div
+                                        className={`transition-opacity duration-300 ${exportAll ? "opacity-30 pointer-events-none" : "opacity-100"}`}
+                                    >
+                                        <label className="text-emerald-500/60 text-[10px] font-bold uppercase tracking-widest block mb-2">
+                                            Status
+                                        </label>
+                                        <select
+                                            value={exportStatus}
+                                            onChange={(e) =>
+                                                setExportStatus(e.target.value)
+                                            }
+                                            className="input-etched w-full"
+                                            disabled={exportAll}
+                                        >
+                                            <option value="">
+                                                All Statuses
+                                            </option>
+                                            <option
+                                                value="LOLOS"
+                                                className="bg-[#0f1c2e]"
+                                            >
+                                                LOLOS
+                                            </option>
+                                            <option
+                                                value="PROSES"
+                                                className="bg-[#0f1c2e]"
+                                            >
+                                                PROSES
+                                            </option>
+                                            <option
+                                                value="GAGAL"
+                                                className="bg-[#0f1c2e]"
+                                            >
+                                                GAGAL
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <button
+                                        onClick={handleExportSubmit}
+                                        className="w-full py-4 border font-bold font-serif uppercase tracking-[0.2em] transition-all bg-emerald-700/20 border-emerald-500/50 text-emerald-100 hover:bg-emerald-600 hover:text-black flex items-center justify-center gap-2"
+                                    >
+                                        <ArrowDownTrayIcon className="w-5 h-5" />
+                                        Export to Excel
                                     </button>
                                 </div>
                             </div>
