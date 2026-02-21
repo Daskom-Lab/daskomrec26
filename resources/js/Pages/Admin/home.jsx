@@ -1,11 +1,20 @@
 import { useRef, useState, useEffect } from "react";
 import { Head, router } from "@inertiajs/react";
 
+/* Background Assets */
+import Background from "@assets/backgrounds/Home.png";
+
+/* Decor Assets */
+import DecorLeonidas from "@assets/others/LEONIDAS.png";
+import DecorShip from "@assets/others/DECORATIONS/Shipwreck/18.png";
+import DecorFlag from "@assets/others/DECORATIONS/Shipwreck/19.png";
+import DecorFish from "@assets/others/DECORATIONS/Fish & Other Sea Creatures/02-Fish.png";
+
+/* Other Components */
 import UnderwaterEffect from "@components/UnderwaterEffect";
-import background from "@assets/backgrounds/Background3.png";
+import AdminDashboard from "@components/AdminDashboard";
 import ButtonSidebar from "@components/ButtonSidebar";
 import AdminSidebar from "@components/AdminSidebar";
-import AdminDashboard from "@components/AdminDashboard";
 
 export default function HomeAdmin({
     stages,
@@ -132,7 +141,7 @@ export default function HomeAdmin({
                     {/* Image */}
                     <img
                         ref={backgroundRef}
-                        src={background}
+                        src={Background}
                         alt="background"
                         onLoad={() => setImageLoaded(true)}
                         className={`
@@ -215,18 +224,22 @@ export default function HomeAdmin({
                 >
                     <ButtonSidebar onClick={toggleSidebar} />
 
-                    {/* Animated Text - Hidden if sidebar open OR if scrolled */}
                     <div
-                        className={`
-                        transition-all duration-500 ease-in-out
-                        ${!isSidebarOpen && !hasScrolled ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"}
-                    `}
+                        className={`transition-all duration-500 ease-in-out ${!isSidebarOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"}`}
                     >
-                        <div className="animate-nudge flex items-center mb-5 sm:mb-6">
-                            <span className="text-7xl leading-none font-bold text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)] pb-2">
-                                ←
-                            </span>
-                            <span className="text-lg md:text-xl pt-5 font-serif uppercase tracking-widest text-cyan-200/90 drop-shadow-md whitespace-nowrap">
+                        <div className="animate-nudge flex items-center gap-3">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={2.5}
+                                stroke="currentColor"
+                                className="w-8 h-8 md:w-12 md:h-12 text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                            </svg>
+
+                            <span className="text-sm md:text-xl font-serif uppercase tracking-widest text-cyan-200/90 drop-shadow-md whitespace-nowrap pt-[2px]">
                                 Dive in
                             </span>
                         </div>

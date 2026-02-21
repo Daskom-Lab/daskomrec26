@@ -1,25 +1,33 @@
 import { useRef, useState, useEffect } from "react";
 import { Head, router, usePage } from "@inertiajs/react";
 
-import UnderwaterEffect from "@components/UnderwaterEffect";
-import background from "@assets/backgrounds/AssistantBackground.png";
+/* Background Assets */
+import Background from "@assets/backgrounds/Alternate.png";
+
+/* Decor Assets */
+import DecorRumput from "@assets/others/DECORATIONS/Seaweed & Coral Reefs/32.png";
+
+/* Button Components */
 import ButtonSidebar from "@components/ButtonSidebar";
 import ButtonHome from "@components/ButtonHome";
+
+/* Other Components */
+import UnderwaterEffect from "@components/UnderwaterEffect";
 import UserSidebar from "@components/UserSidebar";
 import CoresMap from "@components/CoresMap";
 import UnlockDialog from "@components/UnlockDialog";
-import Rumput from "@assets/others/DECORATIONS/Seaweed & Coral Reefs/32.png";
-
-const STATUS = {
-    HIDDEN: "hidden",
-    LOCKED: "locked",
-    UNLOCKED: "unlocked",
-};
 
 export default function Cores({ puzzles = [] }) {
     const backgroundRef = useRef(null);
 
-    // Build clues map from puzzles prop
+    const STATUS = {
+        HIDDEN: "hidden",
+        LOCKED: "locked",
+        UNLOCKED: "unlocked",
+    };
+
+    const CRYPT_TEXT = "==gCNEnY1pGIxRHIih2ZSBSSVBCaxpXcDByakVnRgcGauNXcCByboFmcoVHV"
+
     const clueMap = {};
     const puzzleIdMap = {};
     puzzles.forEach((p) => {
@@ -27,7 +35,6 @@ export default function Cores({ puzzles = [] }) {
         puzzleIdMap[p.name] = p.id;
     });
 
-    // Build initial territory states from puzzles prop
     const buildTerritoryStates = () => {
         const states = {};
         puzzles.forEach((p) => {
@@ -39,7 +46,6 @@ export default function Cores({ puzzles = [] }) {
     const [territoryStates, setTerritoryStates] =
         useState(buildTerritoryStates);
 
-    // Sync territory states when puzzles prop changes
     useEffect(() => {
         setTerritoryStates(buildTerritoryStates());
     }, [puzzles]);
@@ -71,7 +77,6 @@ export default function Cores({ puzzles = [] }) {
         const { territoryId } = dialogState;
         const puzzleId = puzzleIdMap[territoryId];
 
-        // Submit answer to backend
         router.post(
             `/user/cores/unlock/${puzzleId}`,
             {
@@ -81,7 +86,6 @@ export default function Cores({ puzzles = [] }) {
                 preserveScroll: true,
                 preserveState: true,
                 onSuccess: () => {
-                    // Answer was correct — update local state
                     setTerritoryStates((prev) => ({
                         ...prev,
                         [territoryId]: STATUS.UNLOCKED,
@@ -101,37 +105,41 @@ export default function Cores({ puzzles = [] }) {
         );
     };
 
-    // Check if all cores are unlocked
     const allUnlocked =
         Object.keys(territoryStates).length > 0 &&
         Object.values(territoryStates).every((s) => s === STATUS.UNLOCKED);
 
-    // Secret modal state
     const [isSecretOpen, setIsSecretOpen] = useState(false);
 
-    // --- Standard Page States (No changes below) ---
     const [showImage, setShowImage] = useState(false);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [inputLocked, setInputLocked] = useState(true);
     const [isMapPlacing, setisMapPlacing] = useState(true);
+
+    // Navigation States
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [isExiting, setIsExiting] = useState(false);
 
     const toggleSidebar = () => {
-        if (inputLocked || isLoggingOut) return;
+        if (inputLocked || isLoggingOut || isExiting) return;
         setIsSidebarOpen((prev) => !prev);
     };
 
-    const goHome = () => {
-        if (inputLocked || isLoggingOut) return;
+    // --- GENERIC NAVIGATION HANDLER ---
+    const handleNavigate = (url) => {
+        if (inputLocked || isLoggingOut || isExiting) return;
+
         setIsExiting(true);
         setInputLocked(true);
         setIsSidebarOpen(false);
-        setTimeout(() => router.visit("/user/home"), 1000);
+        // Wait 1s for animation
+        setTimeout(() => router.visit(url), 1000);
     };
 
     const handleLogout = () => {
+        if (inputLocked || isLoggingOut || isExiting) return;
+
         setInputLocked(true);
         setIsSidebarOpen(false);
         setTimeout(() => {
@@ -188,8 +196,9 @@ export default function Cores({ puzzles = [] }) {
             transform-origin: bottom center;
         }
         @keyframes glowPulse {
-            0%, 100% { box-shadow: 0 0 15px rgba(34,211,238,0.4), 0 0 30px rgba(34,211,238,0.2); }
+            0%,
             50% { box-shadow: 0 0 25px rgba(34,211,238,0.7), 0 0 50px rgba(34,211,238,0.4); }
+            100% { box-shadow: 0 0 15px rgba(34,211,238,0.4), 0 0 30px rgba(34,211,238,0.2); }
         }
         .glow-pulse {
             animation: glowPulse 2s ease-in-out infinite;
@@ -238,7 +247,6 @@ export default function Cores({ puzzles = [] }) {
             <Head title="Home" />
             <style>{styles}</style>
 
-            {/* --- DIALOG --- */}
             <UnlockDialog
                 isOpen={dialogState.isOpen}
                 territoryName={dialogState.territoryId}
@@ -248,14 +256,14 @@ export default function Cores({ puzzles = [] }) {
                 }
                 onSubmit={handleUnlockSubmit}
                 clue={clueMap[dialogState.territoryId] || ""}
-                isAlreadyUnlocked={dialogState.isAlreadyUnlocked} // Pass the new prop
+                isAlreadyUnlocked={dialogState.isAlreadyUnlocked}
             />
 
             <div className="relative w-full min-h-screen overflow-hidden">
                 <div
                     className="absolute inset-0"
                     style={{
-                        background:
+                        Background:
                             "linear-gradient(to bottom, #0a2a4a, #0c365b)",
                     }}
                 />
@@ -263,8 +271,8 @@ export default function Cores({ puzzles = [] }) {
                 <div className="absolute inset-0 cold-blue-filter">
                     <img
                         ref={backgroundRef}
-                        src={background}
-                        alt="background"
+                        src={Background}
+                        alt="Background"
                         onLoad={() => setImageLoaded(true)}
                         className="w-full h-full object-cover pointer-events-none"
                         style={getBackgroundStyle()}
@@ -273,7 +281,7 @@ export default function Cores({ puzzles = [] }) {
 
                 <div
                     className="absolute inset-0 pointer-events-none transition-opacity duration-1000"
-                    style={{ background: "rgba(2, 99, 196, 0.2)" }}
+                    style={{ Background: "rgba(2, 99, 196, 0.2)" }}
                 />
 
                 <UnderwaterEffect
@@ -283,18 +291,18 @@ export default function Cores({ puzzles = [] }) {
 
                 {/* Seaweed Decorations */}
                 <div
-                    className={`absolute inset-0 z-20 pointer-events-none hidden md:block transition-opacity duration-1000 ${isMapPlacing || isExiting ? "opacity-0" : "opacity-100"}`}
+                    className={`absolute inset-0 z-20 pointer-events-none hidden md:block transition-opacity duration-1000 ${isMapPlacing || isExiting || isLoggingOut ? "opacity-0" : "opacity-100"}`}
                 >
                     <div className="absolute bottom-[-5%] left-[-10%] w-[45vw] max-w-[620px] rotate-20 origin-bottom]">
                         <img
-                            src={Rumput}
+                            src={DecorRumput}
                             alt="Seaweed"
                             className="w-full h-auto seaweed-anim-2 brightness-75"
                         />
                     </div>
                     <div className="absolute bottom-[-10%] left-[-10%] w-[45vw] max-w-[580px] rotate-20 origin-bottom">
                         <img
-                            src={Rumput}
+                            src={DecorRumput}
                             alt="Seaweed"
                             className="w-full h-auto seaweed-anim-1"
                         />
@@ -302,14 +310,14 @@ export default function Cores({ puzzles = [] }) {
                     <div className="absolute bottom-0 right-0 w-[40vw] h-[40vh] scale-x-[-1]">
                         <div className="absolute bottom-[-10%] left-[-40%] w-[45vw] max-w-[620px] rotate-20 origin-bottom">
                             <img
-                                src={Rumput}
+                                src={DecorRumput}
                                 alt="Seaweed"
                                 className="w-full h-auto seaweed-anim-2 opacity-80 brightness-75"
                             />
                         </div>
                         <div className="absolute bottom-[-25%] left-[-30%] w-[45vw] max-w-[580px] rotate-20 origin-bottom">
                             <img
-                                src={Rumput}
+                                src={DecorRumput}
                                 alt="Seaweed"
                                 className="w-full h-auto seaweed-anim-1 opacity-100"
                             />
@@ -318,29 +326,26 @@ export default function Cores({ puzzles = [] }) {
                 </div>
 
                 <div
-                    className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/30 pointer-events-none transition-opacity duration-1000"
+                    className="absolute inset-0 bg-linear-to-b from-black/25 via-transparent to-black/30 pointer-events-none transition-opacity duration-1000"
                     style={{ opacity: showImage && imageLoaded ? 1 : 0 }}
                 />
 
-                <div
-                    className={`absolute top-6 left-6 z-60 transition-all duration-700 ease-out ${!inputLocked && !isLoggingOut ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-6 pointer-events-none"}`}
-                >
+                <div className={`absolute top-6 left-6 z-70 transition-all duration-700 ease-out ${!inputLocked && !isLoggingOut && !isExiting ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-6 pointer-events-none"}`} >
                     <ButtonSidebar onClick={toggleSidebar} />
                 </div>
 
-                <div
-                    className={`absolute top-6 right-6 z-60 transition-all duration-700 ease-out ${!inputLocked && !isLoggingOut ? "opacity-100 translate-x-0" : "opacity-0 translate-x-6 pointer-events-none"}`}
-                >
-                    <ButtonHome onClick={goHome} />
+                <div className={`absolute top-6 right-6 z-70 transition-all duration-700 ease-out ${!inputLocked && !isLoggingOut && !isExiting ? "opacity-100 translate-x-0" : "opacity-0 translate-x-6 pointer-events-none"}`} >
+                    <ButtonHome onClick={() => handleNavigate("/User/home")} />
                 </div>
 
                 <UserSidebar
                     isOpen={isSidebarOpen}
                     onClose={() => setIsSidebarOpen(false)}
                     onLogout={handleLogout}
+                    onNavigate={handleNavigate}
                 />
 
-                {/* --- MAP CONTAINER --- */}
+                {/* The Map */}
                 <div
                     className="absolute inset-0 flex items-center justify-center"
                     style={getMapStyle()}
@@ -351,10 +356,11 @@ export default function Cores({ puzzles = [] }) {
                     />
                 </div>
 
+                {/* Exit Fade */}
                 <div
                     className="fixed inset-0 z-70 pointer-events-none transition-opacity duration-1000"
                     style={{
-                        background:
+                        Background:
                             "linear-gradient(to bottom, #0a2a4a, #0c365b)",
                         opacity: isLoggingOut ? 1 : 0,
                     }}
@@ -363,8 +369,8 @@ export default function Cores({ puzzles = [] }) {
                     <div className="fixed inset-0 z-80 pointer-events-auto" />
                 )}
 
-                {/* --- ALL UNLOCKED BUTTON --- */}
-                {allUnlocked && !isMapPlacing && !isExiting && (
+                {/* Unlocked ALL */}
+                {allUnlocked && !isMapPlacing && !isExiting && !isLoggingOut && (
                     <div className="absolute bottom-20 md:bottom-24 w-full flex justify-center z-50 transition-opacity duration-1000 animate-fadeIn">
                         <button
                             onClick={() => setIsSecretOpen(true)}
@@ -375,9 +381,9 @@ export default function Cores({ puzzles = [] }) {
                     </div>
                 )}
 
-                {/* --- SECRET MODAL --- */}
+                {/* Secret Modal */}
                 {isSecretOpen && (
-                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-200 flex items-center justify-center p-4">
                         <div
                             className="absolute inset-0 bg-black/80 backdrop-blur-sm"
                             onClick={() => setIsSecretOpen(false)}
@@ -400,7 +406,7 @@ export default function Cores({ puzzles = [] }) {
                                             "0 0 20px rgba(6,182,212,0.5)",
                                     }}
                                 >
-                                    The Deep Reveals
+                                    The Depth Reveals
                                 </h3>
                                 <p className="text-cyan-300/50 text-xs text-center uppercase tracking-[0.3em] mb-8 font-serif">
                                     All cores unlocked
@@ -408,7 +414,7 @@ export default function Cores({ puzzles = [] }) {
 
                                 <div className="bg-black/50 border border-cyan-500/20 p-6 mb-8">
                                     <p className="text-cyan-200 font-mono text-sm md:text-base break-all leading-relaxed text-center select-all">
-                                        ==gCNEnY1pGIxRHIih2ZSBSSVBCaxpXcDByakVnRgcGauNXcCByboFmcoVHV
+                                        {CRYPT_TEXT}
                                     </p>
                                 </div>
 
@@ -426,7 +432,7 @@ export default function Cores({ puzzles = [] }) {
                 )}
 
                 <div
-                    className={`absolute bottom-4 w-full text-center z-40 pointer-events-none transition-opacity duration-1000 delay-500 ${isMapPlacing || isExiting ? "opacity-0" : "opacity-100"}`}
+                    className={`absolute bottom-4 w-full text-center z-40 pointer-events-none transition-opacity duration-1000 delay-500 ${isMapPlacing || isExiting || isLoggingOut ? "opacity-0" : "opacity-100"}`}
                 >
                     <p className="text-white font-caudex text-[10px] md:text-xl tracking-widest drop-shadow-md">
                         @Atlantis.DLOR2026. All Right Served

@@ -1,49 +1,55 @@
 import { useRef, useState, useEffect } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 
-import UnderwaterEffect from '@components/UnderwaterEffect';
-import Background from '@assets/backgrounds/AssistantBackground.png';
+/* Background Assets */
+import Background from '@assets/backgrounds/Alternate.png';
+
+/* Decor Assets */
+import DecorRumput from '@assets/others/DECORATIONS/Seaweed & Coral Reefs/32.png';
+
+/* Button Components */
 import ButtonSidebar from '@components/ButtonSidebar';
 import ButtonHome from '@components/ButtonHome';
-import UserSidebar from '@components/UserSidebar';
+
+/* Other Components */
 import CardCaas from '@components/CaasCard';
-import Rumput from '@assets/others/DECORATIONS/Seaweed & Coral Reefs/32.png';
+import UserSidebar from '@components/UserSidebar';
+import UnderwaterEffect from '@components/UnderwaterEffect';
 
 export default function Profile() {
     const backgroundRef = useRef(null);
 
-    //Get data from controller
-    const { auth} = usePage().props;
+    const {auth} = usePage().props;
     const user = auth.user;
     const profile= auth.profile|| {};
 
-    // Intro states
     const [showImage, setShowImage] = useState(false);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [inputLocked, setInputLocked] = useState(true);
     const [isCardPlacing, setIsCardPlacing] = useState(true);
 
-    // Sidebar
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    // Logout / Exit
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [isExiting, setIsExiting] = useState(false);
 
     const toggleSidebar = () => {
-        if (inputLocked || isLoggingOut) return;
+        if (inputLocked || isLoggingOut || isExiting) return;
         setIsSidebarOpen(prev => !prev);
     };
 
-    const goHome = () => {
-        if (inputLocked || isLoggingOut) return;
+    const handleNavigate = (url) => {
+        if (inputLocked || isLoggingOut || isExiting) return;
+
         setIsExiting(true);
         setInputLocked(true);
         setIsSidebarOpen(false);
-        setTimeout(() => router.visit('/user/home'), 1000);
+        setTimeout(() => router.visit(url), 1000);
     };
 
     const handleLogout = () => {
+        if (inputLocked || isLoggingOut || isExiting) return;
+
         setInputLocked(true);
         setIsSidebarOpen(false);
 
@@ -99,17 +105,16 @@ export default function Profile() {
             animation: subtlePulse 3s ease-in-out infinite;
         }
 
-        /* --- ANIMASI RUMPUT --- */
         @keyframes swaySeaweed {
             0%, 100% { transform: rotate(-4deg); }
             50% { transform: rotate(4deg); }
         }
-        
+
         .seaweed-anim-1 {
             animation: swaySeaweed 5s ease-in-out infinite;
             transform-origin: bottom center;
         }
-        
+
         .seaweed-anim-2 {
             animation: swaySeaweed 7s ease-in-out infinite reverse; /* Gerakan berlawanan & lebih lambat */
             transform-origin: bottom center;
@@ -150,7 +155,7 @@ export default function Profile() {
             transition: 'transform 1s ease-in-out, opacity 1s ease-in-out',
             perspective: '1000px',
         };
-        
+
     };
 
     return (
@@ -160,13 +165,12 @@ export default function Profile() {
 
             <div className="relative w-full min-h-screen overflow-hidden">
 
-                {/* Gradient base */}
+                {/* Filter */}
                 <div
                     className="absolute inset-0"
                     style={{ background: 'linear-gradient(to bottom, #0a2a4a, #0c365b)' }}
                 />
 
-                {/* The filter  */}
                 <div className="absolute inset-0 cold-blue-filter">
                     <img
                         ref={backgroundRef}
@@ -179,15 +183,13 @@ export default function Profile() {
                 </div>
 
 
-                {/* Blue opacity overlay */}
                 <div
                     className="absolute inset-0 pointer-events-none transition-opacity duration-1000"
                     style={{
-                        background: 'rgba(2, 99, 196, 0.2)' // deep blue
+                        background: 'rgba(2, 99, 196, 0.2)'
                     }}
                 />
 
-                {/* Underwater distortion */}
                 <UnderwaterEffect
                     isLoaded={showImage && imageLoaded}
                     isZooming={false}
@@ -199,18 +201,22 @@ export default function Profile() {
                     style={{ opacity: showImage && imageLoaded ? 1 : 0 }}
                 />
 
-                {/* Seaweed Decorations */}
-                <div className={`absolute inset-0 z-20 pointer-events-none hidden md:block transition-opacity duration-1000 ${isCardPlacing ? 'opacity-0' : 'opacity-100'}`}>
+                {/* Rumput Laut */}
+                <div className={`
+                    absolute inset-0 z-20 pointer-events-none hidden md:block
+                    transition-opacity duration-1000
+                    ${isCardPlacing || isExiting || isLoggingOut ? 'opacity-0' : 'opacity-100'}
+                `}>
                     <div className="absolute bottom-[-10%] left-[-10%] w-[45vw] max-w-[620px] rotate-20 origin-bottom]">
-                        <img 
-                            src={Rumput} 
+                        <img
+                            src={DecorRumput}
                             alt="Seaweed Left Back"
                             className="w-full h-auto seaweed-anim-2 brightness-75"
                         />
                     </div>
                     <div className="absolute bottom-[-15%] left-[-10%] w-[45vw] max-w-[580px] rotate-20 origin-bottom">
-                        <img 
-                            src={Rumput} 
+                        <img
+                            src={DecorRumput}
                             alt="Seaweed Left Front"
                             className="w-full h-auto seaweed-anim-1"
                         />
@@ -218,15 +224,15 @@ export default function Profile() {
 
                     <div className="absolute bottom-0 right-0 w-[40vw] h-[40vh] scale-x-[-1]">
                          <div className="absolute bottom-[-10%] left-[-40%] w-[45vw] max-w-[620px] rotate-20 origin-bottom">
-                            <img 
-                                src={Rumput} 
+                            <img
+                                src={DecorRumput}
                                 alt="Seaweed Right Back"
                                 className="w-full h-auto seaweed-anim-2 opacity-80 brightness-75"
                             />
                         </div>
                         <div className="absolute bottom-[-25%] left-[-30%] w-[45vw] max-w-[580px] rotate-20 origin-bottom">
-                            <img 
-                                src={Rumput} 
+                            <img
+                                src={DecorRumput}
                                 alt="Seaweed Right Front"
                                 className="w-full h-auto seaweed-anim-1 opacity-100"
                             />
@@ -236,18 +242,18 @@ export default function Profile() {
 
                 {/* Sidebar Button */}
                 <div
-                    className={`absolute top-6 left-6 z-60 transition-all duration-700 ease-out
-                        ${!inputLocked && !isLoggingOut ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6 pointer-events-none'}`}
+                    className={`absolute top-6 left-6 z-70 transition-all duration-700 ease-out
+                        ${!inputLocked && !isLoggingOut && !isExiting ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6 pointer-events-none'}`}
                 >
                     <ButtonSidebar onClick={toggleSidebar} />
                 </div>
 
                 {/* Home Button */}
                 <div
-                    className={`absolute top-6 right-6 z-60 transition-all duration-700 ease-out
-                        ${!inputLocked && !isLoggingOut ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-6 pointer-events-none'}`}
+                    className={`absolute top-6 right-6 z-70 transition-all duration-700 ease-out
+                        ${!inputLocked && !isLoggingOut && !isExiting ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-6 pointer-events-none'}`}
                 >
-                    <ButtonHome onClick={goHome} />
+                    <ButtonHome onClick={() => handleNavigate('/User/home')} />
                 </div>
 
                 {/* Sidebar */}
@@ -255,6 +261,7 @@ export default function Profile() {
                     isOpen={isSidebarOpen}
                     onClose={() => setIsSidebarOpen(false)}
                     onLogout={handleLogout}
+                    onNavigate={handleNavigate}
                 />
 
                 {/* Card */}
@@ -264,9 +271,9 @@ export default function Profile() {
                 >
                     <CardCaas
                         sex= {profile.gender?.toLowerCase() || 'male'}
-                        name={profile.name|| "nothing"}
+                        name={profile.name|| "Unknown"}
                         nim={user.nim|| "0000000000"}
-                        cls={profile.class|| "A"}
+                        cls={profile.class|| "XX-49-00"}
                         major={profile.major|| "No Major"}
                     />
                 </div>
@@ -289,7 +296,7 @@ export default function Profile() {
                 <div className={`
                     absolute bottom-4 w-full text-center z-40 pointer-events-none
                     transition-opacity duration-1000 delay-500
-                    ${isCardPlacing ? 'opacity-0' : 'opacity-100'}
+                    ${isCardPlacing || isExiting || isLoggingOut ? 'opacity-0' : 'opacity-100'}
                 `}>
                     <p className="text-white font-caudex text-[10px] md:text-xl tracking-widest drop-shadow-md">
                         @Atlantis.DLOR2026. All Right Served

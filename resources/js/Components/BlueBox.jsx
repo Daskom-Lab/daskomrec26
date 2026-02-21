@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
-// --- ASSETS ---
-import PCboard from '@assets/backgrounds/01-ABoard_PC.png';
-import Mobileboard from '@assets/backgrounds/02-ABoard_Mobile.png';
+import BoardPC from '@assets/backgrounds/BoardPC.png';
+import BoardMobile from '@assets/backgrounds/BoardMobile.png';
 import Chains1 from '@assets/others/DECORATIONS/Chains/01-Chain.png';
 import Chains2 from '@assets/others/DECORATIONS/Chains/01-Chain.png';
 
@@ -13,18 +12,22 @@ export default function BlueModalWrapper({ isOpen, onClose, children, className 
     useEffect(() => {
         if (isOpen) {
             setShouldRender(true);
-            const frame = requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
                 setAnimateTrigger(true);
             });
-            return () => cancelAnimationFrame(frame);
-        } else {
+        } else if (shouldRender) {
             setAnimateTrigger(false);
-            const timer = setTimeout(() => {
-                setShouldRender(false);
-            }, 1000);
-            return () => clearTimeout(timer);
         }
-    }, [isOpen]);
+    }, [isOpen, shouldRender]);
+
+    useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') onClose();
+        };
+
+        if (isOpen) window.addEventListener('keydown', handleEsc);
+        return () => window.removeEventListener('keydown', handleEsc);
+    }, [isOpen, onClose]);
 
     const styles = `
         @keyframes dropIn {
@@ -43,14 +46,36 @@ export default function BlueModalWrapper({ isOpen, onClose, children, className 
             33% { transform: rotate(1.5deg); }
             66% { transform: rotate(-1.5deg); }
         }
-        @keyframes chainLeftPhysics { 0%, 100% { transform: scaleY(1); } 33% { transform: scaleY(0.97); } 66% { transform: scaleY(1.03); } }
-        @keyframes chainRightPhysics { 0%, 100% { transform: scaleY(1); } 33% { transform: scaleY(1.03); } 66% { transform: scaleY(0.97); } }
+        @keyframes chainLeftPhysics {
+            0%, 100% { transform: scaleY(1); }
+            33% { transform: scaleY(0.97); }
+            66% { transform: scaleY(1.03); }
+        }
+        @keyframes chainRightPhysics {
+            0%, 100% { transform: scaleY(1); }
+            33% { transform: scaleY(1.03); }
+            66% { transform: scaleY(0.97); }
+        }
 
-        .animate-drop { animation: dropIn 1s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 1 !important; }
-        .animate-exit { animation: pullUp 1s cubic-bezier(0.5, -0.5, 0.5, 1) forwards; }
-        .animate-sway-container { animation: sway 7s ease-in-out infinite; transform-origin: top center; }
-        .animate-chain-left { animation: chainLeftPhysics 7s ease-in-out infinite; transform-origin: top center; }
-        .animate-chain-right { animation: chainRightPhysics 7s ease-in-out infinite; transform-origin: top center; }
+        .animate-drop {
+            animation: dropIn 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        .animate-exit {
+            animation: pullUp 1s cubic-bezier(0.5, -0.5, 0.5, 1) forwards;
+        }
+        .animate-sway-container {
+            animation: sway 7s ease-in-out infinite;
+            transform-origin: top center;
+            will-change: transform;
+        }
+        .animate-chain-left {
+            animation: chainLeftPhysics 7s ease-in-out infinite;
+            transform-origin: top center;
+        }
+        .animate-chain-right {
+            animation: chainRightPhysics 7s ease-in-out infinite;
+            transform-origin: top center;
+        }
     `;
 
     if (!shouldRender) return null;
@@ -61,18 +86,30 @@ export default function BlueModalWrapper({ isOpen, onClose, children, className 
 
             {/* Backdrop */}
             <div
-                className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-1500
+                className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300
                 ${animateTrigger ? 'opacity-100' : 'opacity-0'}`}
-                onClick={onClose}
+                onClick={(e) => {
+                    if (e.target === e.currentTarget) onClose();
+                }}
             />
 
             {/* Main Wrapper */}
-            <div className={`relative z-10 w-full max-w-[350px] sm:max-w-[900px] opacity-0
-                ${animateTrigger ? 'animate-drop' : 'animate-exit'}`}>
+            <div
+                className={`relative z-10 w-full max-w-[350px] sm:max-w-[900px]
+                ${isOpen
+                    ? (animateTrigger ? 'animate-drop' : 'opacity-0 -translate-y-full')
+                    : 'animate-exit'
+                }`}
+                onAnimationEnd={() => {
+                    if (!animateTrigger) {
+                        setShouldRender(false);
+                    }
+                }}
+            >
 
                 <div className="w-full h-full animate-sway-container relative">
 
-                    {/* Chains - Added pointer-events-none so they don't block clicks */}
+                    {/* Chains */}
                     <div className="absolute -top-80 sm:-top-70 left-[15%] h-100 z-0 animate-chain-left pointer-events-none">
                         <img src={Chains1} alt="Chain Left" className="w-full h-full object-contain" />
                     </div>
@@ -80,13 +117,13 @@ export default function BlueModalWrapper({ isOpen, onClose, children, className 
                         <img src={Chains2} alt="Chain Right" className="w-full h-full object-contain" />
                     </div>
 
-                    {/* Board Content - Added pointer-events-auto to ensure children are clickable */}
+                    {/* Board Content */}
                     <div className="relative z-10 drop-shadow-2xl pointer-events-auto">
 
                         {/* Mobile layout */}
                         <div
                             className="block sm:hidden w-full aspect-3/4 bg-contain bg-center bg-no-repeat flex-col"
-                            style={{ backgroundImage: `url(${Mobileboard})` }}
+                            style={{ backgroundImage: `url(${BoardMobile})` }}
                         >
                             <div className={`w-full h-full p-8 pt-24 pb-12 overflow-y-auto no-scrollbar ${className}`}>
                                 {children}
@@ -96,7 +133,7 @@ export default function BlueModalWrapper({ isOpen, onClose, children, className 
                         {/* Desktop layout */}
                         <div
                             className="hidden sm:block w-full aspect-4/3 bg-contain bg-center bg-no-repeat flex-col"
-                            style={{ backgroundImage: `url(${PCboard})` }}
+                            style={{ backgroundImage: `url(${BoardPC})` }}
                         >
                             <div className={`w-full h-full p-16 pt-24 overflow-y-auto custom-scrollbar ${className}`}>
                                 {children}

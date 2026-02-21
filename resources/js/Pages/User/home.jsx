@@ -1,14 +1,19 @@
 import { useRef, useState, useEffect } from "react";
 import { Head, router } from "@inertiajs/react";
 
+/* Background Assets */
+import Background from "@assets/backgrounds/Home.png";
+
+/* Decor Assets */
+import DecorLeonidas from "@assets/others/LEONIDAS.png";
+import DecorShip from "@assets/others/DECORATIONS/Shipwreck/18.png";
+import DecorFlag from "@assets/others/DECORATIONS/Shipwreck/19.png";
+import DecorFish from "@assets/others/DECORATIONS/Fish & Other Sea Creatures/02-Fish.png";
+
+/* Other Components */
 import UnderwaterEffect from "@components/UnderwaterEffect";
-import background from "@assets/backgrounds/Background3.png";
 import ButtonSidebar from "@components/ButtonSidebar";
 import UserSidebar from "@components/UserSidebar";
-import Ship from "@assets/others/DECORATIONS/Shipwreck/18.png";
-import Flag from "@assets/others/DECORATIONS/Shipwreck/19.png";
-import Fish from "@assets/others/DECORATIONS/Fish & Other Sea Creatures/02-Fish.png";
-import Leonidas from "@assets/others/LEONIDAS.png";
 
 export default function Home() {
     const backgroundRef = useRef(null);
@@ -30,7 +35,7 @@ export default function Home() {
         setIsSidebarOpen(false);
         setTimeout(() => {
             setIsLoggingOut(true);
-            setTimeout(() => router.post("/logout"), 1000); // fade duration
+            setTimeout(() => router.post("/logout"), 1000);
         }, 350);
     };
 
@@ -128,20 +133,21 @@ export default function Home() {
         <>
             <Head title="Home" />
             <style>{styles}</style>
+            <UnderwaterEffect />
 
             <div className="relative w-full min-h-screen overflow-hidden">
                 <div
                     className={`absolute inset-0 transition-opacity duration-700 ${showImage ? "opacity-0" : "opacity-100"}`}
                     style={{
-                        background:
+                        Background:
                             "linear-gradient(to bottom, #0a2a4a, #0c365b)",
                     }}
                 />
 
                 <img
                     ref={backgroundRef}
-                    src={background}
-                    alt="background"
+                    src={Background}
+                    alt="Background"
                     onLoad={() => setImageLoaded(true)}
                     className={`absolute inset-0 w-full h-full object-cover pointer-events-none transition-all duration-[1500ms] ease-out ${showImage && imageLoaded ? "opacity-100" : "opacity-0"} ${!isZooming ? "pulse-effect" : ""} cold-blue-filter`}
                     style={{
@@ -155,6 +161,7 @@ export default function Home() {
                     }}
                 />
 
+                {/* Le Fishe */}
                 <div
                     className={`absolute inset-0 z-5 pointer-events-none transition-all duration-1000 ${isZooming ? "opacity-0" : "opacity-100"}`}
                 >
@@ -163,7 +170,7 @@ export default function Home() {
                         style={{ animationDuration: "25s" }}
                     >
                         <img
-                            src={Fish}
+                            src={DecorFish}
                             className="w-full h-auto animate-sway"
                         />
                     </div>
@@ -175,7 +182,7 @@ export default function Home() {
                         }}
                     >
                         <img
-                            src={Fish}
+                            src={DecorFish}
                             className="w-full h-auto animate-sway"
                             style={{ filter: "hue-rotate(30deg)" }}
                         />
@@ -188,13 +195,13 @@ export default function Home() {
                         }}
                     >
                         <img
-                            src={Fish}
+                            src={DecorFish}
                             className="w-full h-auto animate-sway scale-x-[-1]"
                         />
                     </div>
                 </div>
 
-                {/* --- LEONIDAS (UPDATED) --- */}
+                {/* Leonidas */}
                 <div
                     className={`z-20 absolute inset-0 pointer-events-none transition-all duration-[1500ms] ease-out`}
                     style={{
@@ -217,26 +224,27 @@ export default function Home() {
                         `}
                     >
                         <img
-                            src={Leonidas}
+                            src={DecorLeonidas}
                             alt="Leonidas Head"
                             className="w-full h-auto object-contain blur-[1px] relative z-10"
                         />
                     </div>
                 </div>
 
+                {/* Decor */}
                 <div
                     className={`absolute inset-0 z-10 pointer-events-none transition-all duration-1000 ${isZooming ? "opacity-0 scale-110" : "opacity-100 scale-100"}`}
                 >
                     <div className="absolute bottom-[-8%] left-[-7%] w-[60%] lg:bottom-[-16%] lg:left-[-4%] lg:w-[90%] max-w-[600px] -rotate-[6deg] origin-bottom-left">
                         <img
-                            src={Flag}
+                            src={DecorFlag}
                             alt="Broken Mast"
                             className="w-full h-auto animate-sway object-contain opacity-80"
                         />
                     </div>
                     <div className="absolute bottom-[-9%] right-[-14%] w-[60%] lg:bottom-[-25%] lg:right-[-10%] lg:w-[90%] max-w-[800px]">
                         <img
-                            src={Ship}
+                            src={DecorShip}
                             alt="Shipwreck"
                             className="w-full h-auto animate-sway object-contain scale-x-[-1]"
                             style={{ animationDelay: "0.5s" }}
@@ -244,23 +252,28 @@ export default function Home() {
                     </div>
                 </div>
 
-                <UnderwaterEffect />
                 <div
                     className={`absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/30 pointer-events-none transition-opacity duration-1000 ${showImage && imageLoaded ? "opacity-100" : "opacity-0"}`}
                 />
 
-                <div
-                    className={`absolute top-6 left-6 z-60 transition-all duration-700 ease-out flex items-center ${!isZooming && !isLoggingOut ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-6 pointer-events-none"}`}
-                >
+                <div className={`absolute top-6 left-6 z-70 transition-all duration-700 ease-out flex items-center ${!isZooming && !isLoggingOut ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-6 pointer-events-none"}`} >
                     <ButtonSidebar onClick={toggleSidebar} />
-                    <div
-                        className={`transition-all duration-500 ease-in-out ${!isSidebarOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"}`}
-                    >
-                        <div className="animate-nudge flex items-center mb-5 sm:mb-6">
-                            <span className="text-7xl leading-none font-bold text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)] pb-2">
-                                ←
-                            </span>
-                            <span className="text-lg md:text-xl pt-5 font-serif uppercase tracking-widest text-cyan-200/90 drop-shadow-md whitespace-nowrap">
+
+                    <div className={`transition-all duration-500 ease-in-out ${!isSidebarOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"}`} >
+                        <div className="animate-nudge flex items-center gap-3">
+                            {/* Arrow */}
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={2.5}
+                                stroke="currentColor"
+                                className="w-8 h-8 md:w-12 md:h-12 text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                            </svg>
+
+                            <span className="text-sm md:text-xl font-serif uppercase tracking-widest text-cyan-200/90 drop-shadow-md whitespace-nowrap pt-[2px]">
                                 Dive in
                             </span>
                         </div>
@@ -298,21 +311,22 @@ export default function Home() {
                     </div>
                 </div>
 
+                {/* Exit Fade */}
                 <div
-                    className="fixed inset-0 z-70 pointer-events-none transition-opacity duration-1000 ease-in-out"
+                    className="fixed inset-0 z-70 pointer-events-none transition-opacity duration-1000"
                     style={{
-                        background:
-                            "linear-gradient(to bottom, #0a2a4a, #0c365b)",
+                        background: 'linear-gradient(to bottom, #0a2a4a, #0c365b)',
                         opacity: isLoggingOut ? 1 : 0,
                     }}
                 />
+
+                {/* Input lock */}
                 {inputLocked && (
                     <div className="fixed inset-0 z-80 pointer-events-auto" />
                 )}
 
-                <div
-                    className={`absolute bottom-4 w-full text-center z-20 pointer-events-none transition-opacity duration-1000 delay-500 ${isZooming ? "opacity-0" : "opacity-100"}`}
-                >
+                {/* Footer */}
+                <div className={`absolute bottom-4 w-full text-center z-20 pointer-events-none transition-opacity duration-1000 delay-500 ${isZooming ? "opacity-0" : "opacity-100"}`} >
                     <p className="text-white font-caudex text-[8px] md:text-xl tracking-widest drop-shadow-md">
                         @Atlantis.DLOR2026. All Right Served
                     </p>

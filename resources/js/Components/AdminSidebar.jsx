@@ -1,12 +1,12 @@
 import { useState, useRef } from "react";
 import { router } from "@inertiajs/react";
 
-import ButtonRegular from "@assets/buttons/ButtonRegular.png";
-import ButtonStar from "@assets/buttons/ButtonStar.png";
-import ButtonAnchor from "@assets/buttons/ButtonAnchor.png";
-import ButtonChain from "@assets/buttons/ButtonChain.png";
+import ButtonRegular from "@assets/buttons/Regular.png";
+import ButtonStar from "@assets/buttons/Star.png";
+import ButtonAnchor from "@assets/buttons/Anchor.png";
+import ButtonChain from "@assets/buttons/Chain.png";
 
-import ButtonCores from "@assets/buttons/ButtonCores.png";
+import ButtonCores from "@assets/buttons/CoresUnlocked.png";
 
 export default function UserSidebar({ isOpen, onClose, onLogout }) {
     const buttonWrapper =
@@ -54,7 +54,6 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
             >
                 <div className="h-full overflow-y-auto flex">
                     <div className="flex flex-col gap-12 m-auto min-h-0 p-10">
-                        {/* Profile / Password */}
                         <div className="flex flex-col gap-2">
                             <button
                                 type="button"
@@ -81,7 +80,6 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
                             </button>
                         </div>
 
-                        {/* Announcement / Shift / Core */}
                         <div className="flex flex-col gap-2">
                             <button
                                 type="button"
@@ -91,7 +89,7 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
                                 }}
                             >
                                 <img
-                                    src={ButtonRegular}
+                                    src={ButtonAnchor}
                                     className={imageStyle}
                                     alt="Announcement"
                                 />
@@ -103,7 +101,7 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
                                             "0 0 10px rgba(56, 189, 248, 0.7), 0 0 20px rgba(96, 165, 250, 0.5)",
                                     }}
                                 >
-                                    Stage Configuration
+                                    STAGE
                                 </span>
                             </button>
                             <button
@@ -114,7 +112,7 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
                                 }}
                             >
                                 <img
-                                    src={ButtonRegular}
+                                    src={ButtonStar}
                                     className={imageStyle}
                                     alt="Plottingan"
                                 />
@@ -126,7 +124,7 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
                                             "0 0 10px rgba(56, 189, 248, 0.7), 0 0 20px rgba(96, 165, 250, 0.5)",
                                     }}
                                 >
-                                    Plottingan
+                                    PLOTS
                                 </span>
                             </button>
                             <button

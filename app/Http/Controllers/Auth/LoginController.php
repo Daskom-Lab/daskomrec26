@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\JsonResponse;
 
 class LoginController extends Controller
-{    
+{
     /**
      * index
      *
@@ -17,7 +18,7 @@ class LoginController extends Controller
     {
         return inertia('login');
     }
-    
+
     /**
      * store
      *
@@ -26,31 +27,32 @@ class LoginController extends Controller
      */
     public function store(Request $request)
     {
-        /**
-         * validate request
-         */
         $request->validate([
-            'nim'     => 'required',
-            'password'  => 'required'
+            'nim'      => 'required',
+            'password' => 'required'
         ]);
 
-        //get email and password from request
         $credentials = $request->only('nim', 'password');
 
-        //attempt to login
         if (Auth::attempt($credentials)) {
-
             $request->session()->regenerate();
 
-            // Redirect berdasarkan role
-            if (Auth::user()->is_admin) {
-                return redirect('/admin/home');
+            $targetUrl = Auth::user()->is_admin ? '/admin/home' : '/User/home';
+
+            if ($request->wantsJson()) {
+                return response()->json(['redirect_url' => $targetUrl]);
             }
 
-            return redirect('/User/home');
+            return redirect($targetUrl);
         }
 
-        //if login fails
+        // Login Failed
+        if ($request->wantsJson()) {
+            return response()->json([
+                'errors' => ['nim' => ['The provided credentials do not match our records.']]
+            ], 422);
+        }
+
         return back()->withErrors([
             'nim' => 'The provided credentials do not match our records.',
         ]);

@@ -21,7 +21,7 @@ Route::get('/', function () {
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [\App\Http\Controllers\Auth\LoginController::class, 'index'])->name('login');
-    
+
     //route store login
     Route::post('/login', [\App\Http\Controllers\Auth\LoginController::class, 'store']);
 });
@@ -97,5 +97,5 @@ Route::middleware('auth')->group(function (){
 });
 
 Route::fallback(function () {
-    return inertia::render('404_NotFound'); 
+    return inertia::render('404_NotFound');
 });

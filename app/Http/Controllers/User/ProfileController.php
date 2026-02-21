@@ -48,7 +48,7 @@ class ProfileController extends Controller
                 'class' =>$request->class,
                 'gender' =>$request->gender,
             ]
-            
+
         );
 
         return back()->with('success', 'Profile updated successfully.');

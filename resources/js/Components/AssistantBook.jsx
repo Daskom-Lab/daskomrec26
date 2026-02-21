@@ -1,8 +1,8 @@
 import React, { forwardRef, useRef, useState, useEffect, useCallback, useImperativeHandle } from 'react';
 import HTMLFlipBook from 'react-pageflip';
 
-import coverImage from '@assets/cards/books/FrontCover.png';
-import backCoverImage from '@assets/cards/books/BackCover.png';
+import CoverFront from '@assets/cards/books/FrontCover.png';
+import CoverBack from '@assets/cards/books/BackCover.png';
 
 const TOTAL_PAGES = 89;
 const PATH_FILTERED = 'https://ik.imagekit.io/kyla08/foto-asisten-filter';
@@ -310,7 +310,7 @@ const AssistantBook = forwardRef(({
               style={{ margin: '0 auto', padding: 0 }}
               onFlip={onFlip}
             >
-              <Cover key="front-cover" bgImage={coverImage} />
+              <Cover key="front-cover" bgImage={CoverFront} />
                 {pages.map((pageNum) => {
                   const basePath = isFiltered ? PATH_FILTERED : PATH_NORMAL;
                   const fileName = isFiltered ? `${pageNum}.png` : `${pageNum}_dlor.png`;
@@ -324,7 +324,7 @@ const AssistantBook = forwardRef(({
                     />
                   );
                 })}
-              <Cover key="back-cover" bgImage={backCoverImage} />
+              <Cover key="back-cover" bgImage={CoverBack} />
             </HTMLFlipBook>
 
             {/* THE WET LAYERS */}
