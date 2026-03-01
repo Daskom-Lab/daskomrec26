@@ -364,30 +364,7 @@ export default function AnnouncementPage({
                                                                         tahap
                                                                         ini.{" "}
                                                                     </h1>
-
-                                                                    <h1 className="text-sm sm:text-sm md:text-lg italic opacity-70 mt-4">
-                                                                        {
-                                                                            currentData.quote
-                                                                        }
-                                                                    </h1>
-
-                                                                    <h1 className="text-sm sm:text-sm md:text-lg italic opacity-70 mt-4">
-                                                                        <a
-                                                                            href={
-                                                                                currentData.url
-                                                                            }
-                                                                            className="underline cursor-pointer"
-                                                                        >
-                                                                            {
-                                                                                currentData.url
-                                                                            }
-                                                                        </a>
-                                                                    </h1>
                                                                 </div>
-                                                                <h1>
-                                                                    seleksi
-                                                                    tahap ini.
-                                                                </h1>
 
                                                                 {/* --- VARIABLE QUOTE HERE --- */}
                                                                 {successMessage && (
@@ -436,17 +413,7 @@ export default function AnnouncementPage({
                                                                         tahap
                                                                         ini.{" "}
                                                                     </h1>
-
-                                                                    <h1 className="text-xs sm:text-sm md:text-lg italic opacity-70 mt-4">
-                                                                        {
-                                                                            currentData.quote
-                                                                        }
-                                                                    </h1>
                                                                 </div>
-                                                                <h1>
-                                                                    pada tahap
-                                                                    ini.
-                                                                </h1>
 
                                                                 {/* --- VARIABLE QUOTE HERE --- */}
                                                                 {failMessage && (
