@@ -6,7 +6,7 @@ services:
     container_name: daskomrec26_app
     restart: unless-stopped
     ports:
-      - "8026:8000"
+      - "8026:8026"
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
