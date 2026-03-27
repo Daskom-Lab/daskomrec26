@@ -24,6 +24,7 @@ class UserController extends Controller
         
         $users = User::with('profile', 'caasStage.stage')
             ->join('caas_stages', 'users.id', '=', 'caas_stages.user_id')
+            ->where('users.is_admin', false)
             ->select('users.*')
             ->paginate($perPage);
 
@@ -149,6 +150,13 @@ class UserController extends Controller
      */
     public function import(Request $request)
     {
+        if (app()->environment('local')) {
+            // Local-only: allow longer import processing while testing.
+            @ini_set('max_execution_time', '300');
+            @ini_set('max_input_time', '300');
+            @set_time_limit(300);
+        }
+
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv|max:10240',
         ], [

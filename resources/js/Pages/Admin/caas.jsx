@@ -594,6 +594,13 @@ export default function Caas({ users, stages, filters }) {
                         message: page.props.flash.success,
                         onConfirm: closeAllModals,
                     });
+                } else if (page.props.flash?.error) {
+                    setConfirmModal({
+                        isOpen: true,
+                        title: "Import Failed",
+                        message: page.props.flash.error,
+                        onConfirm: closeAllModals,
+                    });
                 }
             },
             onError: (errors) => {
