@@ -5,63 +5,156 @@ namespace App\Imports;
 use App\Models\User;
 use App\Models\Stage;
 use App\Models\CaasStage;
-use Maatwebsite\Excel\Concerns\ToModel;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Illuminate\Support\Facades\Hash;
 
-class CaasImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnError
+class CaasImport implements ToCollection, WithHeadingRow, WithValidation, WithChunkReading, SkipsOnError, SkipsEmptyRows
 {
     use SkipsErrors;
     
     private $importedCount = 0;
     private $skippedCount = 0;
-    /**
-     * Transform a row into a User model
-     *
-     * @param array $row
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function model(array $row)
+    private ?int $administrationStageId = null;
+    private array $seenNims = [];
+
+    public function __construct()
     {
-        // Cast NIM to string (Excel may store it as numeric)
-        $nim = (string) $row['nim'];
-        
-        // Check if user with this NIM already exists
-        $existingUser = User::where('nim', $nim)->first();
-        if ($existingUser) {
-            $this->skippedCount++;
-            return null; // Skip duplicate users
+        $this->administrationStageId = Stage::query()
+            ->where('name', 'Administration')
+            ->value('id');
+    }
+
+    /**
+     * Process rows in chunks and insert related records in bulk.
+     *
+     * @param Collection<int, array<string, mixed>> $rows
+     * @return void
+     */
+    public function collection(Collection $rows): void
+    {
+        if ($rows->isEmpty()) {
+            return;
         }
 
-        // Create the user
-        $user = User::create([
-            'nim' => $nim,
-            'password' => Hash::make($nim), // Default password is NIM
-        ]);
+        $now = now();
+        $candidateRows = [];
 
-        // Create profile
-        $user->profile()->create([
-            'name' => $row['nama'],
-            'major' => $row['jurusan'],
-            'class' => $row['kelas'],
-            'gender' => $row['jenis_kelamin'] ?? $row['jenis kelamin'] ?? null,
-        ]);
+        foreach ($rows as $row) {
+            $nim = trim((string) ($row['nim'] ?? ''));
+            if ($nim === '') {
+                continue;
+            }
 
-        // Create CaasStage with Administration stage (default)
-        $administrationStage = Stage::where('name', 'Administration')->first();
-        if ($administrationStage) {
-            CaasStage::create([
-                'user_id' => $user->id,
-                'stage_id' => $administrationStage->id,
-                'status' => 'PROSES',
-            ]);
+            // Keep first occurrence only when same NIM appears multiple times in file.
+            if (isset($this->seenNims[$nim])) {
+                $this->skippedCount++;
+                continue;
+            }
+
+            $this->seenNims[$nim] = true;
+            $candidateRows[$nim] = [
+                'nim' => $nim,
+                'nama' => $row['nama'] ?? null,
+                'jurusan' => $row['jurusan'] ?? null,
+                'kelas' => $row['kelas'] ?? null,
+                'jenis_kelamin' => $row['jenis_kelamin'] ?? ($row['jenis kelamin'] ?? null),
+            ];
         }
 
-        $this->importedCount++;
-        return $user;
+        if (empty($candidateRows)) {
+            return;
+        }
+
+        $nims = array_keys($candidateRows);
+        $existingNims = User::query()
+            ->whereIn('nim', $nims)
+            ->pluck('nim')
+            ->map(fn ($nim) => (string) $nim)
+            ->all();
+
+        if (!empty($existingNims)) {
+            $existingNimSet = array_flip($existingNims);
+            foreach ($existingNims as $existingNim) {
+                unset($candidateRows[$existingNim]);
+            }
+            $this->skippedCount += count($existingNimSet);
+        }
+
+        if (empty($candidateRows)) {
+            return;
+        }
+
+        $usersToInsert = [];
+        foreach ($candidateRows as $nim => $row) {
+            $usersToInsert[] = [
+                'nim' => $nim,
+                'password' => Hash::make($nim),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        DB::transaction(function () use ($candidateRows, $usersToInsert, $now) {
+            User::query()->insert($usersToInsert);
+
+            $insertedUsers = User::query()
+                ->whereIn('nim', array_keys($candidateRows))
+                ->get(['id', 'nim'])
+                ->keyBy(fn ($user) => (string) $user->nim);
+
+            $profilesToInsert = [];
+            $stagesToInsert = [];
+
+            foreach ($candidateRows as $nim => $row) {
+                $user = $insertedUsers->get($nim);
+                if (!$user) {
+                    continue;
+                }
+
+                $profilesToInsert[] = [
+                    'user_id' => $user->id,
+                    'name' => $row['nama'],
+                    'major' => $row['jurusan'],
+                    'class' => $row['kelas'],
+                    'gender' => $row['jenis_kelamin'],
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+
+                if ($this->administrationStageId) {
+                    $stagesToInsert[] = [
+                        'user_id' => $user->id,
+                        'stage_id' => $this->administrationStageId,
+                        'status' => 'PROSES',
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                }
+            }
+
+            if (!empty($profilesToInsert)) {
+                DB::table('profiles')->insert($profilesToInsert);
+            }
+
+            if (!empty($stagesToInsert)) {
+                CaasStage::query()->insert($stagesToInsert);
+            }
+
+            $this->importedCount += count($profilesToInsert);
+        });
+    }
+
+    public function chunkSize(): int
+    {
+        return 500;
     }
 
     /**
