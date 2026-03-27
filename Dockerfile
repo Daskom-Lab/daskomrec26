@@ -46,8 +46,8 @@ RUN { \
 
 # Execution timeout tuning for longer-running requests (e.g. imports)
 RUN { \
-        echo 'max_execution_time=300'; \
-        echo 'max_input_time=300'; \
+    echo 'max_execution_time=60'; \
+    echo 'max_input_time=60'; \
     } > /usr/local/etc/php/conf.d/zz-timeouts.ini
 
 # PHP-FPM pool tuning
@@ -59,7 +59,7 @@ RUN { \
         echo 'pm.min_spare_servers = 2'; \
         echo 'pm.max_spare_servers = 6'; \
         echo 'pm.max_requests = 500'; \
-    echo 'request_terminate_timeout = 300s'; \
+    echo 'request_terminate_timeout = 60s'; \
     } > /usr/local/etc/php-fpm.d/zz-tuning.conf
 
 # Composer
