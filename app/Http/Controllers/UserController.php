@@ -21,16 +21,43 @@ class UserController extends Controller
     {
         $perPage = request('perPage', 5); // Default to 5 items per page
         $perPage = in_array($perPage, [5, 10]) ? $perPage : 5; // Validate: only allow 5 or 10
+        $search = request('search', '');
+        $stageId = request('stage_id', '');
+        $status = request('status', '');
         
         $users = User::with('profile', 'caasStage.stage')
             ->join('caas_stages', 'users.id', '=', 'caas_stages.user_id')
             ->where('users.is_admin', false)
+            ->leftJoin('profiles', 'profiles.user_id', '=', 'users.id')
             ->select('users.*')
-            ->paginate($perPage);
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('users.nim', 'like', "%{$search}%")
+                        ->orWhere('profiles.name', 'like', "%{$search}%")
+                        ->orWhere('profiles.major', 'like', "%{$search}%")
+                        ->orWhere('profiles.class', 'like', "%{$search}%");
+                });
+            })
+            ->when($stageId, function ($query) use ($stageId) {
+                $query->where('caas_stages.stage_id', $stageId);
+            })
+            ->when($status, function ($query) use ($status) {
+                $query->where('caas_stages.status', $status);
+            })
+            ->paginate($perPage)
+            ->appends(['search' => $search, 'perPage' => $perPage, 'stage_id' => $stageId, 'status' => $status]);
 
         $stages = Stage::orderBy('id')->get();
         
-        return inertia('Admin/caas', ['users' => $users, 'stages' => $stages]);
+        return inertia('Admin/caas', [
+            'users' => $users,
+            'stages' => $stages,
+            'filters' => [
+                'search' => $search,
+                'stage_id' => $stageId,
+                'status' => $status,
+            ],
+        ]);
     }
 
     /**

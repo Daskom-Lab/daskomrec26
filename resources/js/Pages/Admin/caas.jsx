@@ -398,6 +398,8 @@ export default function Caas({ users, stages, filters }) {
 
     // --- Data State ---
     const [searchQuery, setSearchQuery] = useState(filters?.search || "");
+    const [selectedStage, setSelectedStage] = useState(filters?.stage_id || "");
+    const [selectedStatus, setSelectedStatus] = useState(filters?.status || "");
     const [jumpPage, setJumpPage] = useState("");
 
     // --- Modal State ---
@@ -450,15 +452,6 @@ export default function Caas({ users, stages, filters }) {
 
     const handleSearch = (value) => {
         setSearchQuery(value);
-        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-
-        searchTimeoutRef.current = setTimeout(() => {
-            router.get(
-                "/admin/caas",
-                { search: value, perPage: ITEMS_PER_PAGE },
-                { preserveState: true, replace: true },
-            );
-        }, 300);
     };
 
     const handleStageChange = (caasStageId, newStageId) => {
@@ -484,15 +477,6 @@ export default function Caas({ users, stages, filters }) {
             },
         });
     };
-
-    // Update pagination when view mode changes
-    useEffect(() => {
-        router.get(
-            "/admin/caas",
-            { perPage: ITEMS_PER_PAGE },
-            { preserveState: true, replace: true },
-        );
-    }, [viewMode]);
 
     // --- Listeners ---
     useEffect(() => {
@@ -649,13 +633,27 @@ export default function Caas({ users, stages, filters }) {
     };
 
     // --- Effects ---
+    // Debounced fetch on search, stage, status, or per-page change
     useEffect(() => {
-        router.get(
-            "/admin/caas",
-            { perPage: ITEMS_PER_PAGE, search: searchQuery },
-            { preserveState: true, replace: true },
-        );
-    }, [viewMode, ITEMS_PER_PAGE]);
+        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+
+        searchTimeoutRef.current = setTimeout(() => {
+            router.get(
+                "/admin/caas",
+                { 
+                    perPage: ITEMS_PER_PAGE, 
+                    search: searchQuery,
+                    stage_id: selectedStage,
+                    status: selectedStatus,
+                },
+                { preserveState: true, replace: true },
+            );
+        }, 200);
+
+        return () => {
+            if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+        };
+    }, [searchQuery, selectedStage, selectedStatus, viewMode, ITEMS_PER_PAGE]);
 
     useEffect(() => {
         const showTimer = setTimeout(() => setShowImage(true), 300);
@@ -812,6 +810,31 @@ export default function Caas({ users, stages, filters }) {
                                     >
                                         <ListBulletIcon className="w-5 h-5" />
                                     </button>
+                                </div>
+                                {/* Filter Dropdowns */}
+                                <div className="flex gap-3">
+                                    <select
+                                        value={selectedStage}
+                                        onChange={(e) => setSelectedStage(e.target.value)}
+                                        className="bg-black/30 border border-white/10 rounded-sm px-3 py-2.5 text-xs text-cyan-100 focus:outline-none focus:border-cyan-500/50 transition-all"
+                                    >
+                                        <option value="">All Stages</option>
+                                        {stages.map((stage) => (
+                                            <option key={stage.id} value={stage.id}>
+                                                {stage.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <select
+                                        value={selectedStatus}
+                                        onChange={(e) => setSelectedStatus(e.target.value)}
+                                        className="bg-black/30 border border-white/10 rounded-sm px-3 py-2.5 text-xs text-cyan-100 focus:outline-none focus:border-cyan-500/50 transition-all"
+                                    >
+                                        <option value="">All Status</option>
+                                        <option value="PROSES">PROSES</option>
+                                        <option value="LOLOS">LOLOS</option>
+                                        <option value="GAGAL">GAGAL</option>
+                                    </select>
                                 </div>
                                 <div
                                     className="relative group w-48 md:w-64"
