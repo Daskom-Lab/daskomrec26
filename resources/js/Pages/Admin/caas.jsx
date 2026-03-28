@@ -88,25 +88,17 @@ const StatCard = ({ label, value, type }) => {
             }
         `}
         >
-            <div
-                className={`absolute -right-8 -top-8 w-24 h-24 rounded-full blur-[50px] opacity-20 transition-opacity group-hover:opacity-40 ${isTotal ? "bg-cyan-500" : "bg-amber-500"}`}
-            />
-            <div
-                className={`w-10 h-10 border border-white/10 flex items-center justify-center relative z-10 rotate-45 group-hover:rotate-0 transition-transform duration-500 ${isTotal ? "bg-cyan-900/30 text-cyan-200" : "bg-amber-900/30 text-amber-200"}`}
-            >
+            <div className={`absolute -right-8 -top-8 w-24 h-24 rounded-full blur-[50px] opacity-20 transition-opacity group-hover:opacity-40 ${isTotal ? "bg-cyan-500" : "bg-amber-500"}`} />
+            <div className={`w-10 h-10 border border-white/10 flex items-center justify-center relative z-10 rotate-45 group-hover:rotate-0 transition-transform duration-500 ${isTotal ? "bg-cyan-900/30 text-cyan-200" : "bg-amber-900/30 text-amber-200"}`}>
                 <div className="-rotate-45 group-hover:rotate-0 transition-transform duration-500">
                     <UserGroupIcon className="w-5 h-5" />
                 </div>
             </div>
             <div className="flex flex-col relative z-10">
-                <span
-                    className={`text-[10px] font-serif font-bold uppercase tracking-[0.2em] ${isTotal ? "text-cyan-200/60" : "text-amber-200/60"}`}
-                >
+                <span className={`text-[10px] font-serif font-bold uppercase tracking-[0.2em] ${isTotal ? "text-cyan-200/60" : "text-amber-200/60"}`}>
                     {label}
                 </span>
-                <span className="text-2xl font-serif text-white tracking-wide">
-                    {value}
-                </span>
+                <span className="text-2xl font-serif text-white tracking-wide">{value}</span>
             </div>
         </div>
     );
@@ -412,6 +404,7 @@ export default function Caas({ users, stages, filters }) {
     });
     const [viewData, setViewData] = useState(null);
 
+
     // --- Export Modal State ---
     const [exportAll, setExportAll] = useState(true);
     const [exportStage, setExportStage] = useState("");
@@ -465,7 +458,7 @@ export default function Caas({ users, stages, filters }) {
         router.put(
             `/admin/caas/${caasStageId}/stage`,
             { stage_id: newStageId },
-            { preserveScroll: true, preserveState: true },
+            { preserveScroll: true, preserveState: true }
         );
     };
 
@@ -478,7 +471,7 @@ export default function Caas({ users, stages, filters }) {
                 router.put(
                     `/admin/caas/${caasStageId}/status`,
                     { status: newStatus },
-                    { preserveScroll: true, preserveState: true },
+                    { preserveScroll: true, preserveState: true }
                 );
                 closeAllModals();
             },
@@ -701,19 +694,12 @@ export default function Caas({ users, stages, filters }) {
                         onLoad={() => setImageLoaded(true)}
                         className={`absolute inset-0 w-full h-full object-cover transition-all duration-1500 ease-out ${showImage && imageLoaded ? "opacity-100" : "opacity-0"} ${!isZooming ? "pulse-effect" : ""} cold-blue-filter`}
                         style={{
-                            transform:
-                                showImage && imageLoaded
-                                    ? isZooming
-                                        ? "scale(1.5)"
-                                        : "scale(1.0)"
-                                    : "scale(1.3)",
+                            transform: showImage && imageLoaded ? (isZooming ? "scale(1.5)" : "scale(1.0)") : "scale(1.3)",
                             transformOrigin: "center",
                         }}
                     />
                     <UnderwaterEffect />
-                    <div
-                        className={`absolute inset-0 bg-linear-to-b from-black/25 via-transparent to-black/30 transition-opacity duration-1000 ${showImage && imageLoaded ? "opacity-100" : "opacity-0"}`}
-                    />
+                    <div className={`absolute inset-0 bg-linear-to-b from-black/25 via-transparent to-black/30 transition-opacity duration-1000 ${showImage && imageLoaded ? "opacity-100" : "opacity-0"}`} />
                 </div>
 
                 {/* Main Content Area */}
@@ -723,13 +709,7 @@ export default function Caas({ users, stages, filters }) {
                     {/* Header */}
                     <div className="text-center relative z-10 mb-8 mt-24 md:mt-0 w-full max-w-7xl flex flex-col md:flex-row items-center md:items-end justify-between gap-6">
                         <div className="text-center md:text-left">
-                            <h1
-                                className="text-5xl md:text-7xl font-bold leading-tight"
-                                style={{
-                                    fontFamily: "Cormorant Infant, serif",
-                                    textShadow: "0 2px 20px rgba(0,0,0,.8)",
-                                }}
-                            >
+                            <h1 className="text-5xl md:text-7xl font-bold leading-tight" style={{ fontFamily: "Cormorant Infant, serif", textShadow: "0 2px 20px rgba(0,0,0,.8)" }}>
                                 CaAs Management
                             </h1>
                             <p className="text-sm text-cyan-400/80 font-serif tracking-[0.3em] uppercase mt-1">
@@ -760,34 +740,23 @@ export default function Caas({ users, stages, filters }) {
                                     <PlusIcon className="w-4 h-4" /> New CaAs
                                 </button>
                                 <button
-                                    onClick={() =>
-                                        setConfirmModal({
-                                            isOpen: true,
-                                            title: "Import CaAs",
-                                            message: `Do you want to import CaAs?`,
-                                            onConfirm: () => {
-                                                fileInputRef.current.click();
-                                                closeAllModals();
-                                            },
-                                        })
-                                    }
+                                    onClick={() => setConfirmModal({
+                                        isOpen: true,
+                                        title: "Import CaAs",
+                                        message: `Do you want to import CaAs?`,
+                                        onConfirm: () => {
+                                            fileInputRef.current.click();
+                                            closeAllModals();
+                                        },
+                                    })}
                                     className="p-3 border border-blue-500/40 text-blue-300 rounded-sm hover:bg-blue-900/20 transition-all"
                                 >
                                     <ArrowUpTrayIcon className="w-5 h-5" />
                                 </button>
-                                <button
-                                    onClick={handleExportExcel}
-                                    className="p-3 border border-emerald-500/40 text-emerald-300 rounded-sm hover:bg-emerald-900/20 transition-all"
-                                >
+                                <button onClick={handleExportExcel} className="p-3 border border-emerald-500/40 text-emerald-300 rounded-sm hover:bg-emerald-900/20 transition-all">
                                     <ArrowDownTrayIcon className="w-5 h-5" />
                                 </button>
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    onChange={handleFileChange}
-                                    accept=".xlsx, .xls, .csv"
-                                    className="hidden"
-                                />
+                                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".xlsx, .xls, .csv" className="hidden" />
                             </div>
 
                             {/* Right Tools */}
@@ -836,9 +805,7 @@ export default function Caas({ users, stages, filters }) {
                                             <th className="p-4">Class</th>
                                             <th className="p-4">Stage</th>
                                             <th className="p-4">Status</th>
-                                            <th className="p-4 pr-8 text-center">
-                                                Manage
-                                            </th>
+                                            <th className="p-4 pr-8 text-center">Manage</th>
                                         </tr>
                                     </thead>
                                     <tbody className="font-sans">
@@ -900,11 +867,7 @@ export default function Caas({ users, stages, filters }) {
                                                         className={`${viewMode === "small" ? "text-xs" : "text-sm"} font-bold bg-transparent border border-white/10 rounded-sm px-2 py-1 text-cyan-100 focus:outline-none focus:border-cyan-500/50 cursor-pointer hover:border-cyan-400/30 transition-all`}
                                                     >
                                                         {stages.map((stage) => (
-                                                            <option
-                                                                key={stage.id}
-                                                                value={stage.id}
-                                                                className="bg-[#0f1c2e] text-cyan-100"
-                                                            >
+                                                            <option key={stage.id} value={stage.id} className="bg-[#0f1c2e] text-cyan-100">
                                                                 {stage.name}
                                                             </option>
                                                         ))}
@@ -915,41 +878,21 @@ export default function Caas({ users, stages, filters }) {
                                                 >
                                                     {item.caas_stage ? (
                                                         <div className="flex items-center gap-1.5">
-                                                            {[
-                                                                "LOLOS",
-                                                                "PROSES",
-                                                                "GAGAL",
-                                                            ].map((status) => (
+                                                            {["LOLOS", "PROSES", "GAGAL"].map((status) => (
                                                                 <button
                                                                     key={status}
-                                                                    onClick={() =>
-                                                                        item
-                                                                            .caas_stage
-                                                                            .status !==
-                                                                            status &&
-                                                                        handleStatusChange(
-                                                                            item
-                                                                                .caas_stage
-                                                                                .id,
-                                                                            status,
-                                                                        )
-                                                                    }
+                                                                    onClick={() => item.caas_stage.status !== status && handleStatusChange(item.caas_stage.id, status)}
                                                                     className={`
                                                                         ${viewMode === "small" ? "px-2.5 py-1 text-[10px]" : "px-3.5 py-1.5 text-xs"}
                                                                         font-bold uppercase tracking-wider rounded-sm
                                                                         border transition-all duration-300 cursor-pointer
                                                                         ${
-                                                                            item
-                                                                                .caas_stage
-                                                                                .status ===
-                                                                            status
-                                                                                ? status ===
-                                                                                  "LOLOS"
+                                                                            item.caas_stage.status === status
+                                                                                ? status === "LOLOS"
                                                                                     ? "bg-emerald-900/40 border-emerald-500/60 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.4)]"
-                                                                                    : status ===
-                                                                                        "PROSES"
-                                                                                      ? "bg-amber-900/40 border-amber-500/60 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.4)]"
-                                                                                      : "bg-rose-900/40 border-rose-500/60 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.4)]"
+                                                                                    : status === "PROSES"
+                                                                                    ? "bg-amber-900/40 border-amber-500/60 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.4)]"
+                                                                                    : "bg-rose-900/40 border-rose-500/60 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.4)]"
                                                                                 : "bg-transparent border-white/10 text-white/25 hover:text-white/50 hover:border-white/25"
                                                                         }
                                                                     `}
@@ -959,9 +902,7 @@ export default function Caas({ users, stages, filters }) {
                                                             ))}
                                                         </div>
                                                     ) : (
-                                                        <span className="text-white/30 text-xs italic">
-                                                            N/A
-                                                        </span>
+                                                        <span className="text-white/30 text-xs italic">N/A</span>
                                                     )}
                                                 </td>
                                                 <td
@@ -970,12 +911,8 @@ export default function Caas({ users, stages, filters }) {
                                                     <div className="flex justify-center gap-3">
                                                         <button
                                                             onClick={() => {
-                                                                setViewData(
-                                                                    item,
-                                                                );
-                                                                setIsViewOpen(
-                                                                    true,
-                                                                );
+                                                                setViewData(item);
+                                                                setIsViewOpen(true);
                                                             }}
                                                             className={`${viewMode === "small" ? "p-1.5" : "p-2.5"} border border-cyan-500/30 text-cyan-400 hover:text-white rounded-sm hover:bg-cyan-500/10 transition-all`}
                                                         >
@@ -986,30 +923,12 @@ export default function Caas({ users, stages, filters }) {
                                                                 form.setData({
                                                                     id: item.id,
                                                                     nim: item.nim,
-                                                                    name:
-                                                                        item
-                                                                            .profile
-                                                                            ?.name ||
-                                                                        "",
-                                                                    major:
-                                                                        item
-                                                                            .profile
-                                                                            ?.major ||
-                                                                        "",
-                                                                    class:
-                                                                        item
-                                                                            .profile
-                                                                            ?.class ||
-                                                                        "",
-                                                                    gender:
-                                                                        item
-                                                                            .profile
-                                                                            ?.gender ||
-                                                                        "",
+                                                                    name: item.profile?.name || "",
+                                                                    major: item.profile?.major || "",
+                                                                    class: item.profile?.class || "",
+                                                                    gender: item.profile?.gender || "",
                                                                 });
-                                                                setIsFormOpen(
-                                                                    true,
-                                                                );
+                                                                setIsFormOpen(true);
                                                             }}
                                                             className={`${viewMode === "small" ? "p-1.5" : "p-2.5"} border border-amber-500/30 text-amber-400 hover:text-white rounded-sm hover:bg-amber-500/10 transition-all`}
                                                         >
@@ -1043,15 +962,11 @@ export default function Caas({ users, stages, filters }) {
                                         Page {currentPage} of {totalPages}
                                     </span>
                                     <div className="flex items-center gap-3 border-l border-white/10 pl-6">
-                                        <span className="text-[10px] text-cyan-500/50 uppercase font-bold tracking-widest">
-                                            Jump
-                                        </span>
+                                        <span className="text-[10px] text-cyan-500/50 uppercase font-bold tracking-widest">Jump</span>
                                         <input
                                             type="text"
                                             value={jumpPage}
-                                            onChange={(e) =>
-                                                setJumpPage(e.target.value)
-                                            }
+                                            onChange={(e) => setJumpPage(e.target.value)}
                                             onKeyDown={handleJumpPage}
                                             className="w-12 bg-black/40 border-b border-cyan-500/30 text-center text-cyan-100 py-1 focus:outline-none font-mono"
                                             placeholder="0"
@@ -1127,11 +1042,7 @@ export default function Caas({ users, stages, filters }) {
                     <ButtonHome onClick={() => router.visit("/admin/home")} />
                 </div>
 
-                <AdminSidebar
-                    isOpen={isSidebarOpen}
-                    onClose={() => setIsSidebarOpen(false)}
-                    onLogout={handleLogout}
-                />
+                <AdminSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} onLogout={handleLogout} />
 
                 {/* MODALS (Form, View, Confirm) */}
                 {isFormOpen &&
