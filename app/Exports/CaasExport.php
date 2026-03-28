@@ -31,6 +31,7 @@ class CaasExport implements FromCollection, WithHeadings, WithMapping, WithStyle
     {
         $query = User::with('profile', 'caasStage.stage')
             ->join('caas_stages', 'users.id', '=', 'caas_stages.user_id')
+            ->where('users.is_admin', false)
             ->select('users.*');
 
         if (!$this->exportAll) {

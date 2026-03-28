@@ -47,4 +47,14 @@ class PlottinganController extends Controller
     {
         return Excel::download(new PlottinganExport, 'Plottingan_Export.xlsx');
     }
+
+    /**
+     * Remove a user assignment from plottingan.
+     */
+    public function destroy(Plottingan $plottingan)
+    {
+        $plottingan->delete();
+
+        return back()->with('success', 'User removed from plottingan successfully.');
+    }
 }

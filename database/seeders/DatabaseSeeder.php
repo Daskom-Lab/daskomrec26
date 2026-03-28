@@ -19,8 +19,9 @@ class DatabaseSeeder extends Seeder
             StageSeeder::class,
             PuzzleSeeder::class,
             UserSeeder::class,
+            ShiftSeeder::class,
             ConfigurationSeeder::class,
-            CaasStageSeeder::class,
+            PlottinganSeeder::class,
         ]);
     }
 }

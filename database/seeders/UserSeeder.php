@@ -15,25 +15,39 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get the Administration stage
-        $administrationStage = Stage::where('name', 'Administration')->first();
-
-        // Create 10 regular users
-        $users = User::factory()->count(10)->create();
-
-        // Create CaasStage for each user with Administration stage
-        if ($administrationStage) {
-            foreach ($users as $user) {
-                CaasStage::firstOrCreate([
-                    'user_id' => $user->id,
-                    'stage_id' => $administrationStage->id,
-                ], [
-                    'status' => 'GAGAL', // Default status
-                ]);
-            }
+        $stages = Stage::all();
+        if ($stages->isEmpty()) {
+            return; // stages needed for CaasStage assignment
         }
 
-        // Create 1 admin user
+        $administrationStage = $stages->firstWhere('name', 'Administration') ?? $stages->first();
+        $statusPool = ['PROSES', 'LOLOS', 'GAGAL'];
+
+        // Create regular users with profiles and caas stages
+        $users = User::factory()->count(20)->create();
+        foreach ($users as $user) {
+            $user->profile()->create([
+                'name' => fake()->name(),
+                'major' => fake()->randomElement([
+                    'Teknik Elektro',
+                    'Teknik Biomedis',
+                    'Teknik Fisika',
+                    'Teknik Telekomunikasi',
+                    'Teknik Sistem Energi',
+                ]),
+                'class' => strtoupper(fake()->bothify('??-##')),
+                'gender' => fake()->randomElement(['Male', 'Female']),
+            ]);
+
+            CaasStage::firstOrCreate([
+                'user_id' => $user->id,
+            ], [
+                'stage_id' => $administrationStage->id,
+                'status' => fake()->randomElement($statusPool),
+            ]);
+        }
+
+        // Create admin user with profile and caas stage
         $adminUser = User::firstOrCreate(
             ['nim' => '10101'],
             [
@@ -43,14 +57,21 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // Create CaasStage for admin user too
-        if ($administrationStage && $adminUser) {
-            CaasStage::firstOrCreate([
-                'user_id' => $adminUser->id,
-                'stage_id' => $administrationStage->id,
-            ], [
-                'status' => 'GAGAL',
-            ]);
-        }
+        $adminUser->profile()->updateOrCreate(
+            ['user_id' => $adminUser->id],
+            [
+                'name' => 'Admin Daskom',
+                'major' => 'Teknik Elektro',
+                'class' => 'ADM-01',
+                'gender' => 'Male',
+            ]
+        );
+
+        CaasStage::firstOrCreate([
+            'user_id' => $adminUser->id,
+        ], [
+            'stage_id' => $administrationStage->id,
+            'status' => 'LOLOS',
+        ]);
     }
 }

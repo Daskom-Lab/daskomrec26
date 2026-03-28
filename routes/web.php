@@ -79,6 +79,7 @@ Route::middleware('auth')->group(function (){
         Route::get('/admin/plottingan', [PlottinganController::class, 'index']);
         Route::get('/admin/plottingan/export', [PlottinganController::class, 'export'])->name('plottingan.export');
         Route::get('/admin/plottingan/shift/{shiftId}', [PlottinganController::class, 'shiftUsers']);
+        Route::delete('/admin/plottingan/{plottingan}', [PlottinganController::class, 'destroy'])->name('plottingan.destroy');
 
         Route::get('/admin/password', [UserController::class, 'passwordChangeView']);
         Route::put('/admin/password', [UserController::class, 'updatePassword']);
