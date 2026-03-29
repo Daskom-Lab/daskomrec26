@@ -4,9 +4,9 @@ import HTMLFlipBook from 'react-pageflip';
 import CoverFront from '@assets/cards/books/FrontCover.webp';
 import CoverBack from '@assets/cards/books/BackCover.webp';
 
-const TOTAL_PAGES = 87;
-const PATH_FILTERED = 'https://ik.imagekit.io/kyla08/foto-filter';
-const PATH_NORMAL   = 'https://ik.imagekit.io/kyla08/foto-polos';
+const TOTAL_PAGES = 89;
+const PATH_FILTERED = 'https://ik.imagekit.io/kyla08/foto-asisten-filter';
+const PATH_NORMAL   = 'https://ik.imagekit.io/kyla08/foto-asisten-polos';
 
 const SEPIA_COLOR = '#f2e8d5';
 const SIZE_FILTERED = '141% 115%';
