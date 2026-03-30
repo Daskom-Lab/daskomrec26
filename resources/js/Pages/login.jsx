@@ -16,13 +16,12 @@ import BlueInputBox from "@components/BlueInputBox";
 
 /* Other Components */
 import UnderwaterEffect from "@components/UnderwaterEffect";
+import MuteButton from '@components/MuteButton';
 
 export default function Login() {
-    const orbRef = useRef(null);
     const rafRef = useRef(null);
     const scrollWrapperRef = useRef(null);
     const doorRef = useRef(null);
-    const roadRef = useRef(null);
 
     const OFFSET = {
         base: {x: 0, y : 430},
@@ -42,7 +41,6 @@ export default function Login() {
     const [showColorFade, setShowColorFade] = useState(false);
     const [fadeScroll, setFadeScroll] = useState(false);
 
-    /* Form into Backend */
     const { data, setData, post, processing, errors, setError, clearErrors } =
         useForm({
             nim: "",
@@ -59,29 +57,6 @@ export default function Login() {
                   : OFFSET["base"];
 
         return `translate(${offset.x}px, ${offset.y}px) scale(${scale})`;
-    };
-
-    const handleMouseMove = (e) => {
-        if (rafRef.current || isIntro || cameraState !== "idle") return;
-
-        rafRef.current = requestAnimationFrame(() => {
-            if (!orbRef.current || !roadRef.current) return;
-
-            const { innerWidth, innerHeight } = window;
-            const x = (e.clientX / innerWidth - 0.5) * 30;
-            const y = (e.clientY / innerHeight - 0.5) * 30;
-
-            orbRef.current.style.transform = `translate(${x}px, ${y}px) scale(${SCALE.bg.idle})`;
-            roadRef.current.style.transform = `translate(${x}px, ${y}px) scale(${SCALE.road.idle})`;
-
-            rafRef.current = null;
-        });
-    };
-
-    const handleMouseLeave = () => {
-        if (!orbRef.current || !roadRef.current) return;
-        orbRef.current.style.transform = getTransform("bg");
-        roadRef.current.style.transform = getTransform("road");
     };
 
     const handleOutsideClick = (e) => {
@@ -144,16 +119,6 @@ export default function Login() {
     const hasError = Object.keys(errors).length > 0;
 
     const styles = `
-        .atlantis-sync {
-            filter: sepia(1) hue-rotate(150deg) saturate(2) contrast(1.5) brightness(0.9);
-        }
-        .deep-ocean-bg {
-            filter: brightness(0.8) saturate(1.2) contrast(1.1);
-        }
-        .cold-blue-filter-scroll {
-            filter: brightness(1.1) contrast(1) saturate(0.2) hue-rotate(220deg) sepia(0.2);
-        }
-
         .bottom-centered-asset {
             position: absolute;
             bottom: 0;
@@ -180,8 +145,6 @@ export default function Login() {
             <UnderwaterEffect />
 
             <div
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}
                 onClick={handleOutsideClick}
                 className="relative w-full min-h-screen overflow-hidden bg-[#0a243b]"
             >
@@ -194,15 +157,13 @@ export default function Login() {
                 />
 
                 <img
-                    ref={roadRef}
                     src={ImgRoad}
                     alt="road"
                     className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-auto min-w-[2000px] z-5 atlantis-sync"
                     style={roadStyle}
-                />
+                />The
 
                 <img
-                    ref={orbRef}
                     src={ImgOrb}
                     alt="background"
                     className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-auto min-w-[2000px] z-0 atlantis-sync"
@@ -235,10 +196,6 @@ export default function Login() {
                                     cameraState === "out"
                                   ? 0
                                   : 1,
-                            filter:
-                                cameraState === "out"
-                                    ? "blur(8px)"
-                                    : "blur(0px)",
                             pointerEvents:
                                 cameraState === "idle" ? "auto" : "none",
                             width: "520px",
@@ -352,6 +309,10 @@ export default function Login() {
                         opacity: showColorFade ? 1 : 0,
                     }}
                 />
+            </div>
+
+            <div className="flex flex-col gap-0">
+                <MuteButton />
             </div>
         </>
     );
