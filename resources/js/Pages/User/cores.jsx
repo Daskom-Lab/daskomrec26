@@ -435,7 +435,7 @@ export default function Cores({ puzzles = [] }) {
                     className={`absolute bottom-4 w-full text-center z-40 pointer-events-none transition-opacity duration-1000 delay-500 ${isMapPlacing || isExiting || isLoggingOut ? "opacity-0" : "opacity-100"}`}
                 >
                     <p className="text-white font-caudex text-[10px] md:text-xl tracking-widest drop-shadow-md">
-                        @Atlantis.DLOR2026. All Right Served
+                        @Atlantis.DLOR2026. All Right Reserved
                     </p>
                 </div>
             </div>

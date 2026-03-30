@@ -217,7 +217,7 @@ export default function Home() {
                     <div
                         onClick={handleHeadClick}
                         className={`
-                            absolute bottom-[28%] left-[38%] w-[14%] md:w-[8%] lg:bottom-[18%] lg:left-[45%] lg:w-[5%] -translate-x-1/2
+                            absolute bottom-[28%] left-[38%] w-[14%] md:w-[8%] lg:bottom-[18%] lg:left-[45%] lg:w-[5%] -translate-x-1/2 rotate-290
                             z-10 pointer-events-auto cursor-pointer
                             transition-opacity duration-300
                             ${!showImage ? "opacity-0" : "opacity-100"}
@@ -328,7 +328,7 @@ export default function Home() {
                 {/* Footer */}
                 <div className={`absolute bottom-4 w-full text-center z-20 pointer-events-none transition-opacity duration-1000 delay-500 ${isZooming ? "opacity-0" : "opacity-100"}`} >
                     <p className="text-white font-caudex text-[8px] md:text-xl tracking-widest drop-shadow-md">
-                        @Atlantis.DLOR2026. All Right Served
+                        @Atlantis.DLOR2026. All Right Reserved
                     </p>
                 </div>
             </div>

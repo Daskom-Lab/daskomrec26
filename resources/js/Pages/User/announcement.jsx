@@ -243,7 +243,7 @@ export default function AnnouncementPage({
 
              {/* Contents & Footer Wrapper */}
                 <div className="relative z-30 w-full flex flex-col justify-start items-center pt-[12vh]">
-                    
+
                     {/* === PAPAN BATU === */}
                     <div
                         className={`
@@ -299,7 +299,7 @@ export default function AnnouncementPage({
 {/* If Revelaled */}
                                         {isRevealed && (
                                             <div className="w-full h-full flex flex-col items-center text-center text-[#092338] px-[10%] pt-[32%] sm:pt-[28%] md:pt-[24%] pb-[12%] animate-crt-reveal ml-1">
-                                                
+
                                                 {/* 1. HEADER (Dikunci di atas menggunakan shrink-0) */}
                                                 <div className="relative z-10 w-full mb-2 shrink-0">
                                                     <h1 className="text-2xl sm:text-4xl font-bold uppercase tracking-[0.15em] drop-shadow-sm">
@@ -399,7 +399,7 @@ export default function AnnouncementPage({
                         className={`relative shrink-0 w-full text-center pt-16 pb-12 z-40 text-sm md:text-base tracking-wider text-cyan-100/50 transition-opacity duration-1000
                         ${isExiting || isLoggingOut ? "opacity-0" : "opacity-100"}`}
                     >
-                        <p>@Atlantis.DLOR2026. All Right Served</p>
+                        <p>@Atlantis.DLOR2026. All Right Reserved</p>
                     </div>
 
                 </div>
