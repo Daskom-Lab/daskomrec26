@@ -7,6 +7,7 @@ import ButtonAnchor from "@assets/buttons/Anchor.webp";
 import ButtonChain from "@assets/buttons/Chain.webp";
 
 import ButtonCores from "@assets/buttons/CoresUnlocked.webp";
+import MuteButton from "@components/MuteButton"
 
 export default function UserSidebar({ isOpen, onClose, onLogout }) {
     const buttonWrapper =

@@ -117,6 +117,7 @@ export default function ChangePassword({ users = { data: [] } }) {
                 { search: value },
                 { preserveState: true, replace: true }
             );
+            searchTimeoutRef.current = null;
         }, 300);
     };
 
@@ -140,8 +141,19 @@ export default function ChangePassword({ users = { data: [] } }) {
                 }
             }
         };
+
         window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+
+            clearTimeout(showTimer);
+            clearTimeout(zoomTimer);
+
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current);
+            }
+        };
     }, [showModal]);
 
     const getBackgroundStyle = () => {

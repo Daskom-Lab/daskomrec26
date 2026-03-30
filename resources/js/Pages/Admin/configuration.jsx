@@ -514,7 +514,7 @@ export default function Configuration({ stages }) {
                                                     Success Message Preview
                                                 </h4>
                                                 <div
-                                                    className="text-emerald-100/80 leading-relaxed font-light prose prose-invert prose-sm max-w-none"
+                                                    className="flex-1 min-h-0 overflow-y-auto hide-scrollbar text-emerald-100/80 leading-loose text-lg font-light prose prose-invert prose-emerald max-w-none break-words whitespace-pre-wrap pr-2"
                                                     dangerouslySetInnerHTML={{
                                                         __html:
                                                             formData.success_message ||
@@ -528,7 +528,7 @@ export default function Configuration({ stages }) {
                                                     Fail Message Preview
                                                 </h4>
                                                 <div
-                                                    className="text-rose-100/80 leading-relaxed font-light prose prose-invert prose-sm max-w-none"
+                                                    className="flex-1 min-h-0 overflow-y-auto hide-scrollbar text-emerald-100/80 leading-loose text-lg font-light prose prose-invert prose-emerald max-w-none break-words whitespace-pre-wrap pr-2"
                                                     dangerouslySetInnerHTML={{
                                                         __html:
                                                             formData.fail_message ||
