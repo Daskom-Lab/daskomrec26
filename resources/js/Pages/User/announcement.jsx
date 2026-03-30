@@ -296,7 +296,6 @@ export default function AnnouncementPage({
                                             </div>
                                         )}
 
-{/* If Revelaled */}
                                         {isRevealed && (
                                             <div className="w-full h-full flex flex-col items-center text-center text-[#092338] px-[10%] pt-[32%] sm:pt-[28%] md:pt-[24%] pb-[12%] animate-crt-reveal ml-1">
 

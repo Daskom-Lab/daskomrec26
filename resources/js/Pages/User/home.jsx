@@ -112,7 +112,7 @@ export default function Home() {
         }
         @keyframes sway {
             0%, 100% { transform: rotate(-1deg) translateY(0); }
-            50% { transform: rotate(1deg) translateY(-5px); }
+            50% { transform: rotate(1deg) translateY(-1px); }
         }
         .animate-sway {
             animation: sway 4s ease-in-out infinite;
@@ -235,14 +235,14 @@ export default function Home() {
                 <div
                     className={`absolute inset-0 z-10 pointer-events-none transition-all duration-1000 ${isZooming ? "opacity-0 scale-110" : "opacity-100 scale-100"}`}
                 >
-                    <div className="absolute bottom-[-8%] left-[-7%] w-[60%] lg:bottom-[-16%] lg:left-[-4%] lg:w-[90%] max-w-[600px] -rotate-[6deg] origin-bottom-left">
+                    <div className="absolute bottom-[-10%] left-[-7%] w-[60%] lg:bottom-[-16%] lg:left-[-4%] lg:w-[90%] max-w-[600px] -rotate-[6deg] origin-bottom-left">
                         <img
                             src={DecorFlag}
                             alt="Broken Mast"
                             className="w-full h-auto animate-sway object-contain opacity-80"
                         />
                     </div>
-                    <div className="absolute bottom-[-9%] right-[-14%] w-[60%] lg:bottom-[-25%] lg:right-[-10%] lg:w-[90%] max-w-[800px]">
+                    <div className="absolute bottom-[-11%] right-[-14%] w-[60%] lg:bottom-[-25%] lg:right-[-10%] lg:w-[90%] max-w-[800px]">
                         <img
                             src={DecorShip}
                             alt="Shipwreck"

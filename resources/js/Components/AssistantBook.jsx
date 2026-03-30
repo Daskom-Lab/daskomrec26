@@ -4,9 +4,10 @@ import HTMLFlipBook from 'react-pageflip';
 import CoverFront from '@assets/cards/books/FrontCover.webp';
 import CoverBack from '@assets/cards/books/BackCover.webp';
 
-const TOTAL_PAGES = 89;
-const PATH_FILTERED = 'https://ik.imagekit.io/kyla08/foto-asisten-filter';
-const PATH_NORMAL   = 'https://ik.imagekit.io/kyla08/foto-asisten-polos';
+const TOTAL_PAGES = 88;
+const PATH_FILTERED = 'https://ik.imagekit.io/kyla08/foto-filter';
+const PATH_NORMAL   = 'https://ik.imagekit.io/kyla08/foto-polos';
+const IMG_VERSION = '202630'
 
 const SEPIA_COLOR = '#f2e8d5';
 const SIZE_FILTERED = '141% 115%';
@@ -44,8 +45,8 @@ const Page = forwardRef((props, ref) => {
             backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat',
             boxShadow: isRightPage
-                ? 'inset 15px 0 20px -10px rgba(0,0,0,0.7)'
-                : 'inset -15px 0 20px -10px rgba(0,0,0,0.7)'
+                ? 'inset 15px 0 30px -10px rgba(0,0,0,0.7)'
+                : 'inset -15px 0 30px -10px rgba(0,0,0,0.7)'
           }}
         />
 
@@ -53,8 +54,8 @@ const Page = forwardRef((props, ref) => {
             className="absolute inset-0 pointer-events-none"
             style={{
               boxShadow: isRightPage
-                ? 'inset -15px 0 20px -10px rgba(0,0,0,0.7)'
-                : 'inset 15px 0 20px -10px rgba(0,0,0,0.7)'
+                ? 'inset -25px 0 30px -10px rgba(0,0,0,0.7)'
+                : 'inset 25px 0 30px -10px rgba(0,0,0,0.7)'
             }}
         />
 
@@ -97,7 +98,7 @@ const AssistantBook = forwardRef(({
     onPageChange,
     width = 400,
     height = 600,
-    initialFilterState = FILTERED //changes foto filter state
+    initialFilterState = FILTERED
 }, ref) => {
 
   const bookRef = useRef(null);
@@ -106,7 +107,9 @@ const AssistantBook = forwardRef(({
 
   const [isMobile, setIsMobile] = useState(false);
   const [bubbles, setBubbles] = useState([]);
-  const [clicked, setClicked] = useState(false);
+
+  // Changed from `clicked` to `isPressed`
+  const [isPressed, setIsPressed] = useState(false);
 
   const [isFiltered, setIsFiltered] = useState(initialFilterState);
   useEffect(() => {
@@ -131,7 +134,6 @@ const AssistantBook = forwardRef(({
     if (onPageChange) onPageChange(e.data);
   }, [onPageChange]);
 
-  // --- 3D INTERACTION (TILT) ---
   const handlePointerMove = (e) => {
     if (!containerRef.current) return;
     if (e.buttons === 1) return;
@@ -152,6 +154,8 @@ const AssistantBook = forwardRef(({
   };
 
   const handlePointerLeave = () => {
+    setIsPressed(false); // Make sure it un-presses when moving cursor out
+
     if (!containerRef.current) return;
     containerRef.current.style.setProperty('--rx', '0deg');
     containerRef.current.style.setProperty('--ry', '0deg');
@@ -159,10 +163,12 @@ const AssistantBook = forwardRef(({
   };
 
   const handlePointerDown = () => {
-    if (clicked) return;
-    setClicked(true);
+    setIsPressed(true);
     spawnBubbles();
-    setTimeout(() => setClicked(false), 200);
+  };
+
+  const handlePointerUp = () => {
+    setIsPressed(false);
   };
 
   const spawnBubbles = useCallback(() => {
@@ -204,20 +210,6 @@ const AssistantBook = forwardRef(({
 
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center">
-      {/* SVG FILTERS for Wet Effect */}
-      <svg style={{ display: 'none' }}>
-        <defs>
-          <filter id="wet-glimmer">
-            <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="noise" />
-            <feGaussianBlur in="noise" stdDeviation="1.5" result="smoothedNoise" />
-            <feSpecularLighting in="smoothedNoise" surfaceScale="20" specularConstant="1.2" specularExponent="30" result="specularOut">
-                <fePointLight x="-5000" y="-10000" z="20000" />
-            </feSpecularLighting>
-            <feComposite in="specularOut" in2="SourceAlpha" operator="in" result="specular" />
-          </filter>
-        </defs>
-      </svg>
-
       <style>{`
         .book-wrapper {
           --rx: 0deg;
@@ -234,8 +226,9 @@ const AssistantBook = forwardRef(({
             background: rgba(0, 10, 30, 0.6);
             filter: blur(50px);
             border-radius: 30px;
-            opacity: 0.8;
             pointer-events: none;
+            /* Added transition to match the book inner scale */
+            transition: transform 0.2s cubic-bezier(0.1, 0.4, 0.3, 1), opacity 0.2s ease;
         }
         .book-inner {
           z-index: 10;
@@ -280,16 +273,24 @@ const AssistantBook = forwardRef(({
         onPointerMove={handlePointerMove}
         onPointerLeave={handlePointerLeave}
         onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
       >
         <div className="book-wrapper relative">
 
           {/* 1. Shadow Layer */}
-          <div className="book-shadow" />
+          <div
+             className="book-shadow"
+             style={{
+                transform: isPressed ? 'scale(0.96)' : 'scale(1)',
+                opacity: isPressed ? 0.6 : 0.8
+             }}
+          />
 
           {/* 2. Book Inner (The tilting part) */}
           <div
             className="book-inner relative"
-            style={{ '--scale': clicked ? 0.98 : 1 }}
+            style={{ '--scale': isPressed ? 0.98 : 1 }}
           >
             <HTMLFlipBook
               width={width}
@@ -306,7 +307,6 @@ const AssistantBook = forwardRef(({
               showCover={true}
               mobileScrollSupport={true}
               ref={bookRef}
-              style={{ margin: '0 auto', padding: 0 }}
               onFlip={onFlip}
             >
               <Cover key="front-cover" bgImage={CoverFront} />
@@ -318,18 +318,13 @@ const AssistantBook = forwardRef(({
                     <Page
                       key={pageNum}
                       number={pageNum}
-                      contentImage={`${basePath}/${fileName}?tr=w-400,q-80,f-auto`}
+                      contentImage={`${basePath}/${fileName}?tr=w-400,q-80,f-auto,${IMG_VERSION}`}
                       isFiltered={isFiltered}
                     />
                   );
                 })}
               <Cover key="back-cover" bgImage={CoverBack} />
             </HTMLFlipBook>
-
-            {/* THE WET LAYERS */}
-            <div className="wet-overlay absolute inset-0 z-40 rounded-sm bg-white/5" />
-            <div className="wet-glint absolute inset-0 z-50 rounded-sm" />
-
           </div>
 
           {/* 3. Bubbles Layer */}
