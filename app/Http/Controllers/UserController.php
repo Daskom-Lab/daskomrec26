@@ -24,7 +24,7 @@ class UserController extends Controller
         $search = request('search', '');
         $stageId = request('stage_id', '');
         $status = request('status', '');
-        
+
         $users = User::with('profile', 'caasStage.stage')
             ->join('caas_stages', 'users.id', '=', 'caas_stages.user_id')
             ->where('users.is_admin', false)
@@ -48,7 +48,7 @@ class UserController extends Controller
             ->appends(['search' => $search, 'perPage' => $perPage, 'stage_id' => $stageId, 'status' => $status]);
 
         $stages = Stage::orderBy('id')->get();
-        
+
         return inertia('Admin/caas', [
             'users' => $users,
             'stages' => $stages,
@@ -255,9 +255,13 @@ class UserController extends Controller
             'current_password.exists' => 'Praktikan NIM not found.',
         ]);
 
-        $user = User::where('nim', $request->current_password)->firstOrFail();
-
-        $user->update([
+        $authenticatedUser = $request->user();
+        if (!$authenticatedUser || $authenticatedUser->nim !== $request->current_password) {
+            return back()->withErrors([
+                'current_password' => 'The provided NIM does not match the authenticated user.',
+            ]);
+        }
+        $authenticatedUser->update([
             'password' => bcrypt($request->password),
         ]);
 
