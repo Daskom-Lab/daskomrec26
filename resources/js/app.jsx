@@ -13,7 +13,6 @@ createInertiaApp({
         createRoot(el).render(
             <SoundProvider>
                 <App {...props} />
-                <MuteButton/>
             </SoundProvider>
         )
     },

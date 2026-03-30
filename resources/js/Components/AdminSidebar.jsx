@@ -202,6 +202,9 @@ export default function UserSidebar({ isOpen, onClose, onLogout }) {
                                 </span>
                             </button>
                         </div>
+                        <div className="flex flex-col gap-0">
+                            <MuteButton />
+                        </div>
                     </div>
                 </div>
             </aside>
