@@ -27,7 +27,7 @@ export default function Assistants() {
     const [isBookPlacing, setIsBookPlacing] = useState(true);
 
     const [pageIndex, setPageIndex] = useState(0);
-    const totalIndices = 89 + 2;
+    const totalIndices = 88 + 1;
 
     const [bookDim, setBookDim] = useState({ width: 300, height: 450 });
 
@@ -320,8 +320,8 @@ export default function Assistants() {
                         onPrev={handlePrev}
                         onNext={handleNext}
                         onGoToPage={handleGoToPage}
-                        currentPage={pageIndex}
-                        totalPages={totalIndices - 1}
+                        currentPage={pageIndex + 1}
+                        totalPages={totalIndices}
                     />
                 </div>
 
@@ -356,6 +356,13 @@ export default function Assistants() {
                 />
 
                 {inputLocked && <div className="fixed inset-0 z-80 pointer-events-auto" />}
+
+                {/* Footer */}
+                <div className={`absolute bottom-4 w-full text-center z-40 pointer-events-none transition-opacity duration-1000 delay-500 ${isExiting || isLoggingOut ? "opacity-0" : "opacity-100"}`} >
+                    <p className="text-white font-caudex text-[10px] md:text-xl tracking-widest drop-shadow-md">
+                        @Atlantis.DLOR2026. All Right Reserved
+                    </p>
+                </div>
             </div>
         </>
     );

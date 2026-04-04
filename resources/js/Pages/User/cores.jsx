@@ -371,7 +371,7 @@ export default function Cores({ puzzles = [] }) {
 
                 {/* Unlocked ALL */}
                 {allUnlocked && !isMapPlacing && !isExiting && !isLoggingOut && (
-                    <div className="absolute bottom-20 md:bottom-24 w-full flex justify-center z-50 transition-opacity duration-1000 animate-fadeIn">
+                    <div className="absolute bottom-30 md:bottom-24 w-full flex justify-center z-50 transition-opacity duration-1000 animate-fadeIn">
                         <button
                             onClick={() => setIsSecretOpen(true)}
                             className="glow-pulse px-8 py-4 bg-cyan-900/40 border-2 border-cyan-400/60 text-cyan-100 font-serif font-bold text-lg md:text-xl uppercase tracking-[0.3em] backdrop-blur-md hover:bg-cyan-500/30 hover:border-cyan-300 transition-all duration-300"
@@ -435,7 +435,7 @@ export default function Cores({ puzzles = [] }) {
                     className={`absolute bottom-4 w-full text-center z-40 pointer-events-none transition-opacity duration-1000 delay-500 ${isMapPlacing || isExiting || isLoggingOut ? "opacity-0" : "opacity-100"}`}
                 >
                     <p className="text-white font-caudex text-[10px] md:text-xl tracking-widest drop-shadow-md">
-                        @Atlantis.DLOR2026. All Right Served
+                        @Atlantis.DLOR2026. All Right Reserved
                     </p>
                 </div>
             </div>

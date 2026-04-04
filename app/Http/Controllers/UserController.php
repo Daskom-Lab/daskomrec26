@@ -24,7 +24,7 @@ class UserController extends Controller
         $search = request('search', '');
         $stageId = request('stage_id', '');
         $status = request('status', '');
-        
+
         $users = User::with('profile', 'caasStage.stage')
             ->join('caas_stages', 'users.id', '=', 'caas_stages.user_id')
             ->where('users.is_admin', false)
@@ -48,7 +48,7 @@ class UserController extends Controller
             ->appends(['search' => $search, 'perPage' => $perPage, 'stage_id' => $stageId, 'status' => $status]);
 
         $stages = Stage::orderBy('id')->get();
-        
+
         return inertia('Admin/caas', [
             'users' => $users,
             'stages' => $stages,
@@ -195,27 +195,76 @@ class UserController extends Controller
         try {
             $import = new CaasImport;
             Excel::import($import, $request->file('file'));
-            
+
             $imported = $import->getImportedCount();
             $skipped = $import->getSkippedCount();
-            
+
             $message = "Successfully imported {$imported} user(s).";
             if ($skipped > 0) {
                 $message .= " Skipped {$skipped} duplicate(s).";
             }
-            
+
             return back()->with('success', $message);
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
             $errors = [];
-            
+
             foreach ($failures as $failure) {
                 $errors[] = "Row {$failure->row()}: " . implode(', ', $failure->errors());
             }
-            
+
             return back()->with('error', 'Import validation failed: ' . implode(' | ', array_slice($errors, 0, 5)));
         } catch (\Exception $e) {
             return back()->with('error', 'Import failed: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Show the form for changing a user's password.
+     */
+    public function passwordChangeView(Request $request)
+    {
+        $search = $request->search;
+
+        if ($search) {
+            $users = User::with('profile')
+                ->where('nim', 'like', "%{$search}%")
+                ->orWhereHas('profile', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })
+                ->limit(10)
+                ->get();
+        } else {
+            $users = collect(); // Return empty if no search
+        }
+
+        return inertia('Admin/password', [
+            'users' => ['data' => $users]
+        ]);
+    }
+
+    /**
+     * Update the user's password.
+     */
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|exists:users,nim', // We used NIM for this field in React
+            'password' => 'required|min:8|confirmed',
+        ], [
+            'current_password.exists' => 'Praktikan NIM not found.',
+        ]);
+
+        $authenticatedUser = $request->user();
+        if (!$authenticatedUser || $authenticatedUser->nim !== $request->current_password) {
+            return back()->withErrors([
+                'current_password' => 'The provided NIM does not match the authenticated user.',
+            ]);
+        }
+        $authenticatedUser->update([
+            'password' => bcrypt($request->password),
+        ]);
+
+        return back()->with('success', 'Password changed successfully.');
     }
 }

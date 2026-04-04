@@ -11,7 +11,7 @@ export default function CardCaas({ sex, name, nim, cls, major }) {
   const containerRef = useRef(null);
 
   const [bubbles, setBubbles] = useState([]);
-  const [clicked, setClicked] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
 
   const cardImage = useMemo(() => (sex === 'female' ? CardFem : CardBoy), [sex]);
 
@@ -36,17 +36,21 @@ export default function CardCaas({ sex, name, nim, cls, major }) {
   };
 
   const handlePointerLeave = () => {
+    setIsPressed(false);
+
     if (!containerRef.current) return;
     containerRef.current.style.setProperty('--rx', '0deg');
     containerRef.current.style.setProperty('--ry', '0deg');
     containerRef.current.style.setProperty('--opacity', '0');
   };
 
-  const handleClick = () => {
-    if (clicked) return;
-    setClicked(true);
+  const handlePointerDown = () => {
+    setIsPressed(true);
     spawnBubbles();
-    setTimeout(() => setClicked(false), 200);
+  };
+
+  const handlePointerUp = () => {
+    setIsPressed(false);
   };
 
   const spawnBubbles = useCallback(() => {
@@ -56,24 +60,24 @@ export default function CardCaas({ sex, name, nim, cls, major }) {
 
       switch (edge) {
         case 0:
-            left = Math.random() * 100;
-            top = 0;
-            break; // Top
+          left = Math.random() * 100;
+          top = 0;
+          break; // Top
         case 1:
-            left = 100;
-            top = Math.random() * 100;
-            break; // Right
+          left = 100;
+          top = Math.random() * 100;
+          break; // Right
         case 2:
-            left = Math.random() * 100;
-            top = 100;
-            break; // Bottom
+          left = Math.random() * 100;
+          top = 100;
+          break; // Bottom
         case 3:
-            left = -0;
-            top = Math.random() * 100;
-            break; // Left
+          left = -0;
+          top = Math.random() * 100;
+          break; // Left
         default:
-            left = 0;
-            top = 0;
+          left = 0;
+          top = 0;
       }
       return {
         id: Date.now() + i,
@@ -89,15 +93,6 @@ export default function CardCaas({ sex, name, nim, cls, major }) {
 
   return (
     <>
-      <svg style={{ display: 'none' }}>
-        <defs>
-          <filter id="pearl-noise">
-            <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="2" result="noise" />
-            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.5 0" />
-            <feBlend in="SourceGraphic" in2="noise" mode="multiply" />
-          </filter>
-        </defs>
-      </svg>
 
       <style>{`
         .card-container {
@@ -112,13 +107,13 @@ export default function CardCaas({ sex, name, nim, cls, major }) {
 
         .card-inner {
           transform: rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--scale));
-          transition: transform 0.2s cubic-bezier(0.1, 0.4, 0.3, 1);
+          transition: transform 0.2s cubic-bezier(0.1, 0.4, 0.3, 1), box-shadow 0.2s ease;
           will-change: transform;
         }
 
         .card-foil {
           opacity: var(--opacity);
-          transition: opacity 0.4s ease;
+          transition: opacity 1s ease;
           mix-blend-mode: overlay;
           background-image: repeating-linear-gradient(
             115deg,
@@ -132,18 +127,15 @@ export default function CardCaas({ sex, name, nim, cls, major }) {
           );
           background-size: 250% 250%;
           background-position: calc(var(--mx) * 1.2) calc(var(--my) * 1.2);
-          filter: url(#pearl-noise) brightness(1.1);
         }
 
         .bubble {
           position: absolute;
           border-radius: 50%;
-          /* More transparent/glassy bubble style */
           background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.1) 60%, rgba(255,255,255,0.4) 100%);
-          box-shadow: inset 0 0 4px rgba(255,255,255,0.6), 0 2px 5px rgba(0,0,0,0.1);
           animation: floatBubble var(--dur) ease-out forwards;
           pointer-events: none;
-          z-index: 50; /* Ensure it sits on top */
+          z-index: 50;
         }
 
         @keyframes floatBubble {
@@ -157,15 +149,19 @@ export default function CardCaas({ sex, name, nim, cls, major }) {
         ref={containerRef}
         onPointerMove={handlePointerMove}
         onPointerLeave={handlePointerLeave}
-        onClick={handleClick}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         className="card-container relative w-full max-w-[320px] sm:max-w-100 cursor-pointer group select-none"
       >
         <div
           ref={cardRef}
           className="card-inner relative w-full h-full rounded-xl overflow-hidden shadow-2xl"
           style={{
-             '--scale': clicked ? 0.96 : 1,
-             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+             '--scale': isPressed ? 0.96 : 1,
+             boxShadow: isPressed
+               ? '0 10px 20px -10px rgba(0, 0, 0, 0.6)'
+               : '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
           }}
         >
           <img
@@ -176,20 +172,20 @@ export default function CardCaas({ sex, name, nim, cls, major }) {
 
           <div className="card-foil absolute inset-0 pointer-events-none z-10" />
 
-          <div
-            className="absolute inset-0 flex flex-col justify-end text-[#7C5D12] font-bold z-30 ml-32 mb-24 sm:ml-40 sm:mb-32 pointer-events-none"
-            style={{ fontFamily: 'Cormorant Infant, serif' }}
-          >
+            <div
+                className="absolute inset-0 flex flex-col justify-end text-[#7C5D12] font-bold z-30 ml-32 mb-24 sm:ml-40 sm:mb-32 pointer-events-none"
+                style={{ fontFamily: 'Cormorant Infant, serif' }}
+            >
             {[name, nim, cls, major].map((text, idx) => (
-              <p
-                key={`${text}-${idx}`}
-                className="text-lg leading-6 sm:text-xl sm:leading-6 drop-shadow-sm"
-                style={{textShadow: '0 1px 4px rgba(255,255,255,0.7)'}}
-              >
+                <p
+                    key={`${text}-${idx}`}
+                    className="text-lg leading-6 sm:text-xl sm:leading-6 drop-shadow-sm truncate max-w-50"
+                    style={{ textShadow: '0 1px 4px rgba(255,255,255,0.7)' }}
+                >
                 {text}
-              </p>
+                </p>
             ))}
-          </div>
+            </div>
         </div>
 
         {/* Bubble bubble */}

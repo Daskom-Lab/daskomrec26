@@ -25,6 +25,7 @@ import DecorFish_2 from '@assets/others/02-Fish.webp';
 
 /* Other Components */
 import UnderwaterEffect from '@components/UnderwaterEffect';
+import MuteButton from '@components/MuteButton';
 
 export default function Welcome() {
     const parallax = useRef(null);
@@ -302,6 +303,11 @@ export default function Welcome() {
             {/* The actual contents */}
             <div className={`w-full h-auto m-0 p-0 ${inputLocked ? 'pointer-events-none' : ''}`}>
                 <UnderwaterEffect />
+
+                <div className="absolute gap-0">
+                    <MuteButton />
+                </div>
+
                 <Parallax ref={parallax} pages={3} style={{ top: '0', left: '0', backgroundColor: '#0C365B' }}>
 
                     {/* Rock + Orb Part */}
@@ -385,13 +391,10 @@ export default function Welcome() {
 
                     {/* Le fishe au Chocolat */}
                     <ParallaxLayer offset={1.15} speed={0.1} className="pointer-events-none z-20">
-                        {/* w-[30%] on mobile (large)
-                            md:w-[12%] on desktop (standard)
-                        */}
-                        <img src={DecorFish_1} className="fish-lt w-[30%] md:w-[12%] brightness-90 sepia hue-rotate-[190deg] saturate-200 contrast-150" />
-                        <img src={DecorFish_2} className="fish-lb w-[40%] md:w-[20%] brightness-90 sepia hue-rotate-[190deg] saturate-200 contrast-150" />
-                        <img src={DecorFish_1} className="fish-rt w-[30%] md:w-[12%] brightness-90 sepia hue-rotate-[190deg] saturate-200 contrast-150" />
-                        <img src={DecorFish_2} className="fish-rb w-[40%] md:w-[20%] brightness-90 sepia hue-rotate-[190deg] saturate-200 contrast-150" />
+                        <img src={DecorFish_1} className="fish-lt w-32 md:w-56 brightness-90" />
+                        <img src={DecorFish_2} className="fish-lb w-40 md:w-72 brightness-90" />
+                        <img src={DecorFish_1} className="fish-rt w-32 md:w-56 brightness-90" />
+                        <img src={DecorFish_2} className="fish-rb w-40 md:w-72 brightness-90" />
                     </ParallaxLayer>
 
                     {/* The Door (Bottom Part) */}
@@ -404,20 +407,17 @@ export default function Welcome() {
                         <img
                             src={ImgOrb}
                             alt="rocks"
-                            className="w-full h-auto min-w-[2000px] absolute bottom-1 left-1/2 -translate-x-1/2"
-                            style={{ filter: 'sepia(1) hue-rotate(150deg) saturate(2) contrast(1.5) brightness(0.9)' }}
+                            className="w-full h-auto min-w-[2000px] absolute bottom-1"
                         />
                         <img
                             src={ImgDoor}
                             alt="ImgDoor"
-                            className="w-full h-auto min-w-[2000px] absolute bottom-1 left-1/2 -translate-x-1/2"
-                            style={{ filter: 'sepia(1) hue-rotate(150deg) saturate(2) contrast(1.5) brightness(0.9)' }}
+                            className="w-full h-auto min-w-[2000px] absolute bottom-1"
                         />
                         <img
                             src={ImgRoad}
                             alt="ImgRoad"
-                            className="w-full h-auto min-w-[2000px] absolute bottom-1 left-1/2 -translate-x-1/2"
-                            style={{ filter: 'sepia(1) hue-rotate(150deg) saturate(2) contrast(1.5) brightness(0.9)' }}
+                            className="w-full h-auto min-w-[2000px] absolute bottom-1"
                         />
 
                         <button

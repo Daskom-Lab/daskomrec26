@@ -9,6 +9,8 @@ import ButtonChain from "@assets/buttons/Chain.webp";
 import ButtonCoreUnlocked from "@assets/buttons/CoresUnlocked.webp";
 import ButtonCoreLocked from "@assets/buttons/CoresLocked.webp";
 
+import MuteButton from "@components/MuteButton"
+
 export default function UserSidebar({ isOpen, onClose, onLogout, onNavigate }) {
     const { config, userStageId } = usePage().props;
 
@@ -325,6 +327,9 @@ export default function UserSidebar({ isOpen, onClose, onLogout, onNavigate }) {
                                     LOG OUT
                                 </span>
                             </button>
+                        </div>
+                        <div className="flex flex-col gap-0">
+                            <MuteButton />
                         </div>
                     </div>
                 </div>
